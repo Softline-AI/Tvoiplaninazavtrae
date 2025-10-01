@@ -97,38 +97,6 @@ const HomePage: React.FC = () => {
       followers: '10.71K',
       verified: true,
       twitterUrl: 'https://twitter.com/Chyan'
-    },
-    {
-      id: 5,
-      username: '@fomomofosol',
-      handle: 'fomomofosol',
-      followers: '89.79K',
-      verified: true,
-      twitterUrl: 'https://twitter.com/fomomofosol'
-    },
-    {
-      id: 6,
-      username: '@ScottPh77711570',
-      handle: 'ScottPh77711570',
-      followers: '15.79K',
-      verified: true,
-      twitterUrl: 'https://twitter.com/ScottPh77711570'
-    },
-    {
-      id: 7,
-      username: '@ashrobinqt',
-      handle: 'ashrobinqt',
-      followers: '88.30K',
-      verified: true,
-      twitterUrl: 'https://twitter.com/ashrobinqt'
-    },
-    {
-      id: 8,
-      username: '@Mladek_sol',
-      handle: 'Mladek_sol',
-      followers: '24.34K',
-      verified: true,
-      twitterUrl: 'https://twitter.com/Mladek_sol'
     }
   ];
 
@@ -137,52 +105,41 @@ const HomePage: React.FC = () => {
       id: 'kol-feed',
       title: 'KOL Feed',
       description: 'Track KOL trades live with wallet feeds. Position before followers using fast insights to seize market moves and stay ahead of retail.',
-      icon: <TrendingUp className="w-6 h-6" />
+      icon: <TrendingUp className="w-8 h-8" />
     },
     {
       id: 'kol-leaderboard',
       title: 'KOL Leaderboard',
       description: 'Rank top KOLs by win rate, success. Live leaderboards let you follow market movers and use their strategies for sharp insights.',
-      icon: <BarChart3 className="w-6 h-6" />
+      icon: <BarChart3 className="w-8 h-8" />
     },
     {
       id: 'top-kol-tokens',
       title: 'Top KOL Tokens',
       description: 'Spot tokens with heavy KOL buys. Alerts for influencer convergence let you position early before retail drives big price discovery.',
-      icon: <Star className="w-6 h-6" />
-    },
-    {
-      id: 'wallet-finder',
-      title: 'Wallet Finder',
-      description: 'Find wallets with advanced search. Track partial addresses, connections, patterns instantly to uncover alpha sources and market opportunities.',
-      icon: <Wallet className="w-6 h-6" />
-    },
-    {
-      id: 'cabal-finder',
-      title: 'Cabal Finder',
-      description: 'Spot coordinated wallet groups with analysis. Track strategies, market impact for consistent alpha across tokens and market conditions.',
-      icon: <Search className="w-6 h-6" />
+      icon: <Star className="w-8 h-8" />
     }
   ];
 
   return (
-    <main className="container mx-auto px-4 white-bg min-h-screen">
+    <main className="noir-bg min-h-screen">
       {/* Hero Section */}
-      <section className="w-full pt-12 lg:pt-24 pb-16 lg:pb-24 flex flex-col items-center justify-center relative">
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-12 max-w-7xl mx-auto">
-          <div className={`flex-1 flex flex-col items-start text-left transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-4">
-              <span className="text-blue-bright">Track</span> <span className="text-gray-900">smart money.</span>
+      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative">
+        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4">
+          <div className={`flex-1 flex flex-col items-start text-left noir-fade-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-title">
+              SMARTCHAIN
             </h1>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-4">
-              <span className="text-blue-bright">Profit</span> before others.
-            </h1>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-6 noir-subtitle">
+              Track smart money.<br />
+              Profit before others.
+            </h2>
             
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 font-light mb-8 max-w-xl">
+            <p className="text-lg md:text-xl lg:text-2xl noir-text-secondary font-light mb-10 max-w-xl">
               Real-time blockchain intelligence. Follow the biggest wallets, catch trends early, and make profitable moves before the market reacts.
             </p>
             
-            <ul className="grid grid-cols-1 gap-3 mb-10 w-full max-w-md">
+            <ul className="grid grid-cols-1 gap-4 mb-12 w-full max-w-md">
               {[
                 { text: "Live whale wallet tracking", delay: "0ms" },
                 { text: "1000+ KOL database", delay: "200ms" },
@@ -191,44 +148,52 @@ const HomePage: React.FC = () => {
               ].map((item, index) => (
                 <li 
                   key={index}
-                  className={`flex items-center gap-2 text-base md:text-lg text-gray-600 transition-all duration-700 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}
+                  className={`flex items-center gap-3 text-lg md:text-xl noir-text-secondary transition-all duration-700 noir-slide-in`}
                   style={{ transitionDelay: item.delay }}
                 >
-                  <Check className="w-5 h-5 text-blue-bright shrink-0" />
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
                   {item.text}
                 </li>
               ))}
             </ul>
             
-            <div className="flex flex-row items-center justify-start gap-4 mb-6 w-full">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 w-full">
               <Link 
                 to="/app/kol-feed" 
-                className="beautiful-button inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 outline-none h-14 rounded-lg px-10 text-lg md:text-xl hover-lift"
+                className="noir-button inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-lg md:text-xl"
               >
                 <span>Stop Missing Alpha</span>
               </Link>
+              <Link 
+                to="/app" 
+                className="noir-button-secondary inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-lg md:text-xl"
+              >
+                <span>View Demo</span>
+              </Link>
             </div>
             
-            <div className="flex items-center gap-2 beautiful-card px-4 py-2 rounded-full mt-2">
-              <ShieldCheck className="w-4 h-4 text-blue-bright" />
-              <span className="text-gray-600 text-xs">30-Day Money-Back Guarantee</span>
+            <div className="flex items-center gap-3 noir-card px-6 py-3 rounded-full">
+              <ShieldCheck className="w-5 h-5 text-white" />
+              <span className="noir-text-secondary text-sm">30-Day Money-Back Guarantee</span>
             </div>
           </div>
           
           {/* Video Player */}
-          <div className={`flex-1 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <div className="aspect-video beautiful-card rounded-xl overflow-hidden">
+          <div className={`flex-1 noir-fade-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+            <div className="aspect-video noir-card rounded-2xl overflow-hidden noir-glow">
               <video 
                 className="w-full h-full object-cover"
                 controls
                 poster="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800&h=450&dpr=1"
               >
                 <source src="/demo-video.mp4" type="video/mp4" />
-                <div className="flex items-center justify-center h-full bg-gray-900">
+                <div className="flex items-center justify-center h-full bg-noir-dark">
                   <div className="text-center">
-                    <Play className="w-16 h-16 text-blue-main mx-auto mb-4" />
-                    <p className="text-white font-medium">SmartChain Demo Video</p>
-                    <p className="text-gray-300 text-sm mt-2">Click to play demonstration</p>
+                    <Play className="w-20 h-20 text-white mx-auto mb-6" />
+                    <p className="text-white font-medium text-xl">SmartChain Demo Video</p>
+                    <p className="noir-text-secondary text-lg mt-3">Click to play demonstration</p>
                   </div>
                 </div>
               </video>
@@ -238,69 +203,63 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Features Overview */}
-      <div className="w-full max-w-7xl mx-auto px-4 py-16 lg:py-24">
+      <div className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32">
         <div 
-          className={`flex flex-col items-center mb-12 lg:mb-16 max-w-3xl mx-auto scroll-reveal ${revealedElements.has('features-title') ? 'revealed' : ''}`}
+          className={`flex flex-col items-center mb-16 lg:mb-20 max-w-4xl mx-auto noir-fade-in ${revealedElements.has('features-title') ? 'revealed' : ''}`}
           data-reveal-id="features-title"
         >
-          <h2 className="text-xl md:text-3xl lg:text-4xl text-center font-semibold mb-4 text-gray-900 text-glow">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-6 noir-title">
             Your Edge in the Fastest-Moving Market
           </h2>
-        </div>
-
-        <div 
-          className={`flex flex-col items-center mb-12 max-w-4xl mx-auto px-2 scroll-reveal ${revealedElements.has('features-subtitle') ? 'revealed' : ''}`}
-          data-reveal-id="features-subtitle"
-        >
-          <div className="text-center text-lg text-gray-600">
+          <p className="text-xl md:text-2xl text-center noir-text-secondary max-w-3xl">
             While others rely on Twitter rumors and gut feelings, you'll trade with institutional-grade intelligence.
-          </div>
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 my-12">
           {[
             {
               title: "Discover",
               description: "Find hidden gems before they explode on social media",
-              icon: <Eye className="w-12 h-12 text-blue-bright mb-4" />
+              icon: <Eye className="w-16 h-16 text-white mb-6" />
             },
             {
-              title: "Monitor",
+              title: "Monitor", 
               description: "Track whale wallets and insider patterns 24/7",
-              icon: <Activity className="w-12 h-12 text-blue-bright mb-4" />
+              icon: <Activity className="w-16 h-16 text-white mb-6" />
             },
             {
               title: "Trade",
               description: "Copy moves from the most successful crypto traders",
-              icon: <TrendingUp className="w-12 h-12 text-blue-bright mb-4" />
+              icon: <TrendingUp className="w-16 h-16 text-white mb-6" />
             }
           ].map((item, index) => (
             <div
               key={index}
-              className={`group beautiful-card rounded-xl p-8 hover-lift scroll-reveal ${revealedElements.has(`feature-${index}`) ? 'revealed' : ''}`}
+              className={`group noir-card rounded-2xl p-10 noir-fade-in ${revealedElements.has(`feature-${index}`) ? 'revealed' : ''}`}
               data-reveal-id={`feature-${index}`}
             >
               <div className="flex flex-col items-center text-center">
-                <div className="group-hover:scale-110 transition-transform duration-300">
+                <div className="group-hover:scale-110 transition-transform duration-500">
                   {item.icon}
                 </div>
-                <h3 className="text-2xl mb-3 font-bold gradient-text">{item.title}</h3>
-                <p className="text-gray-600 text-lg leading-relaxed">{item.description}</p>
+                <h3 className="text-3xl mb-4 font-bold noir-title">{item.title}</h3>
+                <p className="noir-text-secondary text-xl leading-relaxed">{item.description}</p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="flex justify-center mb-10">
+        <div className="flex justify-center mt-16">
           <div className="flex flex-col items-center">
             <Link 
               to="/app"
-              className="beautiful-button inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all h-14 rounded-lg px-10 text-lg md:text-xl group hover-lift pulse-blue"
+              className="noir-button inline-flex items-center justify-center gap-3 whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-xl group noir-glow"
             >
               <span>Join Now</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
             </Link>
-            <div className="text-xs md:text-sm text-gray-600 text-center mt-2">
+            <div className="text-sm md:text-base noir-text-muted text-center mt-3">
               Try risk-free, money back guarantee.
             </div>
           </div>
@@ -308,26 +267,26 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* Testimonials Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 py-16 lg:py-24">
+      <section className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32">
         <div 
-          className={`text-center mb-12 lg:mb-16 scroll-reveal ${revealedElements.has('testimonials-title') ? 'revealed' : ''}`}
+          className={`text-center mb-16 lg:mb-20 noir-fade-in ${revealedElements.has('testimonials-title') ? 'revealed' : ''}`}
           data-reveal-id="testimonials-title"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold gradient-text mb-6">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-title mb-8">
             Traders Using SmartChain
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
             Join thousands of professional traders who trust SmartChain to track smart money movements and discover the next big opportunities.
           </p>
         </div>
         
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
           {testimonials.map((testimonial, index) => (
             <div 
               key={testimonial.id} 
-              className={`transition-all duration-700 scroll-reveal ${revealedElements.has(`testimonial-${index}`) ? 'revealed' : ''}`} 
+              className={`transition-all duration-700 noir-fade-in ${revealedElements.has(`testimonial-${index}`) ? 'revealed' : ''}`} 
               data-reveal-id={`testimonial-${index}`}
-              style={{ transitionDelay: `${index * 100}ms` }}
+              style={{ transitionDelay: `${index * 150}ms` }}
             >
               <a
                 href={testimonial.twitterUrl}
@@ -335,35 +294,35 @@ const HomePage: React.FC = () => {
                 rel="noopener noreferrer"
                 className="group block"
               >
-                <div className="beautiful-card rounded-xl p-6 hover-lift">
+                <div className="noir-card rounded-2xl p-8">
                   <div className="flex flex-col items-center text-center">
-                    <div className="relative mb-3">
-                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center overflow-hidden border-2 border-blue-200">
-                        <Users className="w-6 h-6 text-blue-main" />
+                    <div className="relative mb-4">
+                      <div className="w-16 h-16 bg-gradient-to-br from-white to-gray-200 rounded-full flex items-center justify-center overflow-hidden border-2 border-white">
+                        <Users className="w-8 h-8 text-noir-black" />
                       </div>
-                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white">
-                        <svg className="w-3 h-3 text-white" fill="white" viewBox="0 0 24 24">
+                      <div className="absolute -bottom-1 -right-1 w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center border-2 border-white">
+                        <svg className="w-4 h-4 text-white" fill="white" viewBox="0 0 24 24">
                           <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z" />
                         </svg>
                       </div>
                     </div>
                     
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-gray-900 text-base truncate group-hover:text-blue-bright transition-colors">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="font-bold text-white text-lg truncate group-hover:text-gray-200 transition-colors">
                         {testimonial.username}
                       </span>
                       {testimonial.verified && (
-                        <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                        <CheckCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
                       )}
                     </div>
                     
-                    <div className="text-sm text-gray-600 mb-4 font-medium">
+                    <div className="text-base noir-text-secondary mb-6 font-medium">
                       {testimonial.followers} followers
                     </div>
                     
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full"></div>
-                      <span className="text-sm font-semibold text-gray-700 group-hover:text-blue-bright transition-colors">
+                      <div className="w-4 h-4 bg-gradient-to-r from-white to-gray-200 rounded-full"></div>
+                      <span className="text-sm font-semibold noir-text-secondary group-hover:text-white transition-colors">
                         SmartChain User
                       </span>
                     </div>
@@ -374,8 +333,8 @@ const HomePage: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex justify-center mt-12">
-          <button className="beautiful-button inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-base font-semibold transition-all h-12 px-8 py-3 hover-lift">
+        <div className="flex justify-center mt-16">
+          <button className="noir-button inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-lg font-semibold transition-all h-14 px-10 py-4">
             <Link to="/app" className="w-full h-full flex items-center justify-center">
               Get Started
             </Link>
@@ -383,167 +342,53 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Tools Section */}
-      <section className="w-full max-w-7xl mx-auto px-4 py-16 lg:py-24">
-        <div 
-          className={`flex flex-col items-center mb-12 lg:mb-16 px-2 scroll-reveal ${revealedElements.has('tools-title') ? 'revealed' : ''}`}
-          data-reveal-id="tools-title"
-        >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-6 gradient-text">
-            Unlock the Most Advanced Smart Money Tools
-          </h2>
-          <p className="text-xl text-gray-600 text-center max-w-3xl leading-relaxed">
-            Everything you need to track, analyze, and act on smart money flows in real time.
-          </p>
-        </div>
-
-        <div 
-          className={`flex flex-col lg:flex-row gap-0 items-stretch rounded-2xl beautiful-card overflow-hidden scroll-reveal hover-lift ${revealedElements.has('tools-panel') ? 'revealed' : ''}`}
-          data-reveal-id="tools-panel"
-        >
-          <div className="w-full lg:w-[35%] flex flex-col divide-y divide-blue-500/20">
-            {features.map((feature, index) => (
-              <div
-                key={feature.id}
-                className={`relative transition-all duration-300 ${
-                  feature.id === activeFeature 
-                    ? 'bg-blue-900/20' 
-                    : 'hover:bg-blue-900/10'
-                } ${index === 0 ? 'rounded-t-2xl lg:rounded-tr-none lg:rounded-tl-2xl' : ''} ${
-                  index === features.length - 1 ? 'rounded-b-2xl lg:rounded-bl-2xl lg:rounded-br-none' : ''
-                }`}
-              >
-                <button
-                  onClick={() => setActiveFeature(feature.id)}
-                  className="w-full text-left px-6 py-4 flex items-center justify-between group hover:no-underline"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-lg transition-colors ${
-                      feature.id === activeFeature ? 'text-blue-bright bg-blue-900/30' : 'text-blue-main'
-                    }`}>
-                      {feature.icon}
-                    </div>
-                    <span className={`font-semibold text-base md:text-lg transition-colors ${
-                      feature.id === activeFeature ? 'text-blue-bright' : 'text-gray-900'
-                    }`}>
-                      {feature.title}
-                    </span>
-                  </div>
-                  <ChevronDown className={`w-4 h-4 transition-all duration-300 ${
-                    feature.id === activeFeature ? 'rotate-180 text-blue-bright' : 'text-blue-main'
-                  }`} />
-                </button>
-                
-                {feature.id === activeFeature && (
-                  <div className="px-8 py-2 animate-fadeIn">
-                    <div className="text-gray-600 text-sm md:text-base leading-relaxed">
-                      {feature.description}
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          
-          <div className="w-full lg:w-[65%] bg-black/20 relative overflow-hidden lg:flex lg:items-center lg:justify-center p-12">
-            <div className="text-center">
-              <div className="w-32 h-32 mx-auto mb-6 bg-blue-900/30 rounded-full flex items-center justify-center">
-                <Brain className="w-16 h-16 text-blue-bright" />
-              </div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Advanced Analytics Dashboard</h3>
-              <p className="text-gray-600 max-w-md">
-                Real-time data visualization and smart money tracking interface designed for professional traders.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-12 text-center">
-          <p className="text-xl mb-8 max-w-3xl mx-auto text-gray-600">
-            These opportunities happen every week. The difference between profit and regret is having the right tools to spot them early.
-          </p>
-          <div className="flex flex-col items-center">
-            <Link 
-              to="/app"
-              className="beautiful-button inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium transition-all h-14 rounded-lg px-10 text-lg md:text-xl group hover-lift pulse-blue"
-            >
-              <span>Start Tracking Smart Money Now</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <div className="text-xs md:text-sm text-gray-600 text-center mt-2">
-              Try risk-free, money back guarantee.
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Pricing Section */}
-      <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-16 lg:py-24">
+      <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32">
         <div 
-          className={`text-center mb-12 lg:mb-16 scroll-reveal ${revealedElements.has('pricing-title') ? 'revealed' : ''}`}
+          className={`text-center mb-16 lg:mb-20 noir-fade-in ${revealedElements.has('pricing-title') ? 'revealed' : ''}`}
           data-reveal-id="pricing-title"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold gradient-text mb-6">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-title mb-8">
             Choose Your Trading Edge
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
             Start free, upgrade when you're ready to unlock advanced features and maximize your profits.
           </p>
         </div>
 
-        {/* Billing Toggle */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-gray-100 p-1 rounded-lg">
-            <button
-              onClick={() => setBillingPeriod('monthly')}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                billingPeriod === 'monthly'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingPeriod('yearly')}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                billingPeriod === 'yearly'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Yearly <span className="text-green-600 text-xs ml-1">Save 20%</span>
-            </button>
-          </div>
-        </div>
-
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
           {/* Free Plan */}
           <div 
-            className={`beautiful-card rounded-2xl p-8 hover-lift scroll-reveal ${revealedElements.has('plan-free') ? 'revealed' : ''}`}
+            className={`noir-card rounded-3xl p-10 noir-fade-in ${revealedElements.has('plan-free') ? 'revealed' : ''}`}
             data-reveal-id="plan-free"
           >
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-6">
-                $0<span className="text-lg text-gray-500">/month</span>
+              <h3 className="text-3xl font-bold text-white mb-3">Free</h3>
+              <div className="text-5xl font-bold text-white mb-8">
+                $0<span className="text-xl noir-text-secondary">/month</span>
               </div>
-              <ul className="space-y-4 mb-8 text-left">
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Basic KOL tracking</span>
+              <ul className="space-y-5 mb-10 text-left">
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Basic KOL tracking</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Limited wallet insights</span>
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Limited wallet insights</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Community access</span>
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Community access</span>
                 </li>
               </ul>
-              <button className="w-full beautiful-button h-12 rounded-lg font-semibold">
+              <button className="w-full noir-button-secondary h-14 rounded-lg font-semibold text-lg">
                 Get Started Free
               </button>
             </div>
@@ -551,39 +396,46 @@ const HomePage: React.FC = () => {
 
           {/* Pro Plan */}
           <div 
-            className={`beautiful-card rounded-2xl p-8 hover-lift relative border-2 border-blue-500 scroll-reveal ${revealedElements.has('plan-pro') ? 'revealed' : ''}`}
+            className={`noir-card rounded-3xl p-10 relative border-2 border-white noir-glow noir-fade-in ${revealedElements.has('plan-pro') ? 'revealed' : ''}`}
             data-reveal-id="plan-pro"
           >
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-              <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
+              <span className="bg-white text-noir-black px-6 py-2 rounded-full text-base font-bold">
                 Most Popular
               </span>
             </div>
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
-              <div className="text-4xl font-bold text-gray-900 mb-6">
-                ${billingPeriod === 'monthly' ? '49' : '39'}
-                <span className="text-lg text-gray-500">/{billingPeriod === 'monthly' ? 'month' : 'month'}</span>
+              <h3 className="text-3xl font-bold text-white mb-3">Pro</h3>
+              <div className="text-5xl font-bold text-white mb-8">
+                $49<span className="text-xl noir-text-secondary">/month</span>
               </div>
-              <ul className="space-y-4 mb-8 text-left">
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Advanced KOL analytics</span>
+              <ul className="space-y-5 mb-10 text-left">
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Advanced KOL analytics</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Real-time alerts</span>
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Real-time alerts</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Portfolio tracking</span>
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Portfolio tracking</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>API access</span>
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">API access</span>
                 </li>
               </ul>
-              <button className="w-full beautiful-button h-12 rounded-lg font-semibold pulse-blue">
+              <button className="w-full noir-button h-14 rounded-lg font-semibold text-lg">
                 Start Pro Trial
               </button>
             </div>
@@ -591,109 +443,45 @@ const HomePage: React.FC = () => {
 
           {/* Legend Plan */}
           <div 
-            className={`beautiful-card rounded-2xl p-8 hover-lift scroll-reveal ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
+            className={`noir-card rounded-3xl p-10 noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
             data-reveal-id="plan-legend"
           >
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2">
-                Legend <Crown className="w-6 h-6 text-amber-500" />
+              <h3 className="text-3xl font-bold text-white mb-3 flex items-center justify-center gap-3">
+                Legend <Crown className="w-8 h-8 text-yellow-400" />
               </h3>
-              <div className="text-4xl font-bold text-gray-900 mb-6">
-                ${billingPeriod === 'monthly' ? '99' : '79'}
-                <span className="text-lg text-gray-500">/{billingPeriod === 'monthly' ? 'month' : 'month'}</span>
+              <div className="text-5xl font-bold text-white mb-8">
+                $99<span className="text-xl noir-text-secondary">/month</span>
               </div>
-              <ul className="space-y-4 mb-8 text-left">
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Everything in Pro</span>
+              <ul className="space-y-5 mb-10 text-left">
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Everything in Pro</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Insider scan tools</span>
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Insider scan tools</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Fresh wallet feeds</span>
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Fresh wallet feeds</span>
                 </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Priority support</span>
+                <li className="flex items-center gap-4">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                    <Check className="w-4 h-4 text-noir-black" />
+                  </div>
+                  <span className="text-lg">Priority support</span>
                 </li>
               </ul>
-              <button className="w-full beautiful-button h-12 rounded-lg font-semibold">
+              <button className="w-full noir-button-secondary h-14 rounded-lg font-semibold text-lg">
                 Go Legend
               </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Video Sections */}
-      <section className="w-full max-w-7xl mx-auto px-4 py-16 lg:py-24">
-        <div 
-          className={`text-center mb-12 scroll-reveal ${revealedElements.has('videos-title') ? 'revealed' : ''}`}
-          data-reveal-id="videos-title"
-        >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold gradient-text mb-6">
-            See SmartChain in Action
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Watch how professional traders use SmartChain to identify opportunities and execute profitable trades.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Video 1 */}
-          <div 
-            className={`scroll-reveal ${revealedElements.has('video-1') ? 'revealed' : ''}`}
-            data-reveal-id="video-1"
-          >
-            <div className="aspect-video beautiful-card rounded-xl overflow-hidden hover-lift">
-              <video 
-                className="w-full h-full object-cover"
-                controls
-                poster="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800&h=450&dpr=1"
-              >
-                <source src="/demo-video-1.mp4" type="video/mp4" />
-                <div className="flex items-center justify-center h-full bg-gray-900">
-                  <div className="text-center">
-                    <Play className="w-16 h-16 text-blue-main mx-auto mb-4" />
-                    <p className="text-white font-medium">KOL Tracking Demo</p>
-                    <p className="text-gray-300 text-sm mt-2">Learn to track smart money</p>
-                  </div>
-                </div>
-              </video>
-            </div>
-            <div className="mt-4 text-center">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">KOL Tracking Masterclass</h3>
-              <p className="text-gray-600">Learn how to identify and follow the most profitable crypto influencers</p>
-            </div>
-          </div>
-
-          {/* Video 2 */}
-          <div 
-            className={`scroll-reveal ${revealedElements.has('video-2') ? 'revealed' : ''}`}
-            data-reveal-id="video-2"
-          >
-            <div className="aspect-video beautiful-card rounded-xl overflow-hidden hover-lift">
-              <video 
-                className="w-full h-full object-cover"
-                controls
-                poster="https://images.pexels.com/photos/6802049/pexels-photo-6802049.jpeg?auto=compress&cs=tinysrgb&w=800&h=450&dpr=1"
-              >
-                <source src="/demo-video-2.mp4" type="video/mp4" />
-                <div className="flex items-center justify-center h-full bg-gray-900">
-                  <div className="text-center">
-                    <Play className="w-16 h-16 text-blue-main mx-auto mb-4" />
-                    <p className="text-white font-medium">Wallet Analysis Demo</p>
-                    <p className="text-gray-300 text-sm mt-2">Advanced wallet tracking</p>
-                  </div>
-                </div>
-              </video>
-            </div>
-            <div className="mt-4 text-center">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Wallet Analysis Deep Dive</h3>
-              <p className="text-gray-600">Discover hidden connections and profit patterns in wallet data</p>
             </div>
           </div>
         </div>

@@ -279,13 +279,13 @@ const KOLFeed: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-xl font-semibold">KOL Feed</h1>
+          <h1 className="text-xl font-semibold text-white">KOL Feed</h1>
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${
-              apiStatus === 'connected' ? 'bg-green-500' : 
-              apiStatus === 'failed' ? 'bg-red-500' : 'bg-yellow-500'
+              apiStatus === 'connected' ? 'noir-status-online' : 
+              apiStatus === 'failed' ? 'noir-status-offline' : 'noir-status-warning'
             }`}></div>
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-gray-300">
               {apiStatus === 'connected' ? 'Live Data' : 
                apiStatus === 'failed' ? 'Demo Data' : 'Connecting...'}
             </span>
@@ -294,39 +294,39 @@ const KOLFeed: React.FC = () => {
             onClick={() => setUseRealData(!useRealData)}
             className={`px-3 py-1 text-xs rounded-full transition-colors ${
               useRealData 
-                ? 'bg-green-100 text-green-700 hover:bg-green-200' 
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-white/20 text-white hover:bg-white/30' 
+                : 'bg-white/10 text-gray-300 hover:bg-white/20'
             }`}
           >
             {useRealData ? 'Real Data' : 'Demo Data'}
           </button>
         </div>
-        <div className="text-sm text-gray-500">Realtime trades performed by KOLs</div>
+        <div className="text-sm text-gray-300">Realtime trades performed by KOLs</div>
       </div>
 
       {/* Feed Table */}
       <div className="mt-6">
-        <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+        <div className="noir-table rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-white/10">
+              <thead className="noir-table">
                 <tr>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
                         <span>Last Tx</span>
                         <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                          <Filter className="w-3.5 h-3.5 text-gray-300" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
                         <span>KOL</span>
                         <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                          <Filter className="w-3.5 h-3.5 text-gray-300" />
                         </button>
                       </div>
                     </div>
@@ -414,9 +414,9 @@ const KOLFeed: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="divide-y divide-white/5">
                 {trades.map((trade, index) => (
-                  <tr key={trade.id} className={`transition-colors hover:bg-gray-100 ${getRowBackground(index)}`}>
+                  <tr key={trade.id} className="transition-colors hover:bg-white/5">
                     {/* Last Tx */}
                     <td className="px-3 py-2.5 whitespace-nowrap">
                       <div className="flex flex-col">
@@ -424,7 +424,7 @@ const KOLFeed: React.FC = () => {
                           {trade.lastTx}
                         </span>
                         <div>
-                          <span className="text-xs text-gray-500">{trade.timeAgo}</span>
+                          <span className="text-xs text-gray-300">{trade.timeAgo}</span>
                         </div>
                       </div>
                     </td>
@@ -432,33 +432,33 @@ const KOLFeed: React.FC = () => {
                     {/* KOL */}
                     <td className="px-3 py-2.5 whitespace-nowrap">
                       <div>
-                        <div className="bg-gray-50/80 border border-blue-200/30 rounded-lg px-2 text-gray-600 flex items-center hover:bg-gray-100 transition-colors cursor-pointer" style={{ overflow: 'hidden', height: '28px', width: '160px' }}>
-                          <div className="flex-1 flex items-center justify-start cursor-pointer text-gray-500 min-w-0">
+                        <div className="bg-white/10 border border-white/20 rounded-lg px-2 text-gray-300 flex items-center hover:bg-white/20 transition-colors cursor-pointer" style={{ overflow: 'hidden', height: '28px', width: '160px' }}>
+                          <div className="flex-1 flex items-center justify-start cursor-pointer text-gray-300 min-w-0">
                             <div className="relative">
                               <div className="relative mr-2">
                                 <div className="relative">
-                                  <div className="w-[20px] h-[20px] rounded-full bg-gray-200 flex items-center justify-center border border-gray-300">
-                                    <span className="text-gray-500 font-medium text-[8px]">
+                                  <div className="w-[20px] h-[20px] rounded-full bg-white/20 flex items-center justify-center border border-white/30">
+                                    <span className="text-white font-medium text-[8px]">
                                       {trade.kolName.substring(0, 2).toUpperCase()}
                                     </span>
                                   </div>
                                   <img
                                     alt={trade.kolName}
-                                    className="absolute inset-0 rounded-full border border-gray-300 object-cover w-[20px] h-[20px]"
+                                    className="absolute inset-0 rounded-full border border-white/30 object-cover w-[20px] h-[20px]"
                                     src={trade.kolAvatar}
                                     style={{ display: 'block' }}
                                   />
                                 </div>
-                                <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-blue-400 rounded-full border-2 border-white"></div>
+                                <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-white rounded-full border-2 border-noir-dark"></div>
                               </div>
                             </div>
-                            <span className="text-xs text-gray-800 font-semibold truncate">
+                            <span className="text-xs text-white font-semibold truncate">
                               {trade.kolName}
                             </span>
                           </div>
                           <div className="flex items-center gap-0.5 flex-shrink-0">
                             <a
-                              className="hover:opacity-50 px-1 text-gray-500"
+                              className="hover:opacity-50 px-1 text-gray-300"
                               href={`https://solscan.io/account/${trade.walletAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"
@@ -469,9 +469,9 @@ const KOLFeed: React.FC = () => {
                               href={`https://twitter.com/${trade.twitterHandle}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="hover:opacity-50 p-1 text-gray-500"
+                              className="hover:opacity-50 p-1 text-gray-300"
                             >
-                              <svg className="w-3.5 h-3.5" viewBox="0 0 512 512" fill="currentColor">
+                              <svg className="w-3.5 h-3.5" viewBox="0 0 512 512" fill="white">
                                 <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
                               </svg>
                             </a>
@@ -480,7 +480,7 @@ const KOLFeed: React.FC = () => {
                                 href={`https://t.me/${trade.telegramHandle}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="hover:opacity-50 p-1 text-gray-500"
+                                className="hover:opacity-50 p-1 text-gray-300"
                               >
                                 <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="#1997CA">
                                   <path d="M1.058 6.85c4.337-1.89 7.222-3.127 8.654-3.716 4.113-1.697 4.97-1.992 5.531-2.002.123 0 .397.028.574.17.148.123.188.29.207.406.02.116.045.38.026.588-.223 2.335-1.188 8.016-1.682 10.634-.207 1.11-.615 1.482-1.01 1.518-.861.074-1.516-.576-2.35-1.13-1.295-.85-2.025-1.38-3.284-2.21-1.456-.963-.512-1.494.317-2.362.217-.228 4.005-3.672 4.077-3.983.01-.037.018-.174-.073-.246-.092-.073-.227-.048-.325-.03-.138.027-2.22 1.41-6.247 4.147-.59.406-1.124.604-1.603.594-.528-.01-1.545-.299-2.3-.544-.927-.299-1.663-.456-1.6-.973.033-.263.409-.536 1.114-.82z" />
@@ -546,7 +546,7 @@ const KOLFeed: React.FC = () => {
 
                     {/* Mcap */}
                     <td className="px-3 py-2.5 whitespace-nowrap">
-                      <span className="text-sm text-gray-600">{trade.mcap}</span>
+                      <span className="text-sm text-gray-300">{trade.mcap}</span>
                     </td>
 
                     {/* Bought */}
@@ -591,13 +591,13 @@ const KOLFeed: React.FC = () => {
 
                     {/* AHT */}
                     <td className="px-3 py-2.5 whitespace-nowrap">
-                      <span className="text-xs text-gray-600">{trade.aht}</span>
+                      <span className="text-xs text-gray-300">{trade.aht}</span>
                     </td>
 
                     {/* Actions */}
                     <td className="px-3 py-2.5 whitespace-nowrap">
                       <div className="flex justify-end">
-                        <button className="bg-gray-50/80 border border-blue-200/30 rounded-lg px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-100 transition-colors flex items-center justify-center">
+                        <button className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-xs font-medium text-white hover:bg-white/20 transition-colors flex items-center justify-center">
                           Details
                         </button>
                       </div>
@@ -612,8 +612,8 @@ const KOLFeed: React.FC = () => {
           <div className="flex w-full justify-center p-4 h-20">
             <div className="relative inline-flex flex-col gap-2 items-center justify-center">
               <div className="relative flex w-5 h-5">
-                <div className="absolute w-full h-full rounded-full border-2 border-b-blue-600 animate-spin border-solid border-t-transparent border-l-transparent border-r-transparent"></div>
-                <div className="absolute w-full h-full rounded-full border-2 border-b-blue-600 opacity-75 animate-spin border-dotted border-t-transparent border-l-transparent border-r-transparent"></div>
+                <div className="absolute w-full h-full rounded-full border-2 border-b-white animate-spin border-solid border-t-transparent border-l-transparent border-r-transparent"></div>
+                <div className="absolute w-full h-full rounded-full border-2 border-b-white opacity-75 animate-spin border-dotted border-t-transparent border-l-transparent border-r-transparent"></div>
               </div>
             </div>
           </div>

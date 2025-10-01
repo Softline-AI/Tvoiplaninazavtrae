@@ -187,17 +187,17 @@ const Sidebar: React.FC = () => {
         to={item.href}
         className={`flex-1 flex items-center justify-between h-8 px-2 rounded-lg transition-colors ${
           isActive 
-            ? 'text-white bg-blue-600' 
+            ? 'text-noir-black bg-white' 
             : item.disabled 
-              ? 'text-blue-main opacity-50 hover:bg-blue-900/20' 
-              : 'text-blue-main hover:bg-blue-900/20'
+              ? 'text-white opacity-50 hover:bg-white/10' 
+              : 'text-white hover:bg-white/10'
         }`}
       >
         <div className="flex items-center gap-3">
-          <div className={isActive ? 'text-white' : 'text-blue-main'}>
+          <div className={isActive ? 'text-noir-black' : 'text-white'}>
             {item.icon}
           </div>
-          <span className={`text-sm ${isActive ? 'text-white' : 'text-blue-main'}`}>
+          <span className={`text-sm ${isActive ? 'text-noir-black' : 'text-white'}`}>
             {item.label}
           </span>
         </div>
@@ -241,12 +241,12 @@ const Sidebar: React.FC = () => {
     <div>
       <button
         onClick={() => toggleSection(sectionKey)}
-        className="w-full px-2 flex items-center justify-between text-blue-main rounded-lg hover:bg-blue-900/20 h-auto pt-2 mb-1"
+        className="w-full px-2 flex items-center justify-between text-white rounded-lg hover:bg-white/10 h-auto pt-2 mb-1"
       >
         <span className="text-xs">{title}</span>
         <div className="flex items-center justify-center h-6 w-6 min-w-6">
           <div className={`transition-transform ${expandedSections[sectionKey] ? 'rotate-180' : ''}`}>
-            <ChevronDown className="w-3.5 h-3.5 text-blue-main" />
+            <ChevronDown className="w-3.5 h-3.5 text-white" />
           </div>
         </div>
       </button>
@@ -256,12 +256,12 @@ const Sidebar: React.FC = () => {
           {sectionKey === 'kolScreener' && renderSpecialMenuItem(kolFeedLegacyItem)}
         </div>
       )}
-      <hr className="border-blue-500/30 my-1" />
+      <hr className="border-white/20 my-1" />
     </div>
   );
 
   return (
-    <div className="sidebar py-2 w-60 h-full px-2 beautiful-sidebar z-100">
+    <div className="sidebar py-2 w-60 h-full px-2 noir-sidebar z-100">
       <div>
         <div className="transition-all duration-200">
           {menuItems.map((item) => renderMenuItem(item))}
@@ -277,7 +277,7 @@ const Sidebar: React.FC = () => {
 
       <button className="w-full flex items-center soft-button text-medium h-10 mb-1 px-2 rounded-lg">
       </button>
-      <button className="w-full flex items-center beautiful-button text-medium h-10 mb-1 px-2 rounded-lg">
+      <button className="w-full flex items-center noir-button text-medium h-10 mb-1 px-2 rounded-lg">
         <Link to="/app/upgrade" className="w-full flex items-center">
           <Crown className="w-7 h-7 mr-2" />
           Unlock Tools
