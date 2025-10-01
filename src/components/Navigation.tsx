@@ -38,7 +38,7 @@ const Navigation: React.FC = () => {
               </button>
               
               {isProductsOpen && (
-                <div className="absolute top-full left-0 mt-2 w-[800px] noir-glass noir-border-glow rounded-xl noir-shadow-lg p-6 z-50">
+                <div className="absolute top-full left-0 mt-2 w-[600px] bg-noir-dark border border-white/20 rounded-xl shadow-2xl p-6 z-50 backdrop-blur-sm">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* KOL Screener */}
                     <div className="space-y-3">
