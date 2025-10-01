@@ -150,9 +150,10 @@ const HomePage: React.FC = () => {
                   className={`flex items-center gap-3 text-lg md:text-xl noir-text-secondary transition-all duration-700 noir-slide-in`}
                   style={{ transitionDelay: item.delay }}
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="2.5" d="M20 6L9 17l-5-5" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-5 h-5 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   {item.text}
@@ -225,18 +226,13 @@ const HomePage: React.FC = () => {
                     <div className="w-16 h-16 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
                       <svg className="w-8 h-8 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <p className="text-white/60 text-sm font-medium">Screenshot {index}</p>
-                    <p className="text-white/40 text-xs mt-1">Drag & drop image here</p>
-                  </div>
-                </div>
-                <div className="text-center">
-                  <h3 className="text-2xl mb-3 font-bold text-white">Feature {index}</h3>
-                  <p className="noir-text-secondary text-lg leading-relaxed">Add your screenshot description here</p>
-                </div>
-              </div>
-            </div>
+            <Link 
+              to="/app"
+              className="noir-button noir-pulse inline-flex items-center justify-center gap-3 whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-xl group"
+            >
+              <span>Join Now</span>
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </Link>
           ))}
         </div>
 
@@ -361,24 +357,27 @@ const HomePage: React.FC = () => {
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   <span className="text-lg">Basic KOL tracking</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   <span className="text-lg">Limited wallet insights</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
@@ -408,32 +407,36 @@ const HomePage: React.FC = () => {
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   <span className="text-lg">Advanced KOL analytics</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   <span className="text-lg">Real-time alerts</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   <span className="text-lg">Portfolio tracking</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-400 via-green-500 to-emerald-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
@@ -460,32 +463,36 @@ const HomePage: React.FC = () => {
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   <span className="text-lg">Everything in Pro</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   <span className="text-lg">Insider scan tools</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
                   <span className="text-lg">Fresh wallet feeds</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 flex items-center justify-center shadow-xl border-2 border-white/20 backdrop-blur-sm">
-                    <svg className="w-4 h-4 text-white drop-shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
