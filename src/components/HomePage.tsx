@@ -124,7 +124,7 @@ const HomePage: React.FC = () => {
   return (
     <main className="noir-bg min-h-screen">
       {/* Hero Section */}
-      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative noir-particles">
+      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4">
           <div className={`flex-1 flex flex-col items-start text-left noir-fade-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text noir-neon">
@@ -219,18 +219,18 @@ const HomePage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 my-12">
           {[
             {
-              title: "Discover",
-              description: "Find hidden gems before they explode on social media",
+              title: "Track",
+              description: "Follow smart money movements and whale activities in real-time",
               icon: <Eye className="w-16 h-16 text-white mb-6" />
             },
             {
-              title: "Monitor", 
-              description: "Track whale wallets and insider patterns 24/7",
+              title: "Analyze", 
+              description: "Get deep insights into KOL trading patterns and market trends",
               icon: <Activity className="w-16 h-16 text-white mb-6" />
             },
             {
-              title: "Trade",
-              description: "Copy moves from the most successful crypto traders",
+              title: "Profit",
+              description: "Make informed decisions based on proven trading strategies",
               icon: <TrendingUp className="w-16 h-16 text-white mb-6" />
             }
           ].map((item, index) => (
@@ -240,7 +240,7 @@ const HomePage: React.FC = () => {
               data-reveal-id={`feature-${index}`}
             >
               <div className="flex flex-col items-center text-center">
-                <div className="group-hover:scale-110 transition-transform duration-500">
+                <div className="transition-transform duration-300">
                   {item.icon}
                 </div>
                 <h3 className="text-3xl mb-4 font-bold noir-neon-blue">{item.title}</h3>

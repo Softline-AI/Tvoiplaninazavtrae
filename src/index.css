@@ -41,9 +41,6 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: 
-    radial-gradient(circle at 25% 25%, rgba(255, 255, 255, 0.02) 0%, transparent 50%),
-    radial-gradient(circle at 75% 75%, rgba(255, 255, 255, 0.01) 0%, transparent 50%);
   pointer-events: none;
 }
 
@@ -391,28 +388,6 @@ body {
     0 0 50px rgba(255, 255, 255, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.3);
-}
-
-/* Noir particles effect */
-.noir-particles {
-  position: relative;
-  overflow: hidden;
-}
-
-.noir-particles::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: 
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    radial-gradient(circle at 40% 60%, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 50px 50px, 80px 80px, 60px 60px;
-  animation: noir-float 4s ease-in-out infinite;
-  pointer-events: none;
 }
 
 /* Noir gradient text */
