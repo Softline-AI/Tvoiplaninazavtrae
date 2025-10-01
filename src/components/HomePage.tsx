@@ -127,12 +127,11 @@ const HomePage: React.FC = () => {
       <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4">
           <div className={`flex-1 flex flex-col items-start text-left noir-fade-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text noir-neon">
-              SMARTCHAIN
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text noir-neon">
+              TRACK SMART MONEY
             </h1>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-6 noir-subtitle noir-float">
-              Track smart money.<br />
-              Profit before others.
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-6 noir-subtitle noir-float">
+              PROFIT
             </h2>
             
             <p className="text-lg md:text-xl lg:text-2xl noir-text-secondary font-light mb-10 max-w-xl">
