@@ -140,18 +140,20 @@ const HomePage: React.FC = () => {
             
             <ul className="grid grid-cols-1 gap-4 mb-12 w-full max-w-md">
               {[
-                { text: "Live whale wallet tracking", delay: "0ms" },
-                { text: "1000+ KOL database", delay: "200ms" },
-                { text: "Early trend detection", delay: "400ms" },
-                { text: "Insider move alerts", delay: "600ms" }
+                { text: "Real-time whale wallet tracking", delay: "0ms" },
+                { text: "1000+ verified KOL database", delay: "200ms" },
+                { text: "AI-powered trend detection", delay: "400ms" },
+                { text: "Instant insider move alerts", delay: "600ms" }
               ].map((item, index) => (
                 <li 
                   key={index}
                   className={`flex items-center gap-3 text-lg md:text-xl noir-text-secondary transition-all duration-700 noir-slide-in`}
                   style={{ transitionDelay: item.delay }}
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-lg">
-                    <div className="w-3 h-3 bg-gradient-to-br from-green-500 to-green-600 rounded-full"></div>
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center shadow-lg border border-green-400/30">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
                   {item.text}
                 </li>
