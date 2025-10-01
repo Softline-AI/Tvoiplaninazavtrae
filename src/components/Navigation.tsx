@@ -102,39 +102,39 @@ const Navigation: React.FC = () => {
                           </div>
                         </Link>
                         
-                        <Link to="/app/top-tokens" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-blue-50 transition-all duration-200 text-left group">
-                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-md group-hover:bg-blue-100 transition-colors">
-                            <svg aria-hidden="true" focusable="false" height="20" role="presentation" viewBox="0 0 24 24" width="20" className="text-primary">
-                              <path d="M12 17C12 19.7614 14.2386 22 17 22C19.7614 22 22 19.7614 22 17C22 14.2386 19.7614 12 17 12C14.2386 12 12 14.2386 12 17ZM12 17C12 15.8742 12.3721 14.8353 13 13.9995V5M12 17C12 17.8254 12.2 18.604 12.5541 19.2901C11.7117 20.0018 9.76584 20.5 7.5 20.5C4.46243 20.5 2 19.6046 2 18.5V5M13 5C13 6.10457 10.5376 7 7.5 7C4.46243 7 2 6.10457 2 5M13 5C13 3.89543 10.5376 3 7.5 3C4.46243 3 2 3.89543 2 5M2 14C2 15.1046 4.46243 16 7.5 16C9.689 16 11.5793 15.535 12.4646 14.8618M13 9.5C13 10.6046 10.5376 11.5 7.5 11.5C4.46243 11.5 2 10.6046 2 9.5" stroke="#3b82f6" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                        <Link to="/app/top-tokens" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-white/10 transition-all duration-200 text-left group">
+                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/10 rounded-md group-hover:bg-white/20 transition-colors">
+                            <svg aria-hidden="true" focusable="false" height="20" role="presentation" viewBox="0 0 24 24" width="20" className="w-5 h-5">
+                              <path d="M12 17C12 19.7614 14.2386 22 17 22C19.7614 22 22 19.7614 22 17C22 14.2386 19.7614 12 17 12C14.2386 12 12 14.2386 12 17ZM12 17C12 15.8742 12.3721 14.8353 13 13.9995V5M12 17C12 17.8254 12.2 18.604 12.5541 19.2901C11.7117 20.0018 9.76584 20.5 7.5 20.5C4.46243 20.5 2 19.6046 2 18.5V5M13 5C13 6.10457 10.5376 7 7.5 7C4.46243 7 2 6.10457 2 5M13 5C13 3.89543 10.5376 3 7.5 3C4.46243 3 2 3.89543 2 5M2 14C2 15.1046 4.46243 16 7.5 16C9.689 16 11.5793 15.535 12.4646 14.8618M13 9.5C13 10.6046 10.5376 11.5 7.5 11.5C4.46243 11.5 2 10.6046 2 9.5" stroke="white" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                             </svg>
                           </div>
                           <div className="flex-1 overflow-hidden">
-                            <div className="font-medium text-gray-900 text-sm leading-tight break-words">Top Tokens</div>
-                            <div className="text-xs text-gray-600 leading-tight mt-0.5 break-words">Monitor top-performing tokens by volume and smart money</div>
+                            <div className="font-medium text-white text-sm leading-tight break-words">Top Tokens</div>
+                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Monitor top-performing tokens by volume and smart money</div>
                           </div>
                         </Link>
                         
-                        <Link to="/app/trends-analytics" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-blue-50 transition-all duration-200 text-left group">
-                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-md group-hover:bg-blue-100 transition-colors">
-                            <svg aria-hidden="true" focusable="false" height="16" role="presentation" viewBox="0 0 24 24" width="16" className="w-5 h-5 text-primary">
-                              <path d="M22 7L14.1314 14.8686C13.7354 15.2646 13.5373 15.4627 13.309 15.5368C13.1082 15.6021 12.8918 15.6021 12.691 15.5368C12.4627 15.4627 12.2646 15.2646 11.8686 14.8686L9.13137 12.1314C8.73535 11.7354 8.53735 11.5373 8.30902 11.4632C8.10817 11.3979 7.89183 11.3979 7.69098 11.4632C7.46265 11.5373 7.26465 11.7354 6.86863 12.1314L2 17M22 7H15M22 7V14" stroke="#3b82f6" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                        <Link to="/app/trends-analytics" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-white/10 transition-all duration-200 text-left group">
+                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/10 rounded-md group-hover:bg-white/20 transition-colors">
+                            <svg aria-hidden="true" focusable="false" height="16" role="presentation" viewBox="0 0 24 24" width="16" className="w-5 h-5">
+                              <path d="M22 7L14.1314 14.8686C13.7354 15.2646 13.5373 15.4627 13.309 15.5368C13.1082 15.6021 12.8918 15.6021 12.691 15.5368C12.4627 15.4627 12.2646 15.2646 11.8686 14.8686L9.13137 12.1314C8.73535 11.7354 8.53735 11.5373 8.30902 11.4632C8.10817 11.3979 7.89183 11.3979 7.69098 11.4632C7.46265 11.5373 7.26465 11.7354 6.86863 12.1314L2 17M22 7H15M22 7V14" stroke="white" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                             </svg>
                           </div>
                           <div className="flex-1 overflow-hidden">
-                            <div className="font-medium text-gray-900 text-sm leading-tight break-words">Trends Analytics</div>
-                            <div className="text-xs text-gray-600 leading-tight mt-0.5 break-words">Deep-dive analytics on token trends and whale movements</div>
+                            <div className="font-medium text-white text-sm leading-tight break-words">Trends Analytics</div>
+                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Deep-dive analytics on token trends and whale movements</div>
                           </div>
                         </Link>
                         
-                        <Link to="/app/transactions" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-blue-50 transition-all duration-200 text-left group">
-                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-md group-hover:bg-blue-100 transition-colors">
-                            <svg aria-hidden="true" focusable="false" height="16" role="presentation" viewBox="0 0 24 24" width="16" className="w-5 h-5 text-primary">
-                              <path d="M20 17H4M4 17L8 13M4 17L8 21M4 7H20M20 7L16 3M20 7L16 11" stroke="#3b82f6" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                        <Link to="/app/transactions" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-white/10 transition-all duration-200 text-left group">
+                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/10 rounded-md group-hover:bg-white/20 transition-colors">
+                            <svg aria-hidden="true" focusable="false" height="16" role="presentation" viewBox="0 0 24 24" width="16" className="w-5 h-5">
+                              <path d="M20 17H4M4 17L8 13M4 17L8 21M4 7H20M20 7L16 3M20 7L16 11" stroke="white" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                             </svg>
                           </div>
                           <div className="flex-1 overflow-hidden">
-                            <div className="font-medium text-gray-900 text-sm leading-tight break-words">Transactions</div>
-                            <div className="text-xs text-gray-600 leading-tight mt-0.5 break-words">Explore every smart money transaction with wallet attribution</div>
+                            <div className="font-medium text-white text-sm leading-tight break-words">Transactions</div>
+                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Explore every smart money transaction with wallet attribution</div>
                           </div>
                         </Link>
                       </div>
@@ -162,29 +162,29 @@ const Navigation: React.FC = () => {
                           </div>
                         </Link>
                         
-                        <Link to="/app/cabal-finder" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-blue-50 transition-all duration-200 text-left group">
-                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-md group-hover:bg-blue-100 transition-colors">
-                            <svg aria-hidden="true" focusable="false" height="20" role="presentation" viewBox="0 0 24 24" width="20" className="text-primary">
-                              <path d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z" stroke="#3b82f6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-                              <path d="M22 22L20 20" stroke="#3b82f6" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                        <Link to="/app/cabal-finder" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-white/10 transition-all duration-200 text-left group">
+                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/10 rounded-md group-hover:bg-white/20 transition-colors">
+                            <svg aria-hidden="true" focusable="false" height="20" role="presentation" viewBox="0 0 24 24" width="20" className="w-5 h-5">
+                              <path d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z" stroke="white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                              <path d="M22 22L20 20" stroke="white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                             </svg>
                           </div>
                           <div className="flex-1 overflow-hidden">
-                            <div className="font-medium text-gray-900 text-sm leading-tight break-words">Cabal Finder</div>
-                            <div className="text-xs text-gray-600 leading-tight mt-0.5 break-words">Discover new investment opportunities with analytics</div>
+                            <div className="font-medium text-white text-sm leading-tight break-words">Cabal Finder</div>
+                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Discover new investment opportunities with analytics</div>
                           </div>
                         </Link>
                         
-                        <Link to="/app/copy-traders" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-blue-50 transition-all duration-200 text-left group">
-                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-blue-50 rounded-md group-hover:bg-blue-100 transition-colors">
-                            <svg aria-hidden="true" focusable="false" height="20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" className="text-primary">
-                              <path d="M3 17L9 11L13 15L21 7" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
-                              <path d="M17 7H21V11" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                        <Link to="/app/copy-traders" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-white/10 transition-all duration-200 text-left group">
+                          <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/10 rounded-md group-hover:bg-white/20 transition-colors">
+                            <svg aria-hidden="true" focusable="false" height="20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" className="w-5 h-5">
+                              <path d="M3 17L9 11L13 15L21 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                              <path d="M17 7H21V11" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                             </svg>
                           </div>
                           <div className="flex-1 overflow-hidden">
-                            <div className="font-medium text-gray-900 text-sm leading-tight break-words">Copy Traders</div>
-                            <div className="text-xs text-gray-600 leading-tight mt-0.5 break-words">Copy the trades of the best traders</div>
+                            <div className="font-medium text-white text-sm leading-tight break-words">Copy Traders</div>
+                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Copy the trades of the best traders</div>
                           </div>
                         </Link>
                       </div>
