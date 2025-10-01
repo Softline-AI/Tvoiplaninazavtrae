@@ -168,17 +168,17 @@ const HomePage: React.FC = () => {
   return (
     <main className="container mx-auto px-4 white-bg min-h-screen">
       {/* Hero Section */}
-      <section className="w-full pt-12 lg:pt-24 pb-16 lg:pb-24 flex flex-col items-center justify-center relative">
+      <section className="w-full pt-16 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-12 max-w-7xl mx-auto">
           <div className={`flex-1 flex flex-col items-start text-left transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-4">
-              <span className="text-blue-bright">Track</span> <span className="text-gray-900">smart money.</span>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6">
+              <span className="text-blue-bright">STALKCHAIN</span>
             </h1>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight mb-4">
-              <span className="text-blue-bright">Profit</span> before others.
-            </h1>
+            <p className="text-xl md:text-2xl lg:text-3xl text-gray-700 font-medium mb-8">
+              Follow smart money on the blockchain
+            </p>
             
-            <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 font-light mb-8 max-w-xl">
+            <p className="text-lg sm:text-xl md:text-2xl text-gray-600 font-light mb-10 max-w-2xl">
               Real-time blockchain intelligence. Follow the biggest wallets, catch trends early, and make profitable moves before the market reacts.
             </p>
             
@@ -243,36 +243,27 @@ const HomePage: React.FC = () => {
           className={`flex flex-col items-center mb-12 lg:mb-16 max-w-3xl mx-auto scroll-reveal ${revealedElements.has('features-title') ? 'revealed' : ''}`}
           data-reveal-id="features-title"
         >
-          <h2 className="text-xl md:text-3xl lg:text-4xl text-center font-semibold mb-4 text-gray-900 text-glow">
-            Your Edge in the Fastest-Moving Market
+          <h2 className="text-3xl md:text-4xl lg:text-5xl text-center font-bold mb-6 text-gray-900">
+            Our Features
           </h2>
-        </div>
-
-        <div 
-          className={`flex flex-col items-center mb-12 max-w-4xl mx-auto px-2 scroll-reveal ${revealedElements.has('features-subtitle') ? 'revealed' : ''}`}
-          data-reveal-id="features-subtitle"
-        >
-          <div className="text-center text-lg text-gray-600">
-            While others rely on Twitter rumors and gut feelings, you'll trade with institutional-grade intelligence.
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 my-8">
           {[
             {
-              title: "Discover",
-              description: "Find hidden gems before they explode on social media",
-              icon: <Eye className="w-12 h-12 text-blue-bright mb-4" />
+              title: "KOL Feed",
+              description: "Track the trades and activities of key opinion leaders (KOLs) in real time.",
+              icon: <TrendingUp className="w-12 h-12 text-blue-bright mb-4" />
             },
             {
-              title: "Monitor",
-              description: "Track whale wallets and insider patterns 24/7",
+              title: "Whale Monitoring", 
+              description: "Stay updated on major wallet movements and whale activities.",
               icon: <Activity className="w-12 h-12 text-blue-bright mb-4" />
             },
             {
-              title: "Trade",
-              description: "Copy moves from the most successful crypto traders",
-              icon: <TrendingUp className="w-12 h-12 text-blue-bright mb-4" />
+              title: "Real-Time Analytics",
+              description: "Get insights into market trends and trading signals with up-to-date data.",
+              icon: <BarChart3 className="w-12 h-12 text-blue-bright mb-4" />
             }
           ].map((item, index) => (
             <div
@@ -284,7 +275,7 @@ const HomePage: React.FC = () => {
                 <div className="group-hover:scale-110 transition-transform duration-300">
                   {item.icon}
                 </div>
-                <h3 className="text-2xl mb-3 font-bold gradient-text">{item.title}</h3>
+                <h3 className="text-2xl mb-4 font-bold text-gray-900">{item.title}</h3>
                 <p className="text-gray-600 text-lg leading-relaxed">{item.description}</p>
               </div>
             </div>
@@ -483,38 +474,9 @@ const HomePage: React.FC = () => {
           className={`text-center mb-12 lg:mb-16 scroll-reveal ${revealedElements.has('pricing-title') ? 'revealed' : ''}`}
           data-reveal-id="pricing-title"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold gradient-text mb-6">
-            Choose Your Trading Edge
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+            Pricing
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Start free, upgrade when you're ready to unlock advanced features and maximize your profits.
-          </p>
-        </div>
-
-        {/* Billing Toggle */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-gray-100 p-1 rounded-lg">
-            <button
-              onClick={() => setBillingPeriod('monthly')}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                billingPeriod === 'monthly'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Monthly
-            </button>
-            <button
-              onClick={() => setBillingPeriod('yearly')}
-              className={`px-6 py-2 rounded-md text-sm font-medium transition-all ${
-                billingPeriod === 'yearly'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-900'
-              }`}
-            >
-              Yearly <span className="text-green-600 text-xs ml-1">Save 20%</span>
-            </button>
-          </div>
         </div>
 
         {/* Pricing Cards */}
@@ -527,22 +489,9 @@ const HomePage: React.FC = () => {
             <div className="text-center">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
               <div className="text-4xl font-bold text-gray-900 mb-6">
-                $0<span className="text-lg text-gray-500">/month</span>
+                Free
               </div>
-              <ul className="space-y-4 mb-8 text-left">
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Basic KOL tracking</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Limited wallet insights</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Community access</span>
-                </li>
-              </ul>
+              <p className="text-gray-600 mb-8">Basic access to essential features.</p>
               <button className="w-full beautiful-button h-12 rounded-lg font-semibold">
                 Get Started Free
               </button>
@@ -551,39 +500,16 @@ const HomePage: React.FC = () => {
 
           {/* Pro Plan */}
           <div 
-            className={`beautiful-card rounded-2xl p-8 hover-lift relative border-2 border-blue-500 scroll-reveal ${revealedElements.has('plan-pro') ? 'revealed' : ''}`}
+            className={`beautiful-card rounded-2xl p-8 hover-lift scroll-reveal ${revealedElements.has('plan-pro') ? 'revealed' : ''}`}
             data-reveal-id="plan-pro"
           >
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-              <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-semibold">
-                Most Popular
-              </span>
-            </div>
             <div className="text-center">
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Pro</h3>
               <div className="text-4xl font-bold text-gray-900 mb-6">
-                ${billingPeriod === 'monthly' ? '49' : '39'}
-                <span className="text-lg text-gray-500">/{billingPeriod === 'monthly' ? 'month' : 'month'}</span>
+                $799<span className="text-lg text-gray-500">/year</span>
               </div>
-              <ul className="space-y-4 mb-8 text-left">
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Advanced KOL analytics</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Real-time alerts</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Portfolio tracking</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>API access</span>
-                </li>
-              </ul>
-              <button className="w-full beautiful-button h-12 rounded-lg font-semibold pulse-blue">
+              <p className="text-gray-600 mb-8">Unlock advanced features and real-time tracking.</p>
+              <button className="w-full beautiful-button h-12 rounded-lg font-semibold">
                 Start Pro Trial
               </button>
             </div>
@@ -599,27 +525,9 @@ const HomePage: React.FC = () => {
                 Legend <Crown className="w-6 h-6 text-amber-500" />
               </h3>
               <div className="text-4xl font-bold text-gray-900 mb-6">
-                ${billingPeriod === 'monthly' ? '99' : '79'}
-                <span className="text-lg text-gray-500">/{billingPeriod === 'monthly' ? 'month' : 'month'}</span>
+                $7999<span className="text-lg text-gray-500">/year</span>
               </div>
-              <ul className="space-y-4 mb-8 text-left">
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Everything in Pro</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Insider scan tools</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Fresh wallet feeds</span>
-                </li>
-                <li className="flex items-center gap-3">
-                  <Check className="w-5 h-5 text-green-500" />
-                  <span>Priority support</span>
-                </li>
-              </ul>
+              <p className="text-gray-600 mb-8">Exclusive access and priority support.</p>
               <button className="w-full beautiful-button h-12 rounded-lg font-semibold">
                 Go Legend
               </button>
@@ -628,76 +536,12 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Video Sections */}
-      <section className="w-full max-w-7xl mx-auto px-4 py-16 lg:py-24">
-        <div 
-          className={`text-center mb-12 scroll-reveal ${revealedElements.has('videos-title') ? 'revealed' : ''}`}
-          data-reveal-id="videos-title"
-        >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold gradient-text mb-6">
-            See SmartChain in Action
-          </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Watch how professional traders use SmartChain to identify opportunities and execute profitable trades.
-          </p>
+      {/* Footer */}
+      <footer className="w-full bg-gray-50 py-8 mt-16">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <p className="text-gray-600">&copy; 2025 StalkChain. All rights reserved.</p>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Video 1 */}
-          <div 
-            className={`scroll-reveal ${revealedElements.has('video-1') ? 'revealed' : ''}`}
-            data-reveal-id="video-1"
-          >
-            <div className="aspect-video beautiful-card rounded-xl overflow-hidden hover-lift">
-              <video 
-                className="w-full h-full object-cover"
-                controls
-                poster="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800&h=450&dpr=1"
-              >
-                <source src="/demo-video-1.mp4" type="video/mp4" />
-                <div className="flex items-center justify-center h-full bg-gray-900">
-                  <div className="text-center">
-                    <Play className="w-16 h-16 text-blue-main mx-auto mb-4" />
-                    <p className="text-white font-medium">KOL Tracking Demo</p>
-                    <p className="text-gray-300 text-sm mt-2">Learn to track smart money</p>
-                  </div>
-                </div>
-              </video>
-            </div>
-            <div className="mt-4 text-center">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">KOL Tracking Masterclass</h3>
-              <p className="text-gray-600">Learn how to identify and follow the most profitable crypto influencers</p>
-            </div>
-          </div>
-
-          {/* Video 2 */}
-          <div 
-            className={`scroll-reveal ${revealedElements.has('video-2') ? 'revealed' : ''}`}
-            data-reveal-id="video-2"
-          >
-            <div className="aspect-video beautiful-card rounded-xl overflow-hidden hover-lift">
-              <video 
-                className="w-full h-full object-cover"
-                controls
-                poster="https://images.pexels.com/photos/6802049/pexels-photo-6802049.jpeg?auto=compress&cs=tinysrgb&w=800&h=450&dpr=1"
-              >
-                <source src="/demo-video-2.mp4" type="video/mp4" />
-                <div className="flex items-center justify-center h-full bg-gray-900">
-                  <div className="text-center">
-                    <Play className="w-16 h-16 text-blue-main mx-auto mb-4" />
-                    <p className="text-white font-medium">Wallet Analysis Demo</p>
-                    <p className="text-gray-300 text-sm mt-2">Advanced wallet tracking</p>
-                  </div>
-                </div>
-              </video>
-            </div>
-            <div className="mt-4 text-center">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Wallet Analysis Deep Dive</h3>
-              <p className="text-gray-600">Discover hidden connections and profit patterns in wallet data</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      </footer>
     </main>
   );
 };
