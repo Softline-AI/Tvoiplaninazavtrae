@@ -127,11 +127,11 @@ const HomePage: React.FC = () => {
       <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4">
           <div className={`flex-1 flex flex-col items-start text-left noir-fade-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text noir-neon">
-              SMARTCHAIN
-            </h1>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight mb-6 noir-subtitle noir-float">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text noir-neon">
               TRACK SMART MONEY
+            </h1>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6 noir-subtitle noir-float">
+              PROFIT FROM INSIDER MOVES
             </h2>
             
             <p className="text-lg md:text-xl lg:text-2xl noir-text-secondary font-light mb-10 max-w-xl">
@@ -150,8 +150,8 @@ const HomePage: React.FC = () => {
                   className={`flex items-center gap-3 text-lg md:text-xl noir-text-secondary transition-all duration-700 noir-slide-in`}
                   style={{ transitionDelay: item.delay }}
                 >
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-lg">
+                    <div className="w-3 h-3 bg-gradient-to-br from-green-500 to-green-600 rounded-full"></div>
                   </div>
                   {item.text}
                 </li>
@@ -174,7 +174,9 @@ const HomePage: React.FC = () => {
             </div>
             
             <div className="flex items-center gap-3 noir-glass px-6 py-3 rounded-full noir-border-glow">
-              <ShieldCheck className="w-5 h-5 text-white" />
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-green-400 to-green-600 flex items-center justify-center">
+                <Check className="w-3 h-3 text-white" />
+              </div>
               <span className="noir-text-secondary text-sm">30-Day Money-Back Guarantee</span>
             </div>
           </div>
@@ -369,20 +371,20 @@ const HomePage: React.FC = () => {
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Basic KOL tracking</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Limited wallet insights</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Community access</span>
                 </li>
@@ -410,26 +412,26 @@ const HomePage: React.FC = () => {
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-green-500 to-green-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Advanced KOL analytics</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-green-500 to-green-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Real-time alerts</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-green-500 to-green-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Portfolio tracking</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-green-500 to-green-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">API access</span>
                 </li>
@@ -454,26 +456,26 @@ const HomePage: React.FC = () => {
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Everything in Pro</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Insider scan tools</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Fresh wallet feeds</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                    <Check className="w-4 h-4 text-noir-black" />
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-white to-gray-200 flex items-center justify-center shadow-md">
+                    <div className="w-3 h-3 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-full"></div>
                   </div>
                   <span className="text-lg">Priority support</span>
                 </li>
