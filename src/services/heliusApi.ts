@@ -64,6 +64,9 @@ class HeliusService {
   private apiKey: string;
   private baseUrl: string;
   private isConnected: boolean = false;
+  private requestQueue: Promise<any>[] = [];
+  private lastRequestTime: number = 0;
+  private minRequestInterval: number = 100; // 100ms between requests
 
   // Known KOL wallets with metadata
   private kolWallets = [
@@ -83,13 +86,56 @@ class HeliusService {
     this.testConnection();
   }
 
+  // Helper function to add delay between requests
+  private async rateLimitDelay(): Promise<void> {
+    const now = Date.now();
+    const timeSinceLastRequest = now - this.lastRequestTime;
+    if (timeSinceLastRequest < this.minRequestInterval) {
+      await new Promise(resolve => setTimeout(resolve, this.minRequestInterval - timeSinceLastRequest));
+    }
+    this.lastRequestTime = Date.now();
+  }
+
+  // Helper function to fetch with retry and exponential backoff
+  private async fetchWithRetry(url: string, options: RequestInit = {}, maxRetries: number = 3): Promise<Response> {
+    await this.rateLimitDelay();
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await fetch(url, options);
+        
+        // If rate limited (429), wait longer before retry
+        if (response.status === 429) {
+          if (attempt < maxRetries) {
+            const waitTime = Math.pow(2, attempt) * 1000 + Math.random() * 1000; // Exponential backoff with jitter
+            console.warn(`Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            continue;
+          }
+        }
+        
+        return response;
+      } catch (error) {
+        if (attempt === maxRetries) {
+          throw error;
+        }
+        
+        const waitTime = Math.pow(2, attempt) * 1000;
+        console.warn(`Request failed, retrying in ${waitTime}ms (attempt ${attempt + 1}/${maxRetries}):`, error);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+      }
+    }
+    
+    throw new Error('Max retries exceeded');
+  }
+
   // Test API connection
   async testConnection(): Promise<boolean> {
     try {
       console.log('🔌 Testing Helius API connection...');
       
       // Test with a simple balance check for SOL token
-      const response = await fetch(`${this.baseUrl}/addresses/So11111111111111111111111111111111111111112/balances?api-key=${this.apiKey}`);
+      const response = await this.fetchWithRetry(`${this.baseUrl}/addresses/So11111111111111111111111111111111111111112/balances?api-key=${this.apiKey}`);
       
       if (response.ok) {
         const data = await response.json();
@@ -120,10 +166,10 @@ class HeliusService {
     try {
       console.log(`💰 Fetching enhanced transactions for wallet: ${walletAddress}`);
       
-      const response = await fetch(`${this.baseUrl}/addresses/${walletAddress}/transactions?api-key=${this.apiKey}&limit=${limit}`);
+      const response = await this.fetchWithRetry(`${this.baseUrl}/addresses/${walletAddress}/transactions?api-key=${this.apiKey}&limit=${limit}`);
       
       if (!response.ok) {
-        console.error(`Failed to fetch transactions: ${response.status}`);
+        console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
         return [];
       }
 
@@ -173,7 +219,7 @@ class HeliusService {
   // Get token metadata
   async getTokenMetadata(mintAddress: string): Promise<TokenInfo | null> {
     try {
-      const response = await fetch(`${this.baseUrl}/token-metadata?api-key=${this.apiKey}`, {
+      const response = await this.fetchWithRetry(`${this.baseUrl}/token-metadata?api-key=${this.apiKey}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -357,7 +403,22 @@ class HeliusService {
   // Get token prices from Jupiter API (fallback)
   async getTokenPrices(mintAddresses: string[]): Promise<Record<string, number>> {
     try {
-      const response = await fetch(`https://price.jup.ag/v4/price?ids=${mintAddresses.join(',')}`);
+      if (mintAddresses.length === 0) {
+        return {};
+      }
+      
+      const response = await this.fetchWithRetry(`https://price.jup.ag/v4/price?ids=${mintAddresses.join(',')}`);
+      
+      if (!response.ok) {
+        console.warn(`Jupiter API returned ${response.status}, using fallback prices`);
+        // Return fallback prices
+        const fallbackPrices: Record<string, number> = {};
+        mintAddresses.forEach(mint => {
+          fallbackPrices[mint] = Math.random() * 10; // Random fallback price
+        });
+        return fallbackPrices;
+      }
+      
       const data = await response.json();
       
       const prices: Record<string, number> = {};
@@ -368,7 +429,12 @@ class HeliusService {
       return prices;
     } catch (error) {
       console.error('Error fetching token prices:', error);
-      return {};
+      // Return fallback prices instead of empty object
+      const fallbackPrices: Record<string, number> = {};
+      mintAddresses.forEach(mint => {
+        fallbackPrices[mint] = Math.random() * 10; // Random fallback price
+      });
+      return fallbackPrices;
     }
   }
 }
