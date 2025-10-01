@@ -25,7 +25,7 @@ const Navigation: React.FC = () => {
       <header className="z-40 flex px-6 gap-4 w-full flex-row relative flex-nowrap items-center justify-between h-16 max-w-7xl">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-2">
-            <div className="text-2xl font-bold text-white tracking-wider noir-neon">STALKCHAIN</div>
+            <div className="text-2xl font-bold text-white tracking-wider noir-neon">SMARTCHAIN</div>
           </Link>
           <div className="hidden sm:flex items-center gap-6">
             <div className="relative" ref={dropdownRef}>
