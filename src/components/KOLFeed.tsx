@@ -306,10 +306,10 @@ const KOLFeed: React.FC = () => {
 
       {/* Feed Table */}
       <div className="mt-6">
-        <div className="noir-table rounded-lg overflow-hidden">
+        <div className="noir-table noir-glass noir-border-glow rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-white/10">
-              <thead className="noir-table">
+              <thead className="noir-table noir-shimmer">
                 <tr>
                   <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
@@ -416,7 +416,7 @@ const KOLFeed: React.FC = () => {
               </thead>
               <tbody className="divide-y divide-white/5">
                 {trades.map((trade, index) => (
-                  <tr key={trade.id} className="transition-colors hover:bg-white/5">
+                  <tr key={trade.id} className="transition-colors hover:bg-white/5 noir-spotlight">
                     {/* Last Tx */}
                     <td className="px-3 py-2.5 whitespace-nowrap">
                       <div className="flex flex-col">
@@ -432,7 +432,7 @@ const KOLFeed: React.FC = () => {
                     {/* KOL */}
                     <td className="px-3 py-2.5 whitespace-nowrap">
                       <div>
-                        <div className="bg-white/10 border border-white/20 rounded-lg px-2 text-gray-300 flex items-center hover:bg-white/20 transition-colors cursor-pointer" style={{ overflow: 'hidden', height: '28px', width: '160px' }}>
+                        <div className="bg-white/10 border border-white/20 rounded-lg px-2 text-gray-300 flex items-center hover:bg-white/20 transition-colors cursor-pointer noir-glass" style={{ overflow: 'hidden', height: '28px', width: '160px' }}>
                           <div className="flex-1 flex items-center justify-start cursor-pointer text-gray-300 min-w-0">
                             <div className="relative">
                               <div className="relative mr-2">
@@ -597,7 +597,7 @@ const KOLFeed: React.FC = () => {
                     {/* Actions */}
                     <td className="px-3 py-2.5 whitespace-nowrap">
                       <div className="flex justify-end">
-                        <button className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-xs font-medium text-white hover:bg-white/20 transition-colors flex items-center justify-center">
+                        <button className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-xs font-medium text-white hover:bg-white/20 transition-colors flex items-center justify-center noir-glass noir-shimmer">
                           Details
                         </button>
                       </div>
@@ -609,10 +609,10 @@ const KOLFeed: React.FC = () => {
           </div>
 
           {/* Loading indicator */}
-          <div className="flex w-full justify-center p-4 h-20">
+          <div className="flex w-full justify-center p-4 h-20 noir-loading">
             <div className="relative inline-flex flex-col gap-2 items-center justify-center">
               <div className="relative flex w-5 h-5">
-                <div className="absolute w-full h-full rounded-full border-2 border-b-white animate-spin border-solid border-t-transparent border-l-transparent border-r-transparent"></div>
+                <div className="absolute w-full h-full rounded-full border-2 border-b-white animate-spin border-solid border-t-transparent border-l-transparent border-r-transparent noir-neon"></div>
                 <div className="absolute w-full h-full rounded-full border-2 border-b-white opacity-75 animate-spin border-dotted border-t-transparent border-l-transparent border-r-transparent"></div>
               </div>
             </div>

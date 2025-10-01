@@ -124,13 +124,13 @@ const HomePage: React.FC = () => {
   return (
     <main className="noir-bg min-h-screen">
       {/* Hero Section */}
-      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative">
+      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative noir-particles">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4">
           <div className={`flex-1 flex flex-col items-start text-left noir-fade-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-title">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text noir-neon">
               SMARTCHAIN
             </h1>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-6 noir-subtitle">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight mb-6 noir-subtitle noir-float">
               Track smart money.<br />
               Profit before others.
             </h2>
@@ -162,7 +162,7 @@ const HomePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 w-full">
               <Link 
                 to="/app/kol-feed" 
-                className="noir-button inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-lg md:text-xl"
+                className="noir-button noir-pulse inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-lg md:text-xl"
               >
                 <span>Stop Missing Alpha</span>
               </Link>
@@ -174,7 +174,7 @@ const HomePage: React.FC = () => {
               </Link>
             </div>
             
-            <div className="flex items-center gap-3 noir-card px-6 py-3 rounded-full">
+            <div className="flex items-center gap-3 noir-glass px-6 py-3 rounded-full noir-border-glow">
               <ShieldCheck className="w-5 h-5 text-white" />
               <span className="noir-text-secondary text-sm">30-Day Money-Back Guarantee</span>
             </div>
@@ -182,7 +182,7 @@ const HomePage: React.FC = () => {
           
           {/* Video Player */}
           <div className={`flex-1 noir-fade-in ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-            <div className="aspect-video noir-card rounded-2xl overflow-hidden noir-glow">
+            <div className="aspect-video noir-card noir-spotlight rounded-2xl overflow-hidden noir-glow">
               <video 
                 className="w-full h-full object-cover"
                 controls
@@ -208,7 +208,7 @@ const HomePage: React.FC = () => {
           className={`flex flex-col items-center mb-16 lg:mb-20 max-w-4xl mx-auto noir-fade-in ${revealedElements.has('features-title') ? 'revealed' : ''}`}
           data-reveal-id="features-title"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-6 noir-title">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-6 noir-gradient-text">
             Your Edge in the Fastest-Moving Market
           </h2>
           <p className="text-xl md:text-2xl text-center noir-text-secondary max-w-3xl">
@@ -236,14 +236,14 @@ const HomePage: React.FC = () => {
           ].map((item, index) => (
             <div
               key={index}
-              className={`group noir-card rounded-2xl p-10 noir-fade-in ${revealedElements.has(`feature-${index}`) ? 'revealed' : ''}`}
+              className={`group noir-card noir-spotlight rounded-2xl p-10 noir-fade-in ${revealedElements.has(`feature-${index}`) ? 'revealed' : ''}`}
               data-reveal-id={`feature-${index}`}
             >
               <div className="flex flex-col items-center text-center">
                 <div className="group-hover:scale-110 transition-transform duration-500">
                   {item.icon}
                 </div>
-                <h3 className="text-3xl mb-4 font-bold noir-title">{item.title}</h3>
+                <h3 className="text-3xl mb-4 font-bold noir-neon-blue">{item.title}</h3>
                 <p className="noir-text-secondary text-xl leading-relaxed">{item.description}</p>
               </div>
             </div>
@@ -254,7 +254,7 @@ const HomePage: React.FC = () => {
           <div className="flex flex-col items-center">
             <Link 
               to="/app"
-              className="noir-button inline-flex items-center justify-center gap-3 whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-xl group noir-glow"
+              className="noir-button noir-pulse inline-flex items-center justify-center gap-3 whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-xl group"
             >
               <span>Join Now</span>
               <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
@@ -272,7 +272,7 @@ const HomePage: React.FC = () => {
           className={`text-center mb-16 lg:mb-20 noir-fade-in ${revealedElements.has('testimonials-title') ? 'revealed' : ''}`}
           data-reveal-id="testimonials-title"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-title mb-8">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-gradient-text mb-8">
             Traders Using SmartChain
           </h2>
           <p className="text-xl md:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
@@ -294,7 +294,7 @@ const HomePage: React.FC = () => {
                 rel="noopener noreferrer"
                 className="group block"
               >
-                <div className="noir-card rounded-2xl p-8">
+                <div className="noir-card noir-shimmer rounded-2xl p-8">
                   <div className="flex flex-col items-center text-center">
                     <div className="relative mb-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-white to-gray-200 rounded-full flex items-center justify-center overflow-hidden border-2 border-white">
@@ -348,7 +348,7 @@ const HomePage: React.FC = () => {
           className={`text-center mb-16 lg:mb-20 noir-fade-in ${revealedElements.has('pricing-title') ? 'revealed' : ''}`}
           data-reveal-id="pricing-title"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-title mb-8">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-gradient-text mb-8">
             Choose Your Trading Edge
           </h2>
           <p className="text-xl md:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
@@ -396,11 +396,11 @@ const HomePage: React.FC = () => {
 
           {/* Pro Plan */}
           <div 
-            className={`noir-card rounded-3xl p-10 relative border-2 border-white noir-glow noir-fade-in ${revealedElements.has('plan-pro') ? 'revealed' : ''}`}
+            className={`noir-card noir-border-glow rounded-3xl p-10 relative border-2 border-white noir-pulse noir-fade-in ${revealedElements.has('plan-pro') ? 'revealed' : ''}`}
             data-reveal-id="plan-pro"
           >
             <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
-              <span className="bg-white text-noir-black px-6 py-2 rounded-full text-base font-bold">
+              <span className="bg-white text-noir-black px-6 py-2 rounded-full text-base font-bold noir-neon">
                 Most Popular
               </span>
             </div>
@@ -443,11 +443,11 @@ const HomePage: React.FC = () => {
 
           {/* Legend Plan */}
           <div 
-            className={`noir-card rounded-3xl p-10 noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
+            className={`noir-card noir-spotlight rounded-3xl p-10 noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
             data-reveal-id="plan-legend"
           >
             <div className="text-center">
-              <h3 className="text-3xl font-bold text-white mb-3 flex items-center justify-center gap-3">
+              <h3 className="text-3xl font-bold text-white mb-3 flex items-center justify-center gap-3 noir-neon">
                 Legend <Crown className="w-8 h-8 text-yellow-400" />
               </h3>
               <div className="text-5xl font-bold text-white mb-8">

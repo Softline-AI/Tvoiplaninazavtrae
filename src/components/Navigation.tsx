@@ -21,11 +21,11 @@ const Navigation: React.FC = () => {
   }, []);
 
   return (
-    <nav className="flex z-40 w-full h-auto items-center justify-center sticky top-0 inset-x-0 noir-nav">
+    <nav className="flex z-40 w-full h-auto items-center justify-center sticky top-0 inset-x-0 noir-nav noir-glass">
       <header className="z-40 flex px-6 gap-4 w-full flex-row relative flex-nowrap items-center justify-between h-16 max-w-7xl">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-2">
-            <div className="text-2xl font-bold text-white tracking-wider">SMARTCHAIN</div>
+            <div className="text-2xl font-bold text-white tracking-wider noir-neon">SMARTCHAIN</div>
           </Link>
           <div className="hidden sm:flex items-center gap-6">
             <div className="relative" ref={dropdownRef}>
@@ -38,7 +38,7 @@ const Navigation: React.FC = () => {
               </button>
               
               {isProductsOpen && (
-                <div className="absolute top-full left-0 mt-2 w-[800px] noir-card rounded-xl noir-shadow-lg p-6 z-50">
+                <div className="absolute top-full left-0 mt-2 w-[800px] noir-glass noir-border-glow rounded-xl noir-shadow-lg p-6 z-50">
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* KOL Screener */}
                     <div className="space-y-3">
@@ -48,7 +48,7 @@ const Navigation: React.FC = () => {
                       <div className="space-y-2">
                         <Link to="/app/kol-feed" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-white/10 transition-all duration-200 text-left group">
                           <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/10 rounded-md group-hover:bg-white/20 transition-colors">
-                            <svg aria-hidden="true" focusable="false" height="16" role="presentation" viewBox="0 0 24 24" width="16" fill="none" className="w-5 h-5">
+                            <svg aria-hidden="true" focusable="false" height="16" role="presentation" viewBox="0 0 24 24" width="16" fill="none" className="w-5 h-5 group-hover:drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
                               <path d="M5 18h14M5 14h14l1-9-4 3-4-5-4 5-4-3 1 9Z" stroke="white" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
                             </svg>
                           </div>
@@ -210,7 +210,7 @@ const Navigation: React.FC = () => {
           </a>
           <Link 
             to="/app" 
-            className="noir-button inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all h-9 px-4 py-2"
+            className="noir-button noir-shimmer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all h-9 px-4 py-2"
           >
             Open App
           </Link>
