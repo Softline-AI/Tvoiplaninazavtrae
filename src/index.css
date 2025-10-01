@@ -2,152 +2,345 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Clean white background for professional look */
-.white-bg {
-  background: #ffffff;
-  min-height: 100vh;
+/* Black theme styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Blue text colors */
-.text-blue-main {
-  color: #3b82f6;
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #000;
+  color: #fff;
+  line-height: 1.6;
+  font-size: 16px;
 }
 
-.text-blue-bright {
-  color: #2563eb;
+/* Black background theme */
+.black-bg {
+  background-color: #000;
+  color: #fff;
 }
 
-.text-blue-soft {
-  color: #60a5fa;
+/* Header styles */
+.header-black {
+  background-color: #111;
+  padding: 20px 0;
+  text-align: center;
 }
 
-/* Beautiful cards */
-.beautiful-card {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+.logo-black {
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.tagline-black {
+  font-size: 1.2rem;
+  color: #aaa;
+  margin-top: 10px;
+}
+
+/* Features section */
+.features-black {
+  background-color: #222;
+  padding: 50px 0;
+}
+
+.features-black h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.feature-item-black {
+  margin-bottom: 30px;
+  background-color: #333;
+  padding: 30px;
+  border-radius: 8px;
   transition: all 0.3s ease;
 }
 
-.beautiful-card:hover {
-  border-color: #3b82f6;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  transform: translateY(-2px);
+.feature-item-black:hover {
+  background-color: #444;
+  transform: translateY(-5px);
 }
 
-/* Beautiful buttons */
-.beautiful-button {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  border: none;
-  color: white;
-  box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+.feature-item-black h3 {
+  font-size: 1.5rem;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.feature-item-black p {
+  color: #bbb;
+  font-size: 1rem;
+}
+
+/* Pricing section */
+.pricing-black {
+  background-color: #333;
+  padding: 50px 0;
+}
+
+.pricing-black h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.pricing-plan-black {
+  background-color: #444;
+  padding: 30px;
+  margin: 10px;
+  border-radius: 8px;
   transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.pricing-plan-black:hover {
+  background-color: #555;
+  border-color: #666;
+  transform: translateY(-5px);
+}
+
+.pricing-plan-black h3 {
+  font-size: 1.8rem;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.pricing-plan-black p {
+  color: #bbb;
+  font-size: 1rem;
+}
+
+/* Footer */
+.footer-black {
+  background-color: #111;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.footer-black p {
+  color: #888;
+}
+
+/* Navigation black theme */
+.nav-black {
+  background-color: #111;
+  border-bottom: 1px solid #333;
+}
+
+.nav-black .logo {
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.nav-black a {
+  color: #aaa;
+  transition: color 0.3s ease;
+}
+
+.nav-black a:hover {
+  color: #fff;
+}
+
+/* Sidebar black theme */
+.sidebar-black {
+  background-color: #111;
+  border-right: 1px solid #333;
+}
+
+.sidebar-black .menu-item {
+  color: #aaa;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin: 4px 8px;
+  transition: all 0.3s ease;
+}
+
+.sidebar-black .menu-item:hover {
+  background-color: #222;
+  color: #fff;
+}
+
+.sidebar-black .menu-item.active {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Tables black theme */
+.table-black {
+  background-color: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-black thead {
+  background-color: #333;
+}
+
+.table-black th {
+  color: #fff;
+  padding: 12px;
   font-weight: 600;
+  border-bottom: 1px solid #444;
 }
 
-.beautiful-button:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+.table-black td {
+  color: #bbb;
+  padding: 12px;
+  border-bottom: 1px solid #333;
+}
+
+.table-black tr:hover {
+  background-color: #333;
+}
+
+.table-black tr:nth-child(even) {
+  background-color: #1a1a1a;
+}
+
+.table-black tr:nth-child(odd) {
+  background-color: #222;
+}
+
+/* Buttons black theme */
+.btn-black {
+  background-color: #444;
+  color: #fff;
+  border: 1px solid #555;
+  padding: 10px 20px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-black:hover {
+  background-color: #555;
+  border-color: #666;
   transform: translateY(-2px);
 }
 
-/* Clean button for navigation */
-.clean-button {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
-  transition: all 0.2s ease;
-  font-weight: 500;
+.btn-primary-black {
+  background-color: #666;
+  color: #fff;
+  border: 1px solid #777;
 }
 
-.clean-button:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-  transform: translateY(-1px);
+.btn-primary-black:hover {
+  background-color: #777;
+  border-color: #888;
 }
 
-/* Beautiful navigation */
-.beautiful-nav {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+/* Cards black theme */
+.card-black {
+  background-color: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.3s ease;
 }
 
-/* Beautiful sidebar */
-.beautiful-sidebar {
-  background: #f8fafc;
-  border-right: 1px solid #e5e7eb;
+.card-black:hover {
+  background-color: #333;
+  border-color: #444;
+  transform: translateY(-2px);
 }
 
-/* Scroll reveal animations */
-.scroll-reveal {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* Text colors for black theme */
+.text-primary-black {
+  color: #fff;
 }
 
-.scroll-reveal.revealed {
-  opacity: 1;
-  transform: translateY(0);
+.text-secondary-black {
+  color: #aaa;
 }
 
-.scroll-reveal-left {
-  opacity: 0;
-  transform: translateX(-50px);
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+.text-muted-black {
+  color: #888;
 }
 
-.scroll-reveal-left.revealed {
-  opacity: 1;
-  transform: translateX(0);
+/* Status indicators */
+.status-online {
+  color: #4ade80;
 }
 
-.scroll-reveal-right {
-  opacity: 0;
-  transform: translateX(50px);
-  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+.status-offline {
+  color: #ef4444;
 }
 
-.scroll-reveal-right.revealed {
-  opacity: 1;
-  transform: translateX(0);
+.status-loading {
+  color: #fbbf24;
 }
 
-/* Text glow effect for headings */
-.text-glow {
-  text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-}
-
-/* Premium gradient text */
-.gradient-text {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 50%, #1d4ed8 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Enhanced hover effects */
-.hover-lift {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hover-lift:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-/* Pulse animation for important elements */
-@keyframes pulse-blue {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+/* Animations */
+@keyframes fadeInBlack {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
-  50% {
-    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-.pulse-blue {
-  animation: pulse-blue 2s infinite;
+.fade-in-black {
+  animation: fadeInBlack 0.6s ease-out;
+}
+
+/* Scrollbar black theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #111;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Loading spinner black theme */
+.spinner-black {
+  border: 2px solid #333;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .logo-black {
+    font-size: 2rem;
+  }
+  
+  .pricing-plan-black {
+    width: 100%;
+    margin: 10px 0;
+  }
+  
+  .feature-item-black {
+    margin-bottom: 20px;
+  }
 }
