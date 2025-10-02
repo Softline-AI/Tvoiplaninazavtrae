@@ -23,22 +23,12 @@ const KOLLeaderboard: React.FC = () => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [realKOLs, setRealKOLs] = useState<KOLTrader[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
-
-  // Known KOL wallets with their info
-  const kolWalletsInfo = [
-    { wallet: 'BCagckXeMChUKrHEd6fKFA1uiWDtcmCXMsqaheLiUPJd', name: 'dv', twitter: 'vibed333' },
-    { wallet: '2fg5QD1eD7rzNNCsvnhmXFm5hqNgwTTG8p7kQ6f3rx6f', name: 'Cupsey 3', twitter: 'cupseyy' },
-    { wallet: 'FxN3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR', name: 'Cupsey 3', twitter: 'cupseyy' },
-    { wallet: '7NAd2EpYGGeFofpyvgehSXhH5vg6Ry6VRMW2Y6jiqCu1', name: 'Cupsey 3', twitter: 'cupseyy' },
-    { wallet: 'DfMxre4cKmvogbLrPigxmibVTTQDuzjdXojWzjCXXhzj', name: 'Euris', twitter: 'untaxxable' },
-    { wallet: '2T5NgDDidkvhJQg8AHDi74uCFwgp25pYFMRZXBaCUNBH', name: 'Idontpaytaxes', twitter: 'untaxxable' },
-    { wallet: 'RFSqPtn1JfavGiUD4HJsZyYXvZsycxf31hnYfbyG6iB', name: 'GOOD TRADER 7', twitter: 'goodtrader7' },
-    { wallet: '8rvAsDKeAcEjEkiZMug9k8v1y8mW6gQQiMobd89Uy7qR', name: 'casino', twitter: 'casino616' }
-  ];
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRealKOLData = async () => {
       setIsLoadingReal(true);
+      setError(null);
       try {
         console.log('📊 Fetching real KOL leaderboard data...');
         const kolData = await heliusService.getKOLLeaderboardData();
@@ -63,16 +53,17 @@ const KOLLeaderboard: React.FC = () => {
         console.log('📊 Loaded KOL leaderboard:', formattedKOLs);
       } catch (error) {
         console.error('Error fetching real KOL data:', error);
+        setError('Failed to load leaderboard data');
       } finally {
         setIsLoadingReal(false);
       }
     };
 
     fetchRealKOLData();
-    // Refresh data every 60 seconds
-    const interval = setInterval(fetchRealKOLData, 60000);
+    // Refresh data every 2 minutes
+    const interval = setInterval(fetchRealKOLData, 120000);
     return () => clearInterval(interval);
-  }, []);
+  }, [timePeriod]); // Refresh when time period changes
 
   const traders: KOLTrader[] = [
     {
@@ -230,7 +221,18 @@ const KOLLeaderboard: React.FC = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex-1">
             <h1 className="text-xl mb-1 font-semibold">KOL Leaderboard</h1>
-            <div className="text-gray-600">Top performing KOL traders ranked by volume and activity.</div>
+            <div className="text-gray-600">
+              Top performing KOL traders ranked by volume and activity.
+              {realKOLs.length > 0 && (
+                <span className="ml-2 text-green-600">• Live data connected</span>
+              )}
+              {error && (
+                <span className="ml-2 text-red-600">• {error}</span>
+              )}
+              {isLoadingReal && (
+                <span className="ml-2 text-blue-600">• Loading...</span>
+              )}
+            </div>
           </div>
           
           <div className="flex-1 flex justify-center">

@@ -29,21 +29,12 @@ interface KOLTrade {
 const KOLFeed: React.FC = () => {
   const [realTrades, setRealTrades] = useState<RealTimeKOLTrade[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
-  const [apiStatus, setApiStatus] = useState<'testing' | 'connected' | 'failed'>('testing');
-  const [useRealData, setUseRealData] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const checkApiStatus = async () => {
-      console.log('🔍 Checking API status...');
-      const isConnected = await heliusService.testConnection();
-      setApiStatus(isConnected ? 'connected' : 'failed');
-      console.log(`🔍 API Status: ${isConnected ? 'connected' : 'failed'}`);
-    };
-
     const fetchRealKOLTrades = async () => {
-      if (!useRealData) return;
-      
       setIsLoadingReal(true);
+      setError(null);
       try {
         console.log('📊 Loading real KOL data...');
         const realData = await heliusService.getRealTimeKOLData();
@@ -51,18 +42,18 @@ const KOLFeed: React.FC = () => {
         setRealTrades(realData);
       } catch (error) {
         console.error('Error fetching real KOL data:', error);
+        setError('Failed to load real-time data');
       } finally {
         setIsLoadingReal(false);
       }
     };
 
-    checkApiStatus();
     fetchRealKOLTrades();
 
     // Refresh data every 30 seconds
     const interval = setInterval(fetchRealKOLTrades, 30000);
     return () => clearInterval(interval);
-  }, [useRealData]);
+  }, []);
   
   const trades: KOLTrade[] = [
     {
@@ -258,8 +249,8 @@ const KOLFeed: React.FC = () => {
     }
   ];
 
-  // Use real data if available and enabled, otherwise fallback to mock data
-  const displayTrades = useRealData && realTrades.length > 0 ? realTrades : trades;
+  // Use real data if available, otherwise fallback to mock data
+  const displayTrades = realTrades.length > 0 ? realTrades : trades;
 
   const getRowBackground = (index: number) => {
     return index % 2 === 0 ? 'bg-white' : 'bg-gray-25';
@@ -279,7 +270,15 @@ const KOLFeed: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">KOL Feed</h1>
-        <div className="text-gray-600">Live feed of Key Opinion Leader trades and wallet activity.</div>
+        <div className="text-gray-600">
+          Live feed of Key Opinion Leader trades and wallet activity.
+          {realTrades.length > 0 && (
+            <span className="ml-2 text-green-400">• Live data connected</span>
+          )}
+          {error && (
+            <span className="ml-2 text-red-400">• {error}</span>
+          )}
+        </div>
       </div>
 
       {/* Feed Table */}
@@ -587,15 +586,16 @@ const KOLFeed: React.FC = () => {
           </div>
 
           {/* Loading indicator */}
-          <div className="flex w-full justify-center p-6 h-24 noir-loading bg-gradient-to-r from-transparent via-white/5 to-transparent">
-            <div className="relative inline-flex flex-col gap-2 items-center justify-center">
-              <div className="relative flex w-8 h-8">
-                <div className="absolute w-full h-full rounded-full border-3 border-b-white animate-spin border-solid border-t-transparent border-l-transparent border-r-transparent noir-neon"></div>
-                <div className="absolute w-full h-full rounded-full border-3 border-b-blue-400 opacity-75 animate-spin border-dotted border-t-transparent border-l-transparent border-r-transparent"></div>
+          {isLoadingReal && (
+            <div className="flex w-full justify-center p-6 h-24 bg-gradient-to-r from-transparent via-white/5 to-transparent">
+              <div className="relative inline-flex flex-col gap-2 items-center justify-center">
+                <div className="relative flex w-8 h-8">
+                  <div className="absolute w-full h-full rounded-full border-3 border-b-white animate-spin border-solid border-t-transparent border-l-transparent border-r-transparent"></div>
+                </div>
+                <span className="text-sm font-medium text-gray-300">Loading fresh trades...</span>
               </div>
-              <span className="text-sm font-medium text-gray-300">Loading fresh trades...</span>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

@@ -27,13 +27,20 @@ const TopKOLTokens: React.FC = () => {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [realTokens, setRealTokens] = useState<Token[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRealTokenData = async () => {
       setIsLoadingReal(true);
+      setError(null);
       try {
         console.log('🔥 Fetching real trending tokens...');
         const trendingTokens = await heliusService.getTrendingTokens();
+        
+        if (trendingTokens.length === 0) {
+          throw new Error('No trending tokens found');
+        }
+        
         const prices = await heliusService.getTokenPrices(trendingTokens.map(t => t.mint));
         
         const formattedTokens: Token[] = trendingTokens.map((token, index) => {
@@ -63,16 +70,17 @@ const TopKOLTokens: React.FC = () => {
         console.log('🔥 Loaded trending tokens:', formattedTokens);
       } catch (error) {
         console.error('Error fetching real token data:', error);
+        setError('Failed to load token data');
       } finally {
         setIsLoadingReal(false);
       }
     };
 
     fetchRealTokenData();
-    // Refresh data every 2 minutes
-    const interval = setInterval(fetchRealTokenData, 120000);
+    // Refresh data every 3 minutes
+    const interval = setInterval(fetchRealTokenData, 180000);
     return () => clearInterval(interval);
-  }, []);
+  }, [timePeriod]); // Refresh when time period changes
 
   const tokens: Token[] = [
     {
@@ -257,7 +265,16 @@ const TopKOLTokens: React.FC = () => {
         <h1 className="text-xl mb-1 font-semibold">Top KOL Tokens</h1>
         <div className="mb-3">
           <div className="mt-2 mb-1 text-gray-600">
-            {realTokens.length > 0 ? '⚡ Live blockchain data powered by Helius API' : '🔥 Hottest tokens being accumulated by top KOLs and smart money on Solana'}
+            Hottest tokens being accumulated by top KOLs and smart money on Solana
+            {realTokens.length > 0 && (
+              <span className="ml-2 text-green-600">• Live data connected</span>
+            )}
+            {error && (
+              <span className="ml-2 text-red-600">• {error}</span>
+            )}
+            {isLoadingReal && (
+              <span className="ml-2 text-blue-600">• Loading...</span>
+            )}
           </div>
           
           {/* Time Period Tabs */}
