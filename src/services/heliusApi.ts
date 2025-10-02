@@ -499,6 +499,35 @@ class HeliusService {
     }
   }
 
+  // Generate mock transactions for fallback
+  private generateMockTransactions(walletAddress: string, limit: number): WalletTransaction[] {
+    const transactions: WalletTransaction[] = [];
+    
+    for (let i = 0; i < Math.min(limit, 20); i++) {
+      const tokenInfo: TokenInfo = {
+        mint: 'So11111111111111111111111111111111111111112',
+        symbol: ['SOL', 'USDC', 'BONK', 'WIF', 'POPCAT'][Math.floor(Math.random() * 5)],
+        name: 'Mock Token',
+        decimals: 9,
+        supply: '1000000000'
+      };
+
+      transactions.push({
+        signature: `mock_${walletAddress.slice(0, 8)}_${i}_${Date.now()}`,
+        timestamp: Date.now() - (i * 60000), // 1 minute intervals
+        type: Math.random() > 0.5 ? 'buy' : 'sell',
+        amount: Math.random() * 1000 + 100,
+        token: tokenInfo,
+        wallet: walletAddress,
+        price: Math.random() * 100 + 1,
+        value: Math.random() * 10000 + 500,
+        sol_amount: Math.random() * 10 + 0.1
+      });
+    }
+    
+    return transactions;
+  }
+
   // Helper function to format time ago
   private formatTimeAgo(ms: number): string {
     const seconds = Math.floor(ms / 1000);
