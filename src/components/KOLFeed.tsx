@@ -510,3 +510,19 @@ const KOLFeed: React.FC = () => {
                             >
                               <ExternalLink className="w-3 h-3" />
                             </a>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default KOLFeed;
