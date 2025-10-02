@@ -194,14 +194,6 @@ const Navigation: React.FC = () => {
               )}
             </div>
             <a className="text-gray-700 hover:text-primary transition-colors" href="#plans">
-              Pricing
-            </a>
-            <a className="text-white hover:text-gray-300 transition-colors font-medium" href="#plans">
-              Pricing
-            </a>
-          </div>
-        </div>
-        <div className="flex items-center gap-4">
           <a className="text-white hover:text-gray-300 transition-colors font-medium" href="#plans">
             Tools
           </a>
