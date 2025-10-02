@@ -1,4 +1,4 @@
-// Helius API service for fetching real blockchain data
+мсммммммммммммммммммммммммммммммм// Helius API service for fetching real blockchain data
 const HELIUS_API_KEY = 'cc0ea229-5dc8-4e7d-9707-7c2692eeefbb';
 const HELIUS_BASE_URL = 'https://api.helius.xyz/v0';
 
