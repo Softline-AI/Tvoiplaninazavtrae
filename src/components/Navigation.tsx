@@ -5,12 +5,17 @@ import { Link, useLocation } from 'react-router-dom';
 const Navigation: React.FC = () => {
   const location = useLocation();
   const [isProductsOpen, setIsProductsOpen] = useState(false);
+  const [isToolsOpen, setIsToolsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const toolsDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsProductsOpen(false);
+      }
+      if (toolsDropdownRef.current && !toolsDropdownRef.current.contains(event.target as Node)) {
+        setIsToolsOpen(false);
       }
     };
 
@@ -194,9 +199,48 @@ const Navigation: React.FC = () => {
                 </div>
               )}
             </div>
-            <a href="#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
-              Tools
-            </a>
+            
+            <div className="relative" ref={toolsDropdownRef}>
+              <button 
+                onClick={() => setIsToolsOpen(!isToolsOpen)}
+                className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors font-medium"
+              >
+                Tools
+                <ChevronDown className={`w-4 h-4 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {isToolsOpen && (
+                <div className="absolute top-full left-0 mt-2 w-[300px] bg-noir-dark border border-white/20 rounded-xl shadow-2xl p-6 z-50 backdrop-blur-sm">
+                  <div className="space-y-4">
+                    <Link to="/app/cabal-finder" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-white/10 transition-all duration-200 text-left group">
+                      <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/10 rounded-md group-hover:bg-white/20 transition-colors">
+                        <svg aria-hidden="true" focusable="false" height="20" role="presentation" viewBox="0 0 24 24" width="20" className="w-5 h-5">
+                          <path d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z" stroke="white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                          <path d="M22 22L20 20" stroke="white" fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-white text-sm leading-tight">Cabal Finder</div>
+                        <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Discover new investment opportunities with analytics</div>
+                      </div>
+                    </Link>
+                    
+                    <Link to="/app/jupiter-dca-tracker" className="w-full flex items-start gap-2 p-2 rounded-lg hover:bg-white/10 transition-all duration-200 text-left group">
+                      <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/10 rounded-md group-hover:bg-white/20 transition-colors">
+                        <svg aria-hidden="true" focusable="false" height="20" width="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" role="presentation" className="w-5 h-5">
+                          <path d="M3 17L9 11L13 15L21 7" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                          <path d="M17 7H21V11" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"></path>
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-white text-sm leading-tight">Jupiter DCA Tracker</div>
+                        <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Track Jupiter DCA performance and optimize your strategy</div>
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
         
