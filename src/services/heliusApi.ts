@@ -287,6 +287,19 @@ class HeliusService {
 
   // Get token metadata using Helius API
   async getTokenMetadata(mintAddress: string): Promise<TokenInfo | null> {
+    // Skip API calls if not connected
+    if (!this.isConnected) {
+      console.warn('⚠️ Helius API not connected, returning mock token metadata');
+      return {
+        mint: mintAddress,
+        symbol: mintAddress.slice(0, 4).toUpperCase(),
+        name: `Token ${mintAddress.slice(0, 8)}`,
+        decimals: 9,
+        supply: '1000000000',
+        logoURI: undefined
+      };
+    }
+
     try {
       const response = await this.fetchWithRetry(this.rpcUrl, {
         method: 'POST',
@@ -456,6 +469,12 @@ class HeliusService {
 
   // Get trending tokens
   async getTrendingTokens(): Promise<TokenInfo[]> {
+    // Skip API calls if not connected
+    if (!this.isConnected) {
+      console.warn('⚠️ Helius API not connected, returning mock trending tokens');
+      return this.generateMockTrendingTokens();
+    }
+
     try {
       console.log('🔥 Fetching trending tokens...');
       
@@ -579,6 +598,28 @@ class HeliusService {
       });
       return fallbackPrices;
     }
+  }
+
+  // Generate mock trending tokens for fallback
+  private generateMockTrendingTokens(): TokenInfo[] {
+    const mockTokens = [
+      { symbol: 'SOL', name: 'Solana', mint: 'So11111111111111111111111111111111111111112' },
+      { symbol: 'USDC', name: 'USD Coin', mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v' },
+      { symbol: 'BONK', name: 'Bonk', mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263' },
+      { symbol: 'WIF', name: 'dogwifhat', mint: 'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm' },
+      { symbol: 'POPCAT', name: 'Popcat', mint: '7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr' }
+    ];
+
+    return mockTokens.map(token => ({
+      mint: token.mint,
+      symbol: token.symbol,
+      name: token.name,
+      decimals: 9,
+      supply: '1000000000',
+      price: Math.random() * 100,
+      marketCap: Math.random() * 10000000,
+      volume24h: Math.random() * 1000000
+    }));
   }
 
   // Get wallet balance
