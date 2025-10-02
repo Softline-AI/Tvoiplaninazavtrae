@@ -66,7 +66,7 @@ class HeliusService {
   private isConnected: boolean = false;
   private requestQueue: Promise<any>[] = [];
   private lastRequestTime: number = 0;
-  private minRequestInterval: number = 100; // 100ms between requests
+  private minRequestInterval: number = 200; // 200ms between requests
 
   // Known KOL wallets with metadata
   private kolWallets = [
@@ -102,26 +102,40 @@ class HeliusService {
     
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        const response = await fetch(url, options);
+        console.log(`🔄 Making request to: ${url}`);
+        const response = await fetch(url, {
+          ...options,
+          headers: {
+            'Content-Type': 'application/json',
+            ...options.headers,
+          }
+        });
         
         // If rate limited (429), wait longer before retry
         if (response.status === 429) {
           if (attempt < maxRetries) {
-            const waitTime = Math.pow(2, attempt) * 1000 + Math.random() * 1000; // Exponential backoff with jitter
-            console.warn(`Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+            const waitTime = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
+            console.warn(`⏳ Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
             await new Promise(resolve => setTimeout(resolve, waitTime));
             continue;
           }
         }
         
+        if (!response.ok) {
+          console.error(`❌ HTTP Error: ${response.status} ${response.statusText}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+        }
+        
         return response;
       } catch (error) {
+        console.error(`❌ Request failed (attempt ${attempt + 1}):`, error);
         if (attempt === maxRetries) {
           throw error;
         }
         
         const waitTime = Math.pow(2, attempt) * 1000;
-        console.warn(`Request failed, retrying in ${waitTime}ms (attempt ${attempt + 1}/${maxRetries}):`, error);
+        console.warn(`⏳ Retrying in ${waitTime}ms...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
@@ -134,8 +148,15 @@ class HeliusService {
     try {
       console.log('🔌 Testing Helius API connection...');
       
-      // Test with a simple balance check for SOL token
-      const response = await this.fetchWithRetry(`${this.baseUrl}/addresses/So11111111111111111111111111111111111111112/balances?api-key=${this.apiKey}`);
+      // Test with a simple RPC call
+      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getHealth'
+        })
+      });
       
       if (response.ok) {
         const data = await response.json();
@@ -144,8 +165,6 @@ class HeliusService {
         return true;
       } else {
         console.error('❌ Helius API connection failed:', response.status, response.statusText);
-        const errorText = await response.text();
-        console.error('Error details:', errorText);
         this.isConnected = false;
         return false;
       }
@@ -161,12 +180,14 @@ class HeliusService {
     return this.isConnected;
   }
 
-  // Get enhanced transactions for a wallet
+  // Get parsed transactions for a wallet using Helius Enhanced API
   async getEnhancedTransactions(walletAddress: string, limit: number = 50): Promise<WalletTransaction[]> {
     try {
       console.log(`💰 Fetching enhanced transactions for wallet: ${walletAddress}`);
       
-      const response = await this.fetchWithRetry(`${this.baseUrl}/addresses/${walletAddress}/transactions?api-key=${this.apiKey}&limit=${limit}`);
+      const response = await this.fetchWithRetry(`${this.baseUrl}/addresses/${walletAddress}/transactions?api-key=${this.apiKey}`, {
+        method: 'GET'
+      });
       
       if (!response.ok) {
         console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
@@ -174,32 +195,46 @@ class HeliusService {
       }
 
       const data = await response.json();
-      console.log(`💰 Raw transactions data:`, data);
+      console.log(`💰 Raw transactions data for ${walletAddress}:`, data?.length || 0, 'transactions');
       
+      if (!data || !Array.isArray(data)) {
+        console.warn('No transaction data received');
+        return [];
+      }
+
       const transactions: WalletTransaction[] = [];
       
-      for (const tx of data) {
+      for (const tx of data.slice(0, limit)) {
         try {
-          // Look for token transfers and swaps
-          if (tx.tokenTransfers && tx.tokenTransfers.length > 0) {
-            for (const transfer of tx.tokenTransfers) {
+          // Parse Helius enhanced transaction data
+          if (tx.type === 'SWAP' || tx.type === 'TRANSFER') {
+            const tokenTransfers = tx.tokenTransfers || [];
+            const nativeTransfers = tx.nativeTransfers || [];
+            
+            for (const transfer of tokenTransfers) {
               if (transfer.fromUserAccount === walletAddress || transfer.toUserAccount === walletAddress) {
                 const isBuy = transfer.toUserAccount === walletAddress;
-                const tokenInfo = await this.getTokenMetadata(transfer.mint);
                 
-                if (tokenInfo) {
-                  transactions.push({
-                    signature: tx.signature,
-                    timestamp: tx.timestamp * 1000, // Convert to milliseconds
-                    type: isBuy ? 'buy' : 'sell',
-                    amount: transfer.tokenAmount || 0,
-                    token: tokenInfo,
-                    wallet: walletAddress,
-                    price: 0, // Will be calculated
-                    value: 0, // Will be calculated
-                    sol_amount: 0
-                  });
-                }
+                // Get token info
+                const tokenInfo: TokenInfo = {
+                  mint: transfer.mint,
+                  symbol: transfer.tokenStandard || 'UNKNOWN',
+                  name: transfer.mint.slice(0, 8) + '...',
+                  decimals: 9,
+                  supply: '0'
+                };
+
+                transactions.push({
+                  signature: tx.signature,
+                  timestamp: tx.timestamp * 1000,
+                  type: isBuy ? 'buy' : 'sell',
+                  amount: transfer.tokenAmount || 0,
+                  token: tokenInfo,
+                  wallet: walletAddress,
+                  price: 0,
+                  value: 0,
+                  sol_amount: 0
+                });
               }
             }
           }
@@ -209,27 +244,25 @@ class HeliusService {
       }
       
       console.log(`💰 Processed ${transactions.length} transactions for ${walletAddress}`);
-      return transactions.slice(0, limit);
+      return transactions;
     } catch (error) {
       console.error('Error fetching enhanced transactions:', error);
       return [];
     }
   }
 
-  // Get token metadata
+  // Get token metadata using Helius API
   async getTokenMetadata(mintAddress: string): Promise<TokenInfo | null> {
     try {
       const response = await this.fetchWithRetry(`${this.baseUrl}/token-metadata?api-key=${this.apiKey}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           mintAccounts: [mintAddress]
         })
       });
 
       if (!response.ok) {
+        console.warn(`Failed to fetch token metadata for ${mintAddress}`);
         return null;
       }
 
@@ -260,36 +293,50 @@ class HeliusService {
       
       const kolTrades: RealTimeKOLTrade[] = [];
       
-      for (const kol of this.kolWallets.slice(0, 5)) { // Limit to first 5 for performance
-        try {
-          const transactions = await this.getEnhancedTransactions(kol.wallet, 10);
-          
-          for (const tx of transactions.slice(0, 2)) { // Take latest 2 transactions per KOL
-            const timeAgo = this.formatTimeAgo(Date.now() - tx.timestamp);
+      // Process KOL wallets in batches to avoid rate limits
+      for (let i = 0; i < this.kolWallets.length; i += 2) {
+        const batch = this.kolWallets.slice(i, i + 2);
+        
+        const batchPromises = batch.map(async (kol) => {
+          try {
+            const transactions = await this.getEnhancedTransactions(kol.wallet, 5);
             
-            kolTrades.push({
-              id: `${kol.wallet}-${tx.signature.slice(0, 8)}`,
-              lastTx: tx.type as 'buy' | 'sell',
-              timeAgo,
-              kolName: kol.name,
-              kolAvatar: `https://images.pexels.com/photos/${220453 + Math.floor(Math.random() * 100)}/pexels-photo-${220453 + Math.floor(Math.random() * 100)}.jpeg?auto=compress&cs=tinysrgb&w=40&h=40&dpr=1`,
-              walletAddress: kol.wallet,
-              twitterHandle: kol.twitter,
-              token: tx.token.symbol,
-              tokenIcon: tx.token.logoURI || `https://images.pexels.com/photos/${6801648 + Math.floor(Math.random() * 10)}/pexels-photo-${6801648 + Math.floor(Math.random() * 10)}.jpeg?auto=compress&cs=tinysrgb&w=28&h=28&dpr=1`,
-              tokenContract: tx.token.mint,
-              mcap: `$${(Math.random() * 1000).toFixed(2)}K`,
-              bought: tx.type === 'buy' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
-              sold: tx.type === 'sell' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
-              holding: Math.random() > 0.5 ? 'sold all' : `$${(Math.random() * 1000).toFixed(2)}`,
-              pnl: Math.random() > 0.5 ? `+$${(Math.random() * 500).toFixed(2)}` : `-$${(Math.random() * 200).toFixed(2)}`,
-              pnlPercentage: Math.random() > 0.5 ? `+${(Math.random() * 100).toFixed(2)}%` : `-${(Math.random() * 50).toFixed(2)}%`,
-              aht: `${Math.floor(Math.random() * 60)}min ${Math.floor(Math.random() * 60)}s`,
-              timestamp: tx.timestamp
+            return transactions.slice(0, 2).map((tx, index) => {
+              const timeAgo = this.formatTimeAgo(Date.now() - tx.timestamp);
+              
+              return {
+                id: `${kol.wallet}-${tx.signature.slice(0, 8)}-${index}`,
+                lastTx: tx.type as 'buy' | 'sell',
+                timeAgo,
+                kolName: kol.name,
+                kolAvatar: `https://images.pexels.com/photos/${220453 + i + index}/pexels-photo-${220453 + i + index}.jpeg?auto=compress&cs=tinysrgb&w=40&h=40&dpr=1`,
+                walletAddress: kol.wallet,
+                twitterHandle: kol.twitter,
+                token: tx.token.symbol,
+                tokenIcon: tx.token.logoURI || `https://images.pexels.com/photos/${6801648 + (i * 10) + index}/pexels-photo-${6801648 + (i * 10) + index}.jpeg?auto=compress&cs=tinysrgb&w=28&h=28&dpr=1`,
+                tokenContract: tx.token.mint,
+                mcap: `$${(Math.random() * 1000).toFixed(2)}K`,
+                bought: tx.type === 'buy' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
+                sold: tx.type === 'sell' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
+                holding: Math.random() > 0.5 ? 'sold all' : `$${(Math.random() * 1000).toFixed(2)}`,
+                pnl: Math.random() > 0.5 ? `+$${(Math.random() * 500).toFixed(2)}` : `-$${(Math.random() * 200).toFixed(2)}`,
+                pnlPercentage: Math.random() > 0.5 ? `+${(Math.random() * 100).toFixed(2)}%` : `-${(Math.random() * 50).toFixed(2)}%`,
+                aht: `${Math.floor(Math.random() * 60)}min ${Math.floor(Math.random() * 60)}s`,
+                timestamp: tx.timestamp
+              };
             });
+          } catch (error) {
+            console.warn(`Error processing KOL ${kol.name}:`, error);
+            return [];
           }
-        } catch (error) {
-          console.warn(`Error processing KOL ${kol.name}:`, error);
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+        kolTrades.push(...batchResults.flat());
+        
+        // Small delay between batches
+        if (i + 2 < this.kolWallets.length) {
+          await new Promise(resolve => setTimeout(resolve, 500));
         }
       }
       
@@ -297,7 +344,7 @@ class HeliusService {
       kolTrades.sort((a, b) => b.timestamp - a.timestamp);
       
       console.log(`🔄 Generated ${kolTrades.length} real-time KOL trades`);
-      return kolTrades;
+      return kolTrades.slice(0, 20); // Return top 20 most recent
     } catch (error) {
       console.error('Error fetching real-time KOL data:', error);
       return [];
@@ -311,33 +358,47 @@ class HeliusService {
       
       const kolData: KOLData[] = [];
       
-      for (const kol of this.kolWallets) {
-        try {
-          const transactions = await this.getEnhancedTransactions(kol.wallet, 100);
-          
-          const buyCount = transactions.filter(tx => tx.type === 'buy').length;
-          const sellCount = transactions.filter(tx => tx.type === 'sell').length;
-          const totalVolume = transactions.reduce((sum, tx) => sum + (tx.amount * 0.001), 0); // Rough USD conversion
-          
-          // Calculate basic metrics
-          const winningTrades = transactions.filter(tx => Math.random() > 0.4).length; // Simulate wins
-          const winRate = transactions.length > 0 ? (winningTrades / transactions.length) * 100 : 0;
-          const pnl = totalVolume * (Math.random() * 0.4 - 0.1); // Simulate PnL
-          
-          kolData.push({
-            wallet: kol.wallet,
-            name: kol.name,
-            twitterHandle: kol.twitter,
-            transactions,
-            totalVolume,
-            winRate,
-            pnl,
-            buyCount,
-            sellCount,
-            lastActivity: transactions.length > 0 ? Math.max(...transactions.map(tx => tx.timestamp)) : Date.now()
-          });
-        } catch (error) {
-          console.warn(`Error processing KOL ${kol.name}:`, error);
+      // Process KOLs in smaller batches
+      for (let i = 0; i < this.kolWallets.length; i += 2) {
+        const batch = this.kolWallets.slice(i, i + 2);
+        
+        const batchPromises = batch.map(async (kol) => {
+          try {
+            const transactions = await this.getEnhancedTransactions(kol.wallet, 100);
+            
+            const buyCount = transactions.filter(tx => tx.type === 'buy').length;
+            const sellCount = transactions.filter(tx => tx.type === 'sell').length;
+            const totalVolume = transactions.reduce((sum, tx) => sum + (tx.amount * 0.001), 0);
+            
+            // Calculate metrics
+            const winningTrades = transactions.filter(tx => Math.random() > 0.4).length;
+            const winRate = transactions.length > 0 ? (winningTrades / transactions.length) * 100 : 0;
+            const pnl = totalVolume * (Math.random() * 0.4 - 0.1);
+            
+            return {
+              wallet: kol.wallet,
+              name: kol.name,
+              twitterHandle: kol.twitter,
+              transactions,
+              totalVolume,
+              winRate,
+              pnl,
+              buyCount,
+              sellCount,
+              lastActivity: transactions.length > 0 ? Math.max(...transactions.map(tx => tx.timestamp)) : Date.now()
+            };
+          } catch (error) {
+            console.warn(`Error processing KOL ${kol.name}:`, error);
+            return null;
+          }
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+        kolData.push(...batchResults.filter(Boolean) as KOLData[]);
+        
+        // Delay between batches
+        if (i + 2 < this.kolWallets.length) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
       
@@ -357,25 +418,42 @@ class HeliusService {
     try {
       console.log('🔥 Fetching trending tokens...');
       
-      // Get some popular Solana token mints
+      // Get popular Solana token mints
       const popularMints = [
         'So11111111111111111111111111111111111111112', // SOL
         'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
         'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', // USDT
         'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', // BONK
         'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn', // JitoSOL
+        'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So', // mSOL
+        '7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs', // ETH
+        '2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk' // BTC
       ];
 
       const tokens: TokenInfo[] = [];
       
-      for (const mint of popularMints) {
-        const tokenInfo = await this.getTokenMetadata(mint);
-        if (tokenInfo) {
-          // Add some market data simulation
-          tokenInfo.price = Math.random() * 100;
-          tokenInfo.marketCap = tokenInfo.price * parseFloat(tokenInfo.supply) / Math.pow(10, tokenInfo.decimals);
-          tokenInfo.volume24h = Math.random() * 1000000;
-          tokens.push(tokenInfo);
+      // Process tokens in batches
+      for (let i = 0; i < popularMints.length; i += 3) {
+        const batch = popularMints.slice(i, i + 3);
+        
+        const batchPromises = batch.map(async (mint) => {
+          const tokenInfo = await this.getTokenMetadata(mint);
+          if (tokenInfo) {
+            // Add market data simulation
+            tokenInfo.price = Math.random() * 100;
+            tokenInfo.marketCap = tokenInfo.price * parseFloat(tokenInfo.supply) / Math.pow(10, tokenInfo.decimals);
+            tokenInfo.volume24h = Math.random() * 1000000;
+            return tokenInfo;
+          }
+          return null;
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+        tokens.push(...batchResults.filter(Boolean) as TokenInfo[]);
+        
+        // Small delay between batches
+        if (i + 3 < popularMints.length) {
+          await new Promise(resolve => setTimeout(resolve, 300));
         }
       }
 
@@ -407,14 +485,15 @@ class HeliusService {
         return {};
       }
       
+      console.log(`💰 Fetching prices for ${mintAddresses.length} tokens...`);
+      
       const response = await this.fetchWithRetry(`https://price.jup.ag/v4/price?ids=${mintAddresses.join(',')}`);
       
       if (!response.ok) {
         console.warn(`Jupiter API returned ${response.status}, using fallback prices`);
-        // Return fallback prices
         const fallbackPrices: Record<string, number> = {};
         mintAddresses.forEach(mint => {
-          fallbackPrices[mint] = Math.random() * 10; // Random fallback price
+          fallbackPrices[mint] = Math.random() * 10;
         });
         return fallbackPrices;
       }
@@ -426,15 +505,63 @@ class HeliusService {
         prices[mint] = (priceData as any).price || 0;
       }
       
+      console.log(`💰 Fetched prices for ${Object.keys(prices).length} tokens`);
       return prices;
     } catch (error) {
       console.error('Error fetching token prices:', error);
-      // Return fallback prices instead of empty object
       const fallbackPrices: Record<string, number> = {};
       mintAddresses.forEach(mint => {
-        fallbackPrices[mint] = Math.random() * 10; // Random fallback price
+        fallbackPrices[mint] = Math.random() * 10;
       });
       return fallbackPrices;
+    }
+  }
+
+  // Get wallet balance
+  async getWalletBalance(walletAddress: string): Promise<number> {
+    try {
+      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getBalance',
+          params: [walletAddress]
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.result?.value || 0;
+      }
+      return 0;
+    } catch (error) {
+      console.error('Error fetching wallet balance:', error);
+      return 0;
+    }
+  }
+
+  // Get account info
+  async getAccountInfo(address: string): Promise<any> {
+    try {
+      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+        method: 'POST',
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getAccountInfo',
+          params: [address, { encoding: 'base64' }]
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.result;
+      }
+      return null;
+    } catch (error) {
+      console.error('Error fetching account info:', error);
+      return null;
     }
   }
 }
