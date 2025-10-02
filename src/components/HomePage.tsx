@@ -309,14 +309,9 @@ const HomePage: React.FC = () => {
                     <div className="flex items-center gap-2">
                       <div className="w-4 h-4 bg-gradient-to-r from-white to-gray-200 rounded-full"></div>
                       <span className="text-sm font-semibold noir-text-secondary group-hover:text-white transition-colors">
-                        SmartChain User
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </a>
-            </div>
-          ))}
+                        </svg>
+            )
+          )}
         </div>
 
         <div className="flex justify-center mt-16">
