@@ -237,7 +237,6 @@ class HeliusService {
             value: Math.random() * 10000,
             sol_amount: Math.random() * 10
           });
-          }
         } catch (txError) {
           console.warn('Error processing transaction:', txError);
         }
@@ -502,7 +501,7 @@ class HeliusService {
       const prices: Record<string, number> = {};
       if (data.data) {
         for (const [mint, priceData] of Object.entries(data.data)) {
-        prices[mint] = (priceData as any).price || 0;
+          prices[mint] = (priceData as any).price || 0;
         }
       }
       
