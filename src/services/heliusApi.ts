@@ -91,10 +91,8 @@ class HeliusService {
     }
     
     this.rpcUrl = `https://rpc.helius.xyz/?api-key=${this.apiKey}`;
-    // Only test connection if we have a real API key
-    if (this.apiKey !== 'your-helius-api-key-here') {
-      this.testConnection();
-    }
+    // Don't test connection automatically to avoid errors
+    // this.testConnection();
   }
 
   // Helper function to add delay between requests
