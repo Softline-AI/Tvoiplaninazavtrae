@@ -333,13 +333,41 @@ const HomePage: React.FC = () => {
           className={`text-center mb-16 lg:mb-20 noir-fade-in ${revealedElements.has('pricing-title') ? 'revealed' : ''}`}
           data-reveal-id="pricing-title"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-gradient-text mb-8">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8">
             Choose Your Trading Edge
           </h2>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent blur-xl"></div>
           <p className="text-xl md:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
             Start free, upgrade when you're ready to unlock advanced features and maximize your profits.
           </p>
+          
+          {/* Billing Period Toggle */}
+          <div className="flex items-center justify-center mt-8 mb-4">
+            <div className="bg-noir-dark border border-white/20 rounded-xl p-1 flex">
+              <button
+                onClick={() => setBillingPeriod('monthly')}
+                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${
+                  billingPeriod === 'monthly'
+                    ? 'bg-white text-noir-black'
+                    : 'text-white hover:text-white/80'
+                }`}
+              >
+                Monthly
+              </button>
+              <button
+                onClick={() => setBillingPeriod('yearly')}
+                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${
+                  billingPeriod === 'yearly'
+                    ? 'bg-white text-noir-black'
+                    : 'text-white hover:text-white/80'
+                }`}
+              >
+                Yearly
+                <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded-full">
+                  Save 20%
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Pricing Cards */}
@@ -402,7 +430,15 @@ const HomePage: React.FC = () => {
             <div className="text-center">
               <h3 className="text-3xl font-bold text-white mb-3">Pro</h3>
               <div className="text-5xl font-bold text-white mb-8">
-                $49<span className="text-xl noir-text-secondary">/month</span>
+                ${billingPeriod === 'yearly' ? '39' : '49'}
+                <span className="text-xl noir-text-secondary">
+                  /{billingPeriod === 'yearly' ? 'month' : 'month'}
+                </span>
+                {billingPeriod === 'yearly' && (
+                  <div className="text-sm text-green-400 mt-1">
+                    Billed annually ($468/year)
+                  </div>
+                )}
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
@@ -458,7 +494,15 @@ const HomePage: React.FC = () => {
                 Legend <Crown className="w-8 h-8 text-yellow-400" />
               </h3>
               <div className="text-5xl font-bold text-white mb-8">
-                $99<span className="text-xl noir-text-secondary">/month</span>
+                ${billingPeriod === 'yearly' ? '79' : '99'}
+                <span className="text-xl noir-text-secondary">
+                  /{billingPeriod === 'yearly' ? 'month' : 'month'}
+                </span>
+                {billingPeriod === 'yearly' && (
+                  <div className="text-sm text-green-400 mt-1">
+                    Billed annually ($948/year)
+                  </div>
+                )}
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
