@@ -153,13 +153,19 @@ class HeliusService {
         body: JSON.stringify({
           jsonrpc: '2.0',
           id: 1,
-          method: 'getVersion'
+          method: 'getSlot'
         })
       });
       
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Helius API connected successfully!', data);
+        if (data.result !== undefined) {
+          console.log('✅ Helius API connected successfully! Current slot:', data.result);
+        } else if (data.error) {
+          console.error('❌ Helius API error:', data.error);
+          this.isConnected = false;
+          return false;
+        }
         this.isConnected = true;
         return true;
       } else {
