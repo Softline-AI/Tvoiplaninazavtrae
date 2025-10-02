@@ -6,6 +6,19 @@ import HomePage from './components/HomePage';
 import KOLFeed from './components/KOLFeed';
 import KOLLeaderboard from './components/KOLLeaderboard';
 import TopKOLTokens from './components/TopKOLTokens';
+import DailyTrends from './components/DailyTrends';
+import TopTokens from './components/TopTokens';
+import TrendsAnalytics from './components/TrendsAnalytics';
+import Transactions from './components/Transactions';
+import WalletFinder from './components/WalletFinder';
+import CabalFinder from './components/CabalFinder';
+import CopyTraders from './components/CopyTraders';
+import InsiderScan from './components/InsiderScan';
+import FreshWalletFeed from './components/FreshWalletFeed';
+import LiveDCAFeed from './components/LiveDCAFeed';
+import LegendCommunity from './components/LegendCommunity';
+import KOLFeedLegacy from './components/KOLFeedLegacy';
+import MyStalks from './components/MyStalks';
 
 const App: React.FC = () => {
   return (
@@ -33,14 +46,14 @@ const App: React.FC = () => {
                     <Route path="/kol-feed" element={<KOLFeed />} />
                     <Route path="/kol-leaderboard" element={<KOLLeaderboard />} />
                     <Route path="/top-kol-tokens" element={<TopKOLTokens />} />
-                    <Route path="/daily-trends" element={<div className="p-8 text-center text-white">Daily Trends - Coming Soon</div>} />
-                    <Route path="/top-tokens" element={<div className="p-8 text-center text-white">Top Tokens - Coming Soon</div>} />
-                    <Route path="/trends-analytics" element={<div className="p-8 text-center text-white">Trends Analytics - Coming Soon</div>} />
-                    <Route path="/transactions" element={<div className="p-8 text-center text-white">Transactions - Coming Soon</div>} />
-                    <Route path="/wallet-finder" element={<div className="p-8 text-center text-white">Wallet Finder - Coming Soon</div>} />
-                    <Route path="/cabal-finder" element={<div className="p-8 text-center text-white">Cabal Finder - Coming Soon</div>} />
-                    <Route path="/copy-traders" element={<div className="p-8 text-center text-white">Copy Traders - Coming Soon</div>} />
-                    <Route path="/kol-feed-legacy" element={<div className="p-8 text-center text-white">KOL Feed Legacy - Coming Soon</div>} />
+                    <Route path="/daily-trends" element={<DailyTrends />} />
+                    <Route path="/top-tokens" element={<TopTokens />} />
+                    <Route path="/trends-analytics" element={<TrendsAnalytics />} />
+                    <Route path="/transactions" element={<Transactions />} />
+                    <Route path="/wallet-finder" element={<WalletFinder />} />
+                    <Route path="/cabal-finder" element={<CabalFinder />} />
+                    <Route path="/copy-traders" element={<CopyTraders />} />
+                    <Route path="/kol-feed-legacy" element={<KOLFeedLegacy />} />
                     
                     {/* Live Trackers */}
                     <Route path="/live-market-feed" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Live Market Feed</h2><p className="text-gray-300">Real-time market data streaming...</p></div>} />
@@ -49,11 +62,11 @@ const App: React.FC = () => {
                     
                     {/* Other sections */}
                     <Route path="/learning-center" element={<div className="p-8 text-center text-white">Learning Center - Coming Soon</div>} />
-                    <Route path="/my-stalks" element={<div className="p-8 text-center text-white">My Stalks - PRO Feature</div>} />
-                    <Route path="/insider-scan" element={<div className="p-8 text-center text-white">Insider Scan - LEGEND Feature</div>} />
-                    <Route path="/fresh-wallet-feed" element={<div className="p-8 text-center text-white">Fresh Wallet Feed - LEGEND Feature</div>} />
-                    <Route path="/live-dca-feed" element={<div className="p-8 text-center text-white">Live DCA Feed - LEGEND Feature</div>} />
-                    <Route path="/legend-community" element={<div className="p-8 text-center text-white">Legend Community - LEGEND Feature</div>} />
+                    <Route path="/my-stalks" element={<MyStalks />} />
+                    <Route path="/insider-scan" element={<InsiderScan />} />
+                    <Route path="/fresh-wallet-feed" element={<FreshWalletFeed />} />
+                    <Route path="/live-dca-feed" element={<LiveDCAFeed />} />
+                    <Route path="/legend-community" element={<LegendCommunity />} />
                     <Route path="/upgrade" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Upgrade Your Plan</h2><p className="text-gray-300">Choose PRO or LEGEND to unlock advanced features</p></div>} />
                   </Routes>
                 </div>
