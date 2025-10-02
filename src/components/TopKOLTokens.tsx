@@ -266,36 +266,24 @@ const TopKOLTokens: React.FC = () => {
         <div className="mb-3">
           <div className="mt-2 mb-1 text-gray-600">
             Hottest tokens being accumulated by top KOLs and smart money on Solana
-            {realTokens.length > 0 && (
-              <span className="ml-2 text-green-600">• Live data connected</span>
-            )}
-            {error && (
-              <span className="ml-2 text-red-600">• {error}</span>
-            )}
-            {isLoadingReal && (
-              <span className="ml-2 text-blue-600">• Loading...</span>
-            )}
           </div>
           
           {/* Time Period Tabs */}
           <div className="inline-flex mt-4">
-            <div className="flex h-fit gap-1 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-xl bg-gradient-to-r from-gray-100 to-gray-50 border-2 border-gray-300 p-1 mb-1 shadow-lg">
+            <div className="flex h-fit gap-1 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-xl bg-noir-dark border border-white/20 p-1 mb-1">
               {['1h', '6h', '1d', '7d'].map((period) => (
                 <button
                   key={period}
                   onClick={() => setTimePeriod(period)}
-                  className={`z-0 w-full px-4 py-2 flex group relative justify-center items-center cursor-pointer transition-all duration-300 h-10 text-sm rounded-lg font-bold ${
+                  className={`z-0 w-full px-4 py-2 flex group relative justify-center items-center cursor-pointer transition-all duration-300 h-10 text-sm rounded-lg font-medium ${
                     timePeriod === period
-                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg scale-105'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                      ? 'bg-white text-noir-black'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <div className="relative z-10 whitespace-nowrap transition-colors font-medium">
                     {period === '1h' ? '1H' : period === '6h' ? '6H' : period === '1d' ? '1D' : '7D'}
                   </div>
-                  {timePeriod === period && (
-                    <span className="absolute z-0 inset-0 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg" />
-                  )}
                 </button>
               ))}
             </div>
@@ -304,13 +292,13 @@ const TopKOLTokens: React.FC = () => {
       </div>
 
       {/* Tokens Table */}
-      <div className="border-2 border-gray-300 rounded-2xl overflow-hidden bg-gradient-to-br from-white via-gray-50 to-white mb-8 shadow-2xl">
+      <div className="noir-card rounded-2xl overflow-hidden mb-8">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 border-b-2 border-gray-200">
+            <thead className="bg-noir-dark border-b border-white/20">
               <tr>
                 <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
+                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
                   onClick={() => handleSort('rank')}
                 >
                   <div className="flex items-center gap-1">
@@ -320,11 +308,11 @@ const TopKOLTokens: React.FC = () => {
                     </span>
                   </div>
                 </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider">
+                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                   <div className="flex items-center gap-1">🪙 Token</div>
                 </th>
                 <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
+                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
                   onClick={() => handleSort('kolHolders')}
                 >
                   <div className="flex items-center gap-1">
@@ -335,7 +323,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
+                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
                   onClick={() => handleSort('kolHoldings')}
                 >
                   <div className="flex items-center gap-1">
@@ -346,7 +334,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
+                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
                   onClick={() => handleSort('kolTraders')}
                 >
                   <div className="flex items-center gap-1">
@@ -357,7 +345,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
+                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
                   onClick={() => handleSort('totalSwaps')}
                 >
                   <div className="flex items-center gap-1">
@@ -368,7 +356,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
+                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
                   onClick={() => handleSort('buyVolume')}
                 >
                   <div className="flex items-center gap-1">
@@ -379,7 +367,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
+                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
                   onClick={() => handleSort('sellVolume')}
                 >
                   <div className="flex items-center gap-1">
@@ -390,7 +378,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
+                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
                   onClick={() => handleSort('netVolume')}
                 >
                   <div className="flex items-center gap-1">
@@ -400,29 +388,29 @@ const TopKOLTokens: React.FC = () => {
                     </span>
                   </div>
                 </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider">
+                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                   <div className="flex items-center gap-1">⏰ Token Age</div>
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-gradient-to-br from-white to-gray-50 divide-y divide-gray-200">
+            <tbody className="divide-y divide-white/10">
               {displayTokens.map((token, index) => (
-                <tr key={token.id} className={`transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-transparent hover:scale-[1.01] ${getRowBackground(index)}`}>
+                <tr key={token.id} className="transition-all duration-300 hover:bg-white/5">
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-gray-900">#{token.rank}</div>
+                    <div className="text-base font-bold text-white">#{token.rank}</div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="min-w-0">
-                      <div className="w-fit flex items-center rounded-xl p-0 transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50">
+                      <div className="w-fit flex items-center rounded-xl p-0 transition-all duration-300 hover:bg-white/10">
                         <button className="bg-transparent hover:bg-transparent p-0 rounded-xl flex items-center">
                           <div className="flex items-center min-w-[120px] p-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center border-2 border-gray-400 overflow-hidden">
-                              <span className="text-gray-600 font-bold text-sm">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border-2 border-white/30 overflow-hidden">
+                              <span className="text-white font-bold text-sm">
                                 {token.symbol.substring(0, 2).toUpperCase()}
                               </span>
                             </div>
                             <div className="flex flex-col ml-2 text-left">
-                              <span className="text-sm font-bold flex items-center gap-1">
+                              <span className="text-sm font-bold flex items-center gap-1 text-white">
                                 {token.symbol}
                                 {token.verified && (
                                   <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
@@ -436,21 +424,21 @@ const TopKOLTokens: React.FC = () => {
                                   </svg>
                                 )}
                               </span>
-                              <span className="text-xs text-gray-500 font-medium">
-                                💰 <span className="text-gray-700 font-bold">{token.marketCap}</span>
+                              <span className="text-xs text-white/70 font-medium">
+                                💰 <span className="text-white font-bold">{token.marketCap}</span>
                               </span>
                             </div>
                           </div>
                         </button>
                         <div className="flex items-center gap-1 pr-2">
-                          <button className="hover:opacity-70 hover:scale-110 transition-all cursor-pointer px-1 flex items-center text-gray-500">
+                          <button className="hover:opacity-70 hover:scale-110 transition-all cursor-pointer px-1 flex items-center text-white/70">
                             <Copy className="w-4 h-4" />
                           </button>
                           <a
                             href={`https://axiom.trade/t/${token.contractAddress}/@stalk`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:opacity-70 hover:scale-110 transition-all px-1 text-gray-500"
+                            className="hover:opacity-70 hover:scale-110 transition-all px-1 text-white/70"
                           >
                             <ExternalLink className="w-4 h-4" />
                           </a>
@@ -459,13 +447,13 @@ const TopKOLTokens: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-gray-900">{token.kolHolders}</div>
+                    <div className="text-base font-bold text-white">{token.kolHolders}</div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="text-base font-bold text-green-700">{token.kolHoldings}</div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-gray-900">{token.kolTraders}</div>
+                    <div className="text-base font-bold text-white">{token.kolTraders}</div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="text-base font-bold text-blue-700">{token.totalSwaps}</div>
@@ -482,7 +470,7 @@ const TopKOLTokens: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-600 font-medium">
+                    <div className="text-sm text-white/70 font-medium">
                       <span>{token.tokenAge}</span>
                     </div>
                   </td>

@@ -223,28 +223,19 @@ const KOLLeaderboard: React.FC = () => {
             <h1 className="text-xl mb-1 font-semibold">KOL Leaderboard</h1>
             <div className="text-gray-600">
               Top performing KOL traders ranked by volume and activity.
-              {realKOLs.length > 0 && (
-                <span className="ml-2 text-green-600">• Live data connected</span>
-              )}
-              {error && (
-                <span className="ml-2 text-red-600">• {error}</span>
-              )}
-              {isLoadingReal && (
-                <span className="ml-2 text-blue-600">• Loading...</span>
-              )}
             </div>
           </div>
           
           <div className="flex-1 flex justify-center">
             <div className="flex items-center gap-2">
               <div className="relative">
-                <div className="inline-flex h-fit gap-2 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-lg bg-gray-50 border border-gray-300 p-0.5 mb-1">
+                <div className="inline-flex h-fit gap-2 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-lg bg-noir-dark border border-white/20 p-0.5 mb-1">
                   <button
                     onClick={() => setTimePeriod('6h')}
                     className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
                       timePeriod === '6h' 
-                        ? 'bg-white text-gray-900 shadow-sm' 
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-white text-noir-black shadow-sm' 
+                        : 'text-white/70 hover:text-white'
                     }`}
                   >
                     <div className="relative z-10 whitespace-nowrap transition-colors font-medium">6H</div>
@@ -254,8 +245,8 @@ const KOLLeaderboard: React.FC = () => {
                     onClick={() => setTimePeriod('1d')}
                     className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
                       timePeriod === '1d' 
-                        ? 'bg-white text-gray-900 shadow-sm' 
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-white text-noir-black shadow-sm' 
+                        : 'text-white/70 hover:text-white'
                     }`}
                   >
                     <div className="relative z-10 whitespace-nowrap transition-colors font-medium">24H</div>
@@ -265,8 +256,8 @@ const KOLLeaderboard: React.FC = () => {
                     onClick={() => setTimePeriod('7d')}
                     className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
                       timePeriod === '7d' 
-                        ? 'bg-white text-gray-900 shadow-sm' 
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-white text-noir-black shadow-sm' 
+                        : 'text-white/70 hover:text-white'
                     }`}
                   >
                     <div className="relative z-10 whitespace-nowrap transition-colors font-medium">7D</div>
@@ -274,8 +265,8 @@ const KOLLeaderboard: React.FC = () => {
                   </button>
                 </div>
               </div>
-              <button className="p-3 hover:bg-gray-100 rounded-xl transition-all duration-300 hover:scale-110">
-                <RefreshCw className="w-5 h-5 text-gray-600" />
+              <button className="p-3 hover:bg-white/10 rounded-xl transition-all duration-300 hover:scale-110">
+                <RefreshCw className="w-5 h-5 text-white/70" />
               </button>
             </div>
           </div>
@@ -285,7 +276,7 @@ const KOLLeaderboard: React.FC = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium appearance-none cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full bg-noir-dark border border-white/20 rounded-lg px-4 py-2 text-sm font-medium appearance-none cursor-pointer hover:bg-noir-gray focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30 transition-all text-white"
               >
                 <option value="overall">Overall Rank</option>
                 <option value="winRate">Win Rate</option>
@@ -293,34 +284,34 @@ const KOLLeaderboard: React.FC = () => {
                 <option value="pnl">P&L</option>
                 <option value="activity">Most Active</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Leaderboard Table */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
+      <div className="noir-card rounded-2xl overflow-hidden">
         {/* Table Header */}
-        <div className="flex justify-between py-4 bg-gray-50 sticky top-0 z-10 px-6 border-b border-gray-200">
+        <div className="flex justify-between py-4 bg-noir-dark sticky top-0 z-10 px-6 border-b border-white/20">
           <div className="flex items-center flex-1">
-            <div className="flex items-center min-w-[40px] text-sm font-medium text-gray-500">Rank</div>
-            <div className="flex-1 text-sm font-medium text-gray-500 pl-6">Trader</div>
+            <div className="flex items-center min-w-[40px] text-sm font-medium text-white">Rank</div>
+            <div className="flex-1 text-sm font-medium text-white pl-6">Trader</div>
           </div>
           <div className="flex items-center gap-8">
-            <div className="flex w-16 text-sm font-medium text-gray-500 justify-end">Trades</div>
-            <div className="flex w-28 text-sm font-medium text-gray-500 justify-end">Volume</div>
+            <div className="flex w-16 text-sm font-medium text-white justify-end">Trades</div>
+            <div className="flex w-28 text-sm font-medium text-white justify-end">Volume</div>
             <div className="flex w-4 text-xs justify-center"></div>
           </div>
         </div>
 
-        <hr className="border-gray-200" />
+        <hr className="border-white/20" />
 
         {/* Table Rows */}
-        <div className="divide-y divide-gray-200">
+        <div className="divide-y divide-white/10">
           {displayTraders.map((trader) => (
             <div key={trader.id} className="relative">
-              <div className={`w-full flex justify-between items-center h-20 text-sm hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-300 ${getRowStyling(trader)}`}>
+              <div className={`w-full flex justify-between items-center h-20 text-sm hover:bg-white/5 transition-all duration-300 ${getRowStyling(trader)}`}>
                 <div className="flex items-center pl-6 flex-1">
                   <div className="flex items-center min-w-[40px]">
                     <div className="flex items-center gap-1">
@@ -328,19 +319,19 @@ const KOLLeaderboard: React.FC = () => {
                     </div>
                   </div>
                   <div className="font-medium">
-                    <div className="bg-gradient-to-r from-transparent to-gray-50/50 hover:from-gray-100 hover:to-gray-50 rounded-xl px-3 py-2 text-gray-600 flex items-center transition-all duration-300 cursor-pointer group" style={{ overflow: 'hidden', height: '40px', width: 'auto' }}>
-                      <div className="flex-1 flex items-center justify-start cursor-pointer text-gray-500 min-w-0">
+                    <div className="bg-white/10 hover:bg-white/15 rounded-xl px-3 py-2 text-white flex items-center transition-all duration-300 cursor-pointer group" style={{ overflow: 'hidden', height: '40px', width: 'auto' }}>
+                      <div className="flex-1 flex items-center justify-start cursor-pointer text-white min-w-0">
                         <div className="relative">
                           <div className="relative mr-2">
                             <div className="relative">
-                              <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center border-2 border-gray-400">
-                                <span className="text-gray-600 font-bold text-sm">
+                              <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border-2 border-white/30">
+                                <span className="text-white font-bold text-sm">
                                   {trader.name.substring(0, 2).toUpperCase()}
                                 </span>
                               </div>
                               <img
                                 alt={trader.name}
-                                className="absolute inset-0 rounded-full border-2 border-gray-400 object-cover w-[32px] h-[32px]"
+                                className="absolute inset-0 rounded-full border-2 border-white/30 object-cover w-[32px] h-[32px]"
                                 src={trader.avatar}
                                 style={{ display: 'block' }}
                               />
@@ -348,13 +339,13 @@ const KOLLeaderboard: React.FC = () => {
                             <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full border-2 border-white shadow-lg"></div>
                           </div>
                         </div>
-                        <span className="font-bold mr-2 text-gray-800 truncate text-base">
+                        <span className="font-bold mr-2 text-white truncate text-base">
                           {trader.name}
                         </span>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
                         <a
-                          className="hover:opacity-70 hover:scale-110 transition-all px-1 text-gray-500"
+                          className="hover:opacity-70 hover:scale-110 transition-all px-1 text-white/70"
                           href={`https://solscan.io/account/${trader.walletAddress}`}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -365,7 +356,7 @@ const KOLLeaderboard: React.FC = () => {
                           href={`https://twitter.com/${trader.twitterHandle}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:opacity-70 hover:scale-110 transition-all p-1 text-blue-500 group-hover:text-blue-600"
+                          className="hover:opacity-70 hover:scale-110 transition-all p-1 text-blue-400 group-hover:text-blue-300"
                         >
                           <svg className="w-4 h-4" viewBox="0 0 512 512" fill="currentColor">
                             <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
@@ -379,7 +370,7 @@ const KOLLeaderboard: React.FC = () => {
                   <div className="flex justify-end w-16">
                     <div className="flex items-center gap-1">
                       <span className="text-green-600 font-bold text-base">📈{trader.buyCount}</span>
-                      <span className="text-gray-400 font-bold">/</span>
+                      <span className="text-white/50 font-bold">/</span>
                       <span className="text-red-600 font-bold text-base">📉{trader.sellCount}</span>
                     </div>
                   </div>
@@ -395,15 +386,15 @@ const KOLLeaderboard: React.FC = () => {
       </div>
 
       {/* Explanation Section */}
-      <div className="bg-gray-50 rounded-xl mt-6 overflow-hidden">
+      <div className="noir-card rounded-xl mt-6 overflow-hidden">
         <div className="p-4">
           <div className="flex items-center justify-between cursor-pointer" onClick={() => setShowExplanation(!showExplanation)}>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium">How KOL Rankings Work</span>
-              <span className="text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded-full">🏆 Ranking System</span>
+              <span className="text-sm font-medium text-white">How KOL Rankings Work</span>
+              <span className="text-xs text-white/70 bg-white/10 px-2 py-0.5 rounded-full">🏆 Ranking System</span>
             </div>
-            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-              <ChevronDown className={`w-4 h-4 text-gray-600 transition-transform ${showExplanation ? 'rotate-180' : ''}`} />
+            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+              <ChevronDown className={`w-4 h-4 text-white/70 transition-transform ${showExplanation ? 'rotate-180' : ''}`} />
             </button>
           </div>
           
@@ -411,54 +402,54 @@ const KOLLeaderboard: React.FC = () => {
             <div className="pt-3 pb-1">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <h4 className="font-medium mb-3 text-gray-700 text-sm">Ranking Factors</h4>
-                  <div className="bg-white rounded-lg p-3 shadow-sm space-y-3">
+                  <h4 className="font-medium mb-3 text-white text-sm">Ranking Factors</h4>
+                  <div className="bg-noir-dark rounded-lg p-3 border border-white/10 space-y-3">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-medium text-xs">V</div>
-                        <span className="text-xs font-medium text-gray-700">Total Trading Volume (USD)</span>
+                        <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-medium text-xs">V</div>
+                        <span className="text-xs font-medium text-white">Total Trading Volume (USD)</span>
                       </div>
-                      <p className="text-xs text-gray-600 pl-7">Includes BUY/SELL and DCA fills.</p>
+                      <p className="text-xs text-white/70 pl-7">Includes BUY/SELL and DCA fills.</p>
                     </div>
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <div className="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-medium text-xs">A</div>
-                        <span className="text-xs font-medium text-gray-700">Trading Activity (Buy/Sell Counts)</span>
+                        <div className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-medium text-xs">A</div>
+                        <span className="text-xs font-medium text-white">Trading Activity (Buy/Sell Counts)</span>
                       </div>
-                      <p className="text-xs text-gray-600 pl-7">Counts BUY/SELL trades and DCA fills.</p>
+                      <p className="text-xs text-white/70 pl-7">Counts BUY/SELL trades and DCA fills.</p>
                     </div>
                   </div>
                 </div>
                 <div>
-                  <h4 className="font-medium mb-3 text-gray-700 text-sm">How Rankings Are Determined</h4>
-                  <div className="bg-white rounded-lg p-3 shadow-sm">
+                  <h4 className="font-medium mb-3 text-white text-sm">How Rankings Are Determined</h4>
+                  <div className="bg-noir-dark rounded-lg p-3 border border-white/10">
                     <ol className="text-xs space-y-3">
-                      <li className="pb-2 border-b border-gray-100">
+                      <li className="pb-2 border-b border-white/10">
                         <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-medium">1</div>
-                          <span className="font-medium">Transaction Aggregation</span>
+                          <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-medium">1</div>
+                          <span className="font-medium text-white">Transaction Aggregation</span>
                         </div>
-                        <p className="mt-1 text-gray-600 pl-7">Spot trades and DCA fills are gathered for each KOL in the selected timeframe.</p>
+                        <p className="mt-1 text-white/70 pl-7">Spot trades and DCA fills are gathered for each KOL in the selected timeframe.</p>
                       </li>
-                      <li className="pb-2 border-b border-gray-100">
+                      <li className="pb-2 border-b border-white/10">
                         <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-medium">2</div>
-                          <span className="font-medium">Metric Calculation</span>
+                          <div className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-medium">2</div>
+                          <span className="font-medium text-white">Metric Calculation</span>
                         </div>
-                        <p className="mt-1 text-gray-600 pl-7">Total Trading Volume (USD), Buy, and Sell Transactions are calculated.</p>
+                        <p className="mt-1 text-white/70 pl-7">Total Trading Volume (USD), Buy, and Sell Transactions are calculated.</p>
                       </li>
                       <li>
                         <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-medium">3</div>
-                          <span className="font-medium">Sorting & Ranking</span>
+                          <div className="w-5 h-5 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center font-medium">3</div>
+                          <span className="font-medium text-white">Sorting & Ranking</span>
                         </div>
-                        <p className="mt-1 text-gray-600 pl-7">KOLs are ranked by Total Trading Volume (USD). Trading Activity is a secondary sorter.</p>
+                        <p className="mt-1 text-white/70 pl-7">KOLs are ranked by Total Trading Volume (USD). Trading Activity is a secondary sorter.</p>
                       </li>
                     </ol>
                   </div>
                 </div>
               </div>
-              <div className="mt-4 text-xs text-center text-gray-500">
+              <div className="mt-4 text-xs text-center text-white/50">
                 <span>Rankings update approximately every 30 minutes</span>
               </div>
             </div>
