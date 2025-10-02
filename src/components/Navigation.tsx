@@ -196,7 +196,7 @@ const Navigation: React.FC = () => {
                 </div>
               )}
             </div>
-            <a className="text-white hover:text-gray-300 transition-colors font-medium" href="#plans">
+            <a href="#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
               Tools
             </a>
           </div>
