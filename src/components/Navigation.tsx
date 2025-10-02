@@ -27,10 +27,8 @@ const Navigation: React.FC = () => {
           <Link to="/" className="flex items-center gap-2">
             <div className="text-2xl font-bold text-white tracking-wider">SMARTCHAIN</div>
           </Link>
-        </div>
-        
-        <div className="hidden sm:flex items-center gap-6">
-          <div className="flex items-center gap-6">
+          
+          <div className="hidden sm:flex items-center gap-6">
             <div className="relative" ref={dropdownRef}>
               <button 
                 onClick={() => setIsProductsOpen(!isProductsOpen)}
