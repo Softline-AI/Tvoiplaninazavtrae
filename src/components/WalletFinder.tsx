@@ -85,9 +85,6 @@ const WalletFinder: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Wallet Finder</h1>
-        <div className="text-white/70">
-          Find and analyze any wallet. Uncover connections and holdings
-        </div>
       </div>
 
       {/* Search */}

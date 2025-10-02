@@ -98,9 +98,6 @@ const LiveDCAFeed: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Live DCA Feed</h1>
-        <div className="text-white/70">
-          Monitor Dollar Cost Averaging strategies from smart money wallets
-        </div>
       </div>
 
       {/* Filters */}

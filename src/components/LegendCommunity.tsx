@@ -116,9 +116,6 @@ const LegendCommunity: React.FC = () => {
           <Crown className="w-6 h-6 text-yellow-500" />
           Legend Community
         </h1>
-        <div className="text-white/70">
-          Exclusive community for Legend tier members - share alpha, strategies, and insights
-        </div>
       </div>
 
       {/* Navigation Tabs */}

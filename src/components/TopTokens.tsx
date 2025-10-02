@@ -70,9 +70,6 @@ const TopTokens: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Top Tokens</h1>
-        <div className="text-white/70">
-          Monitor top-performing tokens by volume and smart money activity
-        </div>
       </div>
 
       {/* Filters */}

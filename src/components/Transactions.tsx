@@ -96,9 +96,6 @@ const Transactions: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Smart Money Transactions</h1>
-        <div className="text-white/70">
-          Explore every smart money transaction with wallet attribution
-        </div>
       </div>
 
       {/* Filters */}

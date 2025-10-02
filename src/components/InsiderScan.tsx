@@ -128,9 +128,6 @@ const InsiderScan: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Insider Scan</h1>
-        <div className="text-white/70">
-          Advanced detection of insider trading patterns and unusual wallet activity
-        </div>
       </div>
 
       {/* Filters */}

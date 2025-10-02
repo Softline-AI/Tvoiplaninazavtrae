@@ -221,9 +221,6 @@ const KOLLeaderboard: React.FC = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex-1">
             <h1 className="text-xl mb-1 font-semibold">KOL Leaderboard</h1>
-            <div className="text-gray-600">
-              Top performing KOL traders ranked by volume and activity.
-            </div>
           </div>
           
           <div className="flex-1 flex justify-center">

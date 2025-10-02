@@ -98,9 +98,6 @@ const FreshWalletFeed: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Fresh Wallet Feed</h1>
-        <div className="text-white/70">
-          Track newly created wallets with significant activity and potential
-        </div>
       </div>
 
       {/* Filters */}

@@ -78,9 +78,6 @@ const KOLFeedLegacy: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">KOL Feed Legacy</h1>
-        <div className="text-white/70">
-          Historical view of KOL trading activity with detailed transaction logs
-        </div>
       </div>
 
       {/* Filters */}

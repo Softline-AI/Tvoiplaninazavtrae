@@ -100,9 +100,6 @@ const CopyTraders: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Copy Traders</h1>
-        <div className="text-white/70">
-          Copy the trades of the best performers automatically
-        </div>
       </div>
 
       {/* Filters */}

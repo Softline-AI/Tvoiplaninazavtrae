@@ -264,9 +264,6 @@ const TopKOLTokens: React.FC = () => {
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold">Top KOL Tokens</h1>
         <div className="mb-3">
-          <div className="mt-2 mb-1 text-gray-600">
-            Hottest tokens being accumulated by top KOLs and smart money on Solana
-          </div>
           
           {/* Time Period Tabs */}
           <div className="inline-flex mt-4">

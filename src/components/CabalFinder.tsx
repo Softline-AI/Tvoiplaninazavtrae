@@ -96,9 +96,6 @@ const CabalFinder: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Cabal Finder</h1>
-        <div className="text-white/70">
-          Discover coordinated wallet groups and their investment strategies
-        </div>
       </div>
 
       {/* Search and Filters */}

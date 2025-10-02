@@ -70,9 +70,6 @@ const DailyTrends: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Daily Trends</h1>
-        <div className="text-white/70">
-          Track the hottest tokens and market shifts every day
-        </div>
       </div>
 
       {/* Filters */}

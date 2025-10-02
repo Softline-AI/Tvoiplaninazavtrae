@@ -117,9 +117,6 @@ const MyStalks: React.FC = () => {
               <Target className="w-6 h-6" />
               My Stalks
             </h1>
-            <div className="text-white/70">
-              Track wallets, tokens, and KOLs with custom alerts and notifications
-            </div>
           </div>
           <button
             onClick={() => setShowAddModal(true)}

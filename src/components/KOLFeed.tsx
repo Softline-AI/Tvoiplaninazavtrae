@@ -270,9 +270,6 @@ const KOLFeed: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">KOL Feed</h1>
-        <div className="text-gray-600">
-          Live feed of Key Opinion Leader trades and wallet activity.
-        </div>
       </div>
 
       {/* Feed Table */}
@@ -404,114 +401,97 @@ const KOLFeed: React.FC = () => {
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div>
                         <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white flex items-center hover:bg-white/15 transition-all duration-300 cursor-pointer" style={{ overflow: 'hidden', height: '36px', width: '180px' }}>
-                          <div className="flex-1 flex items-center justify-start cursor-pointer text-white min-w-0">
+                          <div className="flex items-center gap-2 flex-1">
                             <div className="relative">
-                              <div className="relative mr-2">
-                                <div className="relative">
-                                  <div className="w-[24px] h-[24px] rounded-full bg-gradient-to-br from-white/30 to-white/10 flex items-center justify-center border-2 border-white/40">
-                                    <span className="text-white font-bold text-[10px]">
-                                      {trade.kolName.substring(0, 2).toUpperCase()}
-                                    </span>
-                                  </div>
-                                  <img
-                                    alt={trade.kolName}
-                                    className="absolute inset-0 rounded-full border-2 border-white/40 object-cover w-[24px] h-[24px]"
-                                    src={trade.kolAvatar}
-                                    style={{ display: 'block' }}
-                                  />
-                                </div>
-                                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gradient-to-br from-green-400 to-green-600 rounded-full border-2 border-noir-dark shadow-lg"></div>
-                              </div>
+                              <img
+                                alt={trade.kolName}
+                                className="w-8 h-8 rounded-full border-2 border-white/30 object-cover"
+                                src={trade.kolAvatar}
+                              />
+                              <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-noir-dark"></div>
                             </div>
-                            <span className="text-sm text-white font-bold truncate">
+                            <span className="text-sm text-white font-medium truncate">
                               {trade.kolName}
                             </span>
                           </div>
-                          <div className="flex items-center gap-0.5 flex-shrink-0">
+                          <div className="flex items-center gap-1 flex-shrink-0">
                             <a
-                              className="hover:opacity-70 hover:scale-110 transition-all px-1 text-white/70"
+                              className="hover:opacity-70 transition-all p-1 text-white/70"
                               href={`https://solscan.io/account/${trade.walletAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <ExternalLink className="w-3 h-3" />
+                              <ExternalLink className="w-4 h-4" />
                             </a>
                             <a
                               href={`https://twitter.com/${trade.twitterHandle}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="hover:opacity-70 hover:scale-110 transition-all p-1 text-blue-400"
+                              className="hover:opacity-70 transition-all p-1 text-blue-400"
                             >
                               <svg className="w-4 h-4" viewBox="0 0 512 512" fill="currentColor">
                                 <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
                               </svg>
                             </a>
-                            {trade.telegramHandle && (
-                              <a
-                                href={`https://t.me/${trade.telegramHandle}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="hover:opacity-70 hover:scale-110 transition-all p-1 text-blue-500"
-                              >
-                                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
-                                  <path d="M1.058 6.85c4.337-1.89 7.222-3.127 8.654-3.716 4.113-1.697 4.97-1.992 5.531-2.002.123 0 .397.028.574.17.148.123.188.29.207.406.02.116.045.38.026.588-.223 2.335-1.188 8.016-1.682 10.634-.207 1.11-.615 1.482-1.01 1.518-.861.074-1.516-.576-2.35-1.13-1.295-.85-2.025-1.38-3.284-2.21-1.456-.963-.512-1.494.317-2.362.217-.228 4.005-3.672 4.077-3.983.01-.037.018-.174-.073-.246-.092-.073-.227-.048-.325-.03-.138.027-2.22 1.41-6.247 4.147-.59.406-1.124.604-1.603.594-.528-.01-1.545-.299-2.3-.544-.927-.299-1.663-.456-1.6-.973.033-.263.409-.536 1.114-.82z" />
-                                </svg>
-                              </a>
-                            )}
                           </div>
                         </div>
                       </div>
                     </td>
 
                     {/* Token */}
-                    <td className="px-3 py-2.5 whitespace-nowrap">
-                      <div className="max-w-[180px]">
-                        <div className="w-fit flex items-center rounded-md p-0 transition-colors hover:bg-gray-100">
-                          <button className="bg-transparent hover:bg-transparent p-0 rounded-md flex items-center">
-                            <div className="flex items-center min-w-[100px] p-2">
-                              <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300 overflow-hidden">
-                                <span className="text-gray-500 font-medium text-xs">
-                                  {trade.token.substring(0, 2).toUpperCase()}
-                                </span>
-                              </div>
-                              <img
-                                alt={trade.token}
-                                className="absolute w-7 h-7 rounded-full border border-gray-300 object-cover"
-                                src={trade.tokenIcon}
-                                style={{ display: 'block' }}
-                              />
-                              <div className="flex flex-col ml-2 text-left">
-                                <span className="text-xs font-medium flex items-center gap-1">
-                                  {trade.token}
-                                  {trade.verified && (
-                                    <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none">
-                                      <path 
-                                        d="M9 12L11 14L15.5 9.5M7.33377 3.8187C8.1376 3.75455 8.90071 3.43846 9.51447 2.91542C10.9467 1.69486 13.0533 1.69486 14.4855 2.91542C15.0993 3.43846 15.8624 3.75455 16.6662 3.8187C18.5421 3.96839 20.0316 5.45794 20.1813 7.33377C20.2455 8.1376 20.5615 8.90071 21.0846 9.51447C22.3051 10.9467 22.3051 13.0533 21.0846 14.4855C20.5615 15.0993 20.2455 15.8624 20.1813 16.6662C20.0316 18.5421 18.5421 20.0316 16.6662 20.1813C15.8624 20.2455 15.0993 20.5615 14.4855 21.0846C13.0533 22.3051 10.9467 22.3051 9.51447 21.0846C8.90071 20.5615 8.1376 20.2455 7.33377 20.1813C5.45794 20.0316 3.96839 18.5421 3.8187 16.6662C3.75455 15.8624 3.43846 15.0993 2.91542 14.4855C1.69486 13.0533 1.69486 10.9467 2.91542 9.51447C3.43846 8.90071 3.75455 8.1376 3.8187 7.33377C3.96839 5.45794 5.45794 3.96839 7.33377 3.8187Z" 
-                                        stroke="#10b981" 
-                                        strokeWidth="2" 
-                                        strokeLinecap="round" 
-                                        strokeLinejoin="round"
-                                      />
-                                    </svg>
-                                  )}
-                                </span>
-                              </div>
-                            </div>
-                          </button>
-                          <div className="flex items-center gap-1 pr-2">
-                            <button className="hover:opacity-50 cursor-pointer px-1 flex items-center text-gray-500">
-                              <Copy className="w-3 h-3" />
-                            </button>
-                            <a
-                              href={`https://axiom.trade/t/${trade.tokenContract}/@stalk`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:opacity-70 hover:scale-110 transition-all p-1 text-gray-400"
-                            >
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </div>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border border-white/30 overflow-hidden">
+                          <span className="text-white font-bold text-sm">
+                            {trade.token.substring(0, 2).toUpperCase()}
+                          </span>
                         </div>
+                        <img
+                          alt={trade.token}
+                          className="absolute w-8 h-8 rounded-full border border-white/30 object-cover"
+                          src={trade.tokenIcon}
+                        />
+                        <div>
+                          <div className="text-sm font-bold text-white">{trade.token}</div>
+                          <div className="text-xs text-white/70">{trade.mcap}</div>
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Amount */}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="text-sm font-bold text-white">{trade.bought !== '$0.00' ? trade.bought : trade.sold}</div>
+                    </td>
+
+                    {/* P&L */}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className={`text-sm font-bold ${trade.pnl.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                        {trade.pnl}
+                      </div>
+                      <div className={`text-xs ${trade.pnlPercentage.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
+                        {trade.pnlPercentage}
+                      </div>
+                    </td>
+
+                    {/* Holdings */}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="text-sm font-bold text-white">{trade.holding}</div>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <button className="hover:opacity-70 transition-all p-1 text-white/70">
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        <a
+                          href={`https://solscan.io/token/${trade.tokenContract}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:opacity-70 transition-all p-1 text-white/70"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
                       </div>
                     </td>
                   </tr>
@@ -519,6 +499,33 @@ const KOLFeed: React.FC = () => {
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+        <div className="noir-card rounded-xl p-4">
+          <div className="text-xs text-white/70 mb-1">Active KOLs</div>
+          <div className="text-2xl font-bold text-white">234</div>
+          <div className="text-xs text-green-600">+12 today</div>
+        </div>
+        
+        <div className="noir-card rounded-xl p-4">
+          <div className="text-xs text-white/70 mb-1">Total Volume</div>
+          <div className="text-2xl font-bold text-white">$2.4M</div>
+          <div className="text-xs text-green-600">+8.5% 24h</div>
+        </div>
+        
+        <div className="noir-card rounded-xl p-4">
+          <div className="text-xs text-white/70 mb-1">Avg Win Rate</div>
+          <div className="text-2xl font-bold text-green-600">73.8%</div>
+          <div className="text-xs text-white/70">Last 7 days</div>
+        </div>
+        
+        <div className="noir-card rounded-xl p-4">
+          <div className="text-xs text-white/70 mb-1">Top Token</div>
+          <div className="text-2xl font-bold text-white">SOL</div>
+          <div className="text-xs text-white/70">Most traded</div>
         </div>
       </div>
     </div>

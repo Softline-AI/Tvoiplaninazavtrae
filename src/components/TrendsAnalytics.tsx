@@ -92,9 +92,6 @@ const TrendsAnalytics: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">Trends Analytics</h1>
-        <div className="text-white/70">
-          Deep-dive analytics on token trends and whale movements
-        </div>
       </div>
 
       {/* Filters */}
