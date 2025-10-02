@@ -203,6 +203,7 @@ const Navigation: React.FC = () => {
             Open App
           </Link>
         </div>
+      </div>
       </header>
     </nav>
   );
