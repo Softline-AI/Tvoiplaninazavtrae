@@ -62,7 +62,7 @@ export interface RealTimeKOLTrade {
 
 class HeliusService {
   private apiKey: string;
-  private baseUrl: string;
+  private rpcUrl: string;
   private isConnected: boolean = false;
   private requestQueue: Promise<any>[] = [];
   private lastRequestTime: number = 0;
@@ -82,7 +82,7 @@ class HeliusService {
 
   constructor() {
     this.apiKey = HELIUS_API_KEY;
-    this.baseUrl = HELIUS_BASE_URL;
+    this.rpcUrl = `https://rpc.helius.xyz/?api-key=${this.apiKey}`;
     this.testConnection();
   }
 
@@ -148,8 +148,7 @@ class HeliusService {
     try {
       console.log('🔌 Testing Helius API connection...');
       
-      // Test with RPC endpoint
-      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+      const response = await this.fetchWithRetry(this.rpcUrl, {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -185,7 +184,7 @@ class HeliusService {
     try {
       console.log(`💰 Fetching enhanced transactions for wallet: ${walletAddress}`);
       
-      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+      const response = await this.fetchWithRetry(this.rpcUrl, {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -253,7 +252,7 @@ class HeliusService {
   // Get token metadata using Helius API
   async getTokenMetadata(mintAddress: string): Promise<TokenInfo | null> {
     try {
-      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+      const response = await this.fetchWithRetry(this.rpcUrl, {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -520,7 +519,7 @@ class HeliusService {
   // Get wallet balance
   async getWalletBalance(walletAddress: string): Promise<number> {
     try {
-      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+      const response = await this.fetchWithRetry(this.rpcUrl, {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -544,7 +543,7 @@ class HeliusService {
   // Get account info
   async getAccountInfo(address: string): Promise<any> {
     try {
-      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+      const response = await this.fetchWithRetry(this.rpcUrl, {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
