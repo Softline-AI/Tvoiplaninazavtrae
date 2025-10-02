@@ -279,13 +279,13 @@ const KOLFeed: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-xl font-semibold text-white">KOL Feed</h1>
+          <h1 className="text-2xl font-bold text-white noir-gradient-text">🔥 Live KOL Feed</h1>
           <div className="flex items-center gap-2">
             <div className={`w-2 h-2 rounded-full ${
               apiStatus === 'connected' ? 'noir-status-online' : 
               apiStatus === 'failed' ? 'noir-status-offline' : 'noir-status-warning'
             }`}></div>
-            <span className="text-xs text-gray-300">
+            <span className="text-sm font-medium text-gray-300">
               {apiStatus === 'connected' ? 'Live Data' : 
                apiStatus === 'failed' ? 'Demo Data' : 'Connecting...'}
             </span>
@@ -301,177 +301,177 @@ const KOLFeed: React.FC = () => {
             {useRealData ? 'Real Data' : 'Demo Data'}
           </button>
         </div>
-        <div className="text-sm text-gray-300">Realtime trades performed by KOLs</div>
+        <div className="text-lg text-gray-300 font-light">⚡ Real-time whale movements & KOL trades</div>
       </div>
 
       {/* Feed Table */}
       <div className="mt-6">
-        <div className="noir-table noir-glass noir-border-glow rounded-lg overflow-hidden">
+        <div className="noir-card noir-glass noir-border-glow rounded-2xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-white/10">
-              <thead className="noir-table noir-shimmer">
+            <table className="min-w-full">
+              <thead className="bg-gradient-to-r from-noir-dark via-noir-gray to-noir-dark border-b border-white/20">
                 <tr>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-300 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>Last Tx</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-300" />
+                        <span>📊 Last Trade</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-white" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-300 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>KOL</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-300" />
+                        <span>👑 KOL Trader</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-white" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>Token</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                        <span>🪙 Token</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-gray-300" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>Mcap</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                        <span>💰 Market Cap</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-gray-300" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>Bought</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                        <span>📈 Bought</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-gray-300" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>Sold</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                        <span>📉 Sold</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-gray-300" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>Holding</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                        <span>💎 Holdings</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-gray-300" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>PnL</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                        <span>💵 P&L</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-gray-300" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>PnL (%)</span>
-                        <button className="opacity-60 hover:opacity-100 transition-opacity">
-                          <Filter className="w-3.5 h-3.5 text-gray-600" />
+                        <span>📊 P&L %</span>
+                        <button className="opacity-70 hover:opacity-100 transition-opacity">
+                          <Filter className="w-4 h-4 text-gray-300" />
                         </button>
                       </div>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-2">
-                      AHT
+                      ⏱️ Hold Time
                       <span className="cursor-help">
-                        <HelpCircle className="w-3 h-3 text-gray-600" />
+                        <HelpCircle className="w-4 h-4 text-gray-300" />
                       </span>
                     </div>
                   </th>
-                  <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
+                  <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1"></div>
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/5">
+              <tbody className="divide-y divide-white/10">
                 {trades.map((trade, index) => (
-                  <tr key={trade.id} className="transition-colors hover:bg-white/5 noir-spotlight">
+                  <tr key={trade.id} className="transition-all duration-300 hover:bg-gradient-to-r hover:from-white/5 hover:to-transparent noir-spotlight group">
                     {/* Last Tx */}
-                    <td className="px-3 py-2.5 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex flex-col">
-                        <span className={`text-xs font-medium ${getTransactionTypeColor(trade.lastTx)}`}>
-                          {trade.lastTx}
+                        <span className={`text-sm font-bold uppercase tracking-wider ${getTransactionTypeColor(trade.lastTx)}`}>
+                          {trade.lastTx === 'buy' ? '🟢 BUY' : '🔴 SELL'}
                         </span>
                         <div>
-                          <span className="text-xs text-gray-300">{trade.timeAgo}</span>
+                          <span className="text-sm text-gray-400 font-medium">{trade.timeAgo}</span>
                         </div>
                       </div>
                     </td>
 
                     {/* KOL */}
-                    <td className="px-3 py-2.5 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div>
-                        <div className="bg-white/10 border border-white/20 rounded-lg px-2 text-gray-300 flex items-center hover:bg-white/20 transition-colors cursor-pointer noir-glass" style={{ overflow: 'hidden', height: '28px', width: '160px' }}>
+                        <div className="bg-gradient-to-r from-white/10 to-white/5 border border-white/30 rounded-xl px-3 py-2 text-gray-300 flex items-center hover:bg-white/20 transition-all duration-300 cursor-pointer noir-glass group-hover:border-white/50" style={{ overflow: 'hidden', height: '36px', width: '180px' }}>
                           <div className="flex-1 flex items-center justify-start cursor-pointer text-gray-300 min-w-0">
                             <div className="relative">
                               <div className="relative mr-2">
                                 <div className="relative">
-                                  <div className="w-[20px] h-[20px] rounded-full bg-white/20 flex items-center justify-center border border-white/30">
-                                    <span className="text-white font-medium text-[8px]">
+                                  <div className="w-[24px] h-[24px] rounded-full bg-gradient-to-br from-white/30 to-white/10 flex items-center justify-center border-2 border-white/40">
+                                    <span className="text-white font-bold text-[10px]">
                                       {trade.kolName.substring(0, 2).toUpperCase()}
                                     </span>
                                   </div>
                                   <img
                                     alt={trade.kolName}
-                                    className="absolute inset-0 rounded-full border border-white/30 object-cover w-[20px] h-[20px]"
+                                    className="absolute inset-0 rounded-full border-2 border-white/40 object-cover w-[24px] h-[24px]"
                                     src={trade.kolAvatar}
                                     style={{ display: 'block' }}
                                   />
                                 </div>
-                                <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-white rounded-full border-2 border-noir-dark"></div>
+                                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-gradient-to-br from-green-400 to-green-600 rounded-full border-2 border-noir-dark shadow-lg"></div>
                               </div>
                             </div>
-                            <span className="text-xs text-white font-semibold truncate">
+                            <span className="text-sm text-white font-bold truncate">
                               {trade.kolName}
                             </span>
                           </div>
                           <div className="flex items-center gap-0.5 flex-shrink-0">
                             <a
-                              className="hover:opacity-50 px-1 text-gray-300"
+                              className="hover:opacity-70 hover:scale-110 transition-all px-1 text-gray-300"
                               href={`https://solscan.io/account/${trade.walletAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"
                             >
-                              <ExternalLink className="w-2.5 h-2.5" />
+                              <ExternalLink className="w-3 h-3" />
                             </a>
                             <a
                               href={`https://twitter.com/${trade.twitterHandle}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="hover:opacity-50 p-1 text-gray-300"
+                              className="hover:opacity-70 hover:scale-110 transition-all p-1 text-blue-400"
                             >
-                              <svg className="w-3.5 h-3.5" viewBox="0 0 512 512" fill="white">
+                              <svg className="w-4 h-4" viewBox="0 0 512 512" fill="currentColor">
                                 <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
                               </svg>
                             </a>
@@ -480,9 +480,9 @@ const KOLFeed: React.FC = () => {
                                 href={`https://t.me/${trade.telegramHandle}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="hover:opacity-50 p-1 text-gray-300"
+                                className="hover:opacity-70 hover:scale-110 transition-all p-1 text-blue-500"
                               >
-                                <svg className="w-3.5 h-3.5" viewBox="0 0 16 16" fill="#1997CA">
+                                <svg className="w-4 h-4" viewBox="0 0 16 16" fill="currentColor">
                                   <path d="M1.058 6.85c4.337-1.89 7.222-3.127 8.654-3.716 4.113-1.697 4.97-1.992 5.531-2.002.123 0 .397.028.574.17.148.123.188.29.207.406.02.116.045.38.026.588-.223 2.335-1.188 8.016-1.682 10.634-.207 1.11-.615 1.482-1.01 1.518-.861.074-1.516-.576-2.35-1.13-1.295-.85-2.025-1.38-3.284-2.21-1.456-.963-.512-1.494.317-2.362.217-.228 4.005-3.672 4.077-3.983.01-.037.018-.174-.073-.246-.092-.073-.227-.048-.325-.03-.138.027-2.22 1.41-6.247 4.147-.59.406-1.124.604-1.603.594-.528-.01-1.545-.299-2.3-.544-.927-.299-1.663-.456-1.6-.973.033-.263.409-.536 1.114-.82z" />
                                 </svg>
                               </a>
@@ -595,10 +595,10 @@ const KOLFeed: React.FC = () => {
                     </td>
 
                     {/* Actions */}
-                    <td className="px-3 py-2.5 whitespace-nowrap">
+                    <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex justify-end">
-                        <button className="bg-white/10 border border-white/20 rounded-lg px-2 py-1 text-xs font-medium text-white hover:bg-white/20 transition-colors flex items-center justify-center noir-glass noir-shimmer">
-                          Details
+                        <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border border-white/30 rounded-xl px-4 py-2 text-sm font-bold text-white transition-all duration-300 flex items-center justify-center noir-glass shadow-lg hover:shadow-xl hover:scale-105">
+                          🔍 View Details
                         </button>
                       </div>
                     </td>
@@ -609,12 +609,13 @@ const KOLFeed: React.FC = () => {
           </div>
 
           {/* Loading indicator */}
-          <div className="flex w-full justify-center p-4 h-20 noir-loading">
+          <div className="flex w-full justify-center p-6 h-24 noir-loading bg-gradient-to-r from-transparent via-white/5 to-transparent">
             <div className="relative inline-flex flex-col gap-2 items-center justify-center">
-              <div className="relative flex w-5 h-5">
-                <div className="absolute w-full h-full rounded-full border-2 border-b-white animate-spin border-solid border-t-transparent border-l-transparent border-r-transparent noir-neon"></div>
-                <div className="absolute w-full h-full rounded-full border-2 border-b-white opacity-75 animate-spin border-dotted border-t-transparent border-l-transparent border-r-transparent"></div>
+              <div className="relative flex w-8 h-8">
+                <div className="absolute w-full h-full rounded-full border-3 border-b-white animate-spin border-solid border-t-transparent border-l-transparent border-r-transparent noir-neon"></div>
+                <div className="absolute w-full h-full rounded-full border-3 border-b-blue-400 opacity-75 animate-spin border-dotted border-t-transparent border-l-transparent border-r-transparent"></div>
               </div>
+              <span className="text-sm font-medium text-gray-300">Loading fresh trades...</span>
             </div>
           </div>
         </div>

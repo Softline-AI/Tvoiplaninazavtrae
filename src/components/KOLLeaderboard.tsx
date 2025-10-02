@@ -230,11 +230,11 @@ const KOLLeaderboard: React.FC = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <span className="text-xl md:text-xl font-semibold my-4 px-2">Leaderboard</span>
+              <span className="text-2xl md:text-3xl font-bold my-4 px-2 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">🏆 KOL Champions</span>
               {isLoadingReal && (
                 <div className="flex items-center gap-2 text-sm text-blue-600">
-                  <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  Loading...
+                  <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                  <span className="font-medium">Loading champions...</span>
                 </div>
               )}
             </div>
@@ -246,38 +246,38 @@ const KOLLeaderboard: React.FC = () => {
                 <div className="inline-flex bg-white rounded-lg p-1">
                   <button
                     onClick={() => setTimePeriod('6h')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
+                    className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
                       timePeriod === '6h' 
-                        ? 'bg-gray-50 text-gray-900 shadow-sm' 
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     }`}
                   >
-                    6H
+                    ⚡ 6H
                   </button>
                   <button
                     onClick={() => setTimePeriod('1d')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
+                    className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
                       timePeriod === '1d' 
-                        ? 'bg-gray-50 text-gray-900 shadow-sm' 
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     }`}
                   >
-                    24H
+                    🔥 24H
                   </button>
                   <button
                     onClick={() => setTimePeriod('7d')}
-                    className={`px-3 py-1.5 text-sm font-medium rounded transition-all ${
+                    className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
                       timePeriod === '7d' 
-                        ? 'bg-gray-50 text-gray-900 shadow-sm' 
-                        : 'text-gray-500 hover:text-gray-900'
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                     }`}
                   >
-                    7d
+                    📊 7D
                   </button>
                 </div>
               </div>
-              <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                <RefreshCw className="w-4 h-4 text-gray-600" />
+              <button className="p-3 hover:bg-gray-100 rounded-xl transition-all duration-300 hover:scale-110">
+                <RefreshCw className="w-5 h-5 text-gray-600" />
               </button>
             </div>
           </div>
@@ -287,89 +287,89 @@ const KOLLeaderboard: React.FC = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm appearance-none cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full bg-gradient-to-r from-white to-gray-50 border-2 border-gray-300 rounded-xl px-4 py-2 text-sm font-medium appearance-none cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
               >
-                <option value="overall">Rank</option>
-                <option value="winRate">Average Profit %</option>
-                <option value="volume">Volume</option>
-                <option value="pnl">PnL</option>
-                <option value="activity">Most Active</option>
+                <option value="overall">🏆 Overall Rank</option>
+                <option value="winRate">💰 Win Rate</option>
+                <option value="volume">📊 Volume</option>
+                <option value="pnl">💵 P&L</option>
+                <option value="activity">⚡ Most Active</option>
               </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Leaderboard Table */}
-      <div className="border rounded-xl relative overflow-hidden">
+      <div className="border-2 border-gray-200 rounded-2xl relative overflow-hidden shadow-2xl bg-gradient-to-br from-white via-gray-50 to-white">
         {/* Table Header */}
-        <div className="flex justify-between py-2 bg-gray-50 rounded-t-xl sticky top-0 z-10 px-4">
+        <div className="flex justify-between py-4 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded-t-2xl sticky top-0 z-10 px-6 border-b-2 border-gray-200">
           <div className="flex items-center flex-1">
-            <div className="flex items-center min-w-[32px] text-xs font-medium text-gray-600">Rank</div>
-            <div className="flex-1 text-xs font-medium text-gray-600 pl-4">Trader</div>
+            <div className="flex items-center min-w-[40px] text-sm font-bold text-gray-700">🏆 Rank</div>
+            <div className="flex-1 text-sm font-bold text-gray-700 pl-6">👑 Champion Trader</div>
           </div>
           <div className="flex items-center gap-8">
-            <div className="flex w-12 text-xs font-medium text-gray-600 justify-end">Buy/Sell</div>
-            <div className="flex w-24 text-xs font-medium text-gray-600 justify-end">Volume</div>
+            <div className="flex w-16 text-sm font-bold text-gray-700 justify-end">📊 Trades</div>
+            <div className="flex w-28 text-sm font-bold text-gray-700 justify-end">💰 Volume</div>
             <div className="flex w-4 text-xs justify-center"></div>
           </div>
         </div>
 
-        <hr className="border-gray-100" />
+        <hr className="border-gray-200" />
 
         {/* Table Rows */}
-        <div className="divide-y divide-gray-100">
+        <div className="divide-y divide-gray-200">
           {displayTraders.map((trader) => (
             <div key={trader.id} className="relative">
-              <div className={`w-full flex justify-between items-center h-16 text-sm hover:bg-gray-50 ${getRowStyling(trader)}`}>
-                <div className="flex items-center pl-4 flex-1">
-                  <div className="flex items-center min-w-[32px]">
+              <div className={`w-full flex justify-between items-center h-20 text-sm hover:bg-gradient-to-r hover:from-gray-50 hover:to-transparent transition-all duration-300 ${getRowStyling(trader)}`}>
+                <div className="flex items-center pl-6 flex-1">
+                  <div className="flex items-center min-w-[40px]">
                     <div className="flex items-center gap-1">
                       {getRankDisplay(trader)}
                     </div>
                   </div>
                   <div className="font-medium">
-                    <div className="bg-transparent hover:bg-gray-100/50 rounded-lg px-1 text-gray-600 flex items-center hover:bg-gray-100 transition-colors cursor-pointer" style={{ overflow: 'hidden', height: '30px', width: 'auto' }}>
+                    <div className="bg-gradient-to-r from-transparent to-gray-50/50 hover:from-gray-100 hover:to-gray-50 rounded-xl px-3 py-2 text-gray-600 flex items-center transition-all duration-300 cursor-pointer group" style={{ overflow: 'hidden', height: '40px', width: 'auto' }}>
                       <div className="flex-1 flex items-center justify-start cursor-pointer text-gray-500 min-w-0">
                         <div className="relative">
                           <div className="relative mr-2">
                             <div className="relative">
-                              <div className="w-[28px] h-[28px] rounded-full bg-gray-200 flex items-center justify-center border border-gray-300">
-                                <span className="text-gray-500 font-medium text-xs">
+                              <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center border-2 border-gray-400">
+                                <span className="text-gray-600 font-bold text-sm">
                                   {trader.name.substring(0, 2).toUpperCase()}
                                 </span>
                               </div>
                               <img
                                 alt={trader.name}
-                                className="absolute inset-0 rounded-full border border-gray-300 object-cover w-[28px] h-[28px]"
+                                className="absolute inset-0 rounded-full border-2 border-gray-400 object-cover w-[32px] h-[32px]"
                                 src={trader.avatar}
                                 style={{ display: 'block' }}
                               />
                             </div>
-                            <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-400 rounded-full border-2 border-white"></div>
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full border-2 border-white shadow-lg"></div>
                           </div>
                         </div>
-                        <span className="font-medium mr-1 text-gray-800 font-medium truncate">
+                        <span className="font-bold mr-2 text-gray-800 truncate text-base">
                           {trader.name}
                         </span>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
                         <a
-                          className="hover:opacity-50 px-1 text-gray-500"
+                          className="hover:opacity-70 hover:scale-110 transition-all px-1 text-gray-500"
                           href={`https://solscan.io/account/${trader.walletAddress}`}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
-                          <ExternalLink className="w-3 h-3" />
+                          <ExternalLink className="w-4 h-4" />
                         </a>
                         <a
                           href={`https://twitter.com/${trader.twitterHandle}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:opacity-50 p-1 text-gray-500"
+                          className="hover:opacity-70 hover:scale-110 transition-all p-1 text-blue-500 group-hover:text-blue-600"
                         >
-                          <svg className="w-3.5 h-3.5" viewBox="0 0 512 512" fill="currentColor">
+                          <svg className="w-4 h-4" viewBox="0 0 512 512" fill="currentColor">
                             <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
                           </svg>
                         </a>
@@ -378,14 +378,14 @@ const KOLLeaderboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-8">
-                  <div className="flex justify-end w-12">
+                  <div className="flex justify-end w-16">
                     <div className="flex items-center gap-1">
-                      <span className="text-green-600">{trader.buyCount}</span>
-                      <span>/</span>
-                      <span className="text-red-600">{trader.sellCount}</span>
+                      <span className="text-green-600 font-bold text-base">📈{trader.buyCount}</span>
+                      <span className="text-gray-400 font-bold">/</span>
+                      <span className="text-red-600 font-bold text-base">📉{trader.sellCount}</span>
                     </div>
                   </div>
-                  <div className="flex justify-end w-24 text-green-700 font-medium text-base">
+                  <div className="flex justify-end w-28 text-green-700 font-bold text-lg">
                     {trader.volume}
                   </div>
                   <div className="pr-4"></div>
