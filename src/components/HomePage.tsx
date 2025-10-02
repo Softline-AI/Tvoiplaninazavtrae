@@ -233,38 +233,21 @@ const HomePage: React.FC = () => {
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">Feature {index}</h3>
                 <p className="noir-text-secondary text-lg leading-relaxed">
-                  Advanced trading tools and insights to help you make better decisions in the crypto market.
+                  Advanced trading tools and analytics to help you make better investment decisions.
                 </p>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="flex justify-center mt-16">
-          <div className="flex flex-col items-center">
-            <Link 
-              to="/app"
-              className="noir-button noir-pulse inline-flex items-center justify-center gap-3 whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-xl group"
-            >
-              <span>Join Now</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex justify-center mt-16">
-          <div className="flex flex-col items-center">
-            <Link 
-              to="/app"
-              className="noir-button noir-pulse inline-flex items-center justify-center gap-3 whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-xl group"
-            >
-              <span>Join Now</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <div className="text-sm md:text-base noir-text-muted text-center mt-3">
-              Try risk-free, money back guarantee.
-            </div>
-          </div>
+        <div className="text-center mt-16">
+          <Link 
+            to="/app"
+            className="noir-button noir-pulse inline-flex items-center justify-center gap-3 whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-xl group"
+          >
+            <span>Join Now</span>
+            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+          </Link>
         </div>
       </div>
 
