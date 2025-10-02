@@ -148,13 +148,11 @@ class HeliusService {
     try {
       console.log('🔌 Testing Helius API connection...');
       
-      // Test with a simple RPC call
-      const response = await this.fetchWithRetry(`${this.baseUrl}/rpc?api-key=${this.apiKey}`, {
+      // Test with token metadata endpoint using SOL mint
+      const response = await this.fetchWithRetry(`${this.baseUrl}/token-metadata?api-key=${this.apiKey}`, {
         method: 'POST',
         body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'getHealth'
+          mintAccounts: ['So11111111111111111111111111111111111111112'] // SOL mint
         })
       });
       
