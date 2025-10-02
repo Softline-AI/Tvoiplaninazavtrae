@@ -506,4 +506,7 @@ const KOLFeed: React.FC = () => {
                               href={`https://axiom.trade/t/${trade.tokenContract}/@stalk`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              
+                              className="hover:opacity-70 hover:scale-110 transition-all p-1 text-gray-400"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
