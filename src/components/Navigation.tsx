@@ -193,7 +193,6 @@ const Navigation: React.FC = () => {
                 </div>
               )}
             </div>
-            <a className="text-gray-700 hover:text-primary transition-colors" href="#plans">
           <a className="text-white hover:text-gray-300 transition-colors font-medium" href="#plans">
             Tools
           </a>
@@ -208,7 +207,3 @@ const Navigation: React.FC = () => {
     </nav>
   );
 };
-
-export default Navigation;
-  )
-}
