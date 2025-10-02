@@ -257,33 +257,27 @@ const TopKOLTokens: React.FC = () => {
         <h1 className="text-xl mb-1 font-semibold">Top KOL Tokens</h1>
         <div className="mb-3">
           <div className="mt-2 mb-1 text-gray-600">
-            {realTokens.length > 0 ? 'Live token data from Helius API' : 'Top tokens being traded by Key Opinion Leaders (KOLs) on Solana with real-time rankings and holdings data.'}
-            {isLoadingReal && (
-              <div className="flex items-center gap-2 text-sm text-blue-600 mt-2">
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                Loading real token data...
-              </div>
-            )}
+            {realTokens.length > 0 ? '⚡ Live blockchain data powered by Helius API' : '🔥 Hottest tokens being accumulated by top KOLs and smart money on Solana'}
           </div>
           
           {/* Time Period Tabs */}
           <div className="inline-flex mt-4">
-            <div className="flex h-fit gap-2 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-lg bg-gray-50 border border-gray-300 p-0.5 mb-1">
+            <div className="flex h-fit gap-1 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-xl bg-gradient-to-r from-gray-100 to-gray-50 border-2 border-gray-300 p-1 mb-1 shadow-lg">
               {['1h', '6h', '1d', '7d'].map((period) => (
                 <button
                   key={period}
                   onClick={() => setTimePeriod(period)}
-                  className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
+                  className={`z-0 w-full px-4 py-2 flex group relative justify-center items-center cursor-pointer transition-all duration-300 h-10 text-sm rounded-lg font-bold ${
                     timePeriod === period
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-500 hover:text-gray-900'
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg scale-105'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
                   }`}
                 >
                   <div className="relative z-10 whitespace-nowrap transition-colors font-medium">
-                    {period === '1h' ? '1H' : period === '6h' ? '6H' : period === '1d' ? '24H' : '7D'}
+                    {period === '1h' ? '1H' : period === '6h' ? '6H' : period === '1d' ? '1D' : '7D'}
                   </div>
                   {timePeriod === period && (
-                    <span className="absolute z-0 inset-0 rounded-sm bg-white shadow-sm" />
+                    <span className="absolute z-0 inset-0 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg" />
                   )}
                 </button>
               ))}
@@ -293,128 +287,128 @@ const TopKOLTokens: React.FC = () => {
       </div>
 
       {/* Tokens Table */}
-      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white mb-8">
+      <div className="border-2 border-gray-300 rounded-2xl overflow-hidden bg-gradient-to-br from-white via-gray-50 to-white mb-8 shadow-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full">
+            <thead className="bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 border-b-2 border-gray-200">
               <tr>
                 <th 
-                  className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer select-none hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
                   onClick={() => handleSort('rank')}
                 >
                   <div className="flex items-center gap-1">
-                    Rank
+                    🏆 Rank
                     <span className="ml-1">
                       {getSortIcon('rank')}
                     </span>
                   </div>
                 </th>
-                <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
-                  <div className="flex items-center gap-1">Token</div>
+                <th className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider">
+                  <div className="flex items-center gap-1">🪙 Token</div>
                 </th>
                 <th 
-                  className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer select-none hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
                   onClick={() => handleSort('kolHolders')}
                 >
                   <div className="flex items-center gap-1">
-                    KOL Holders
+                    👑 KOL Holders
                     <span className="ml-1">
                       {getSortIcon('kolHolders')}
                     </span>
                   </div>
                 </th>
                 <th 
-                  className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer select-none hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
                   onClick={() => handleSort('kolHoldings')}
                 >
                   <div className="flex items-center gap-1">
-                    KOL Holdings
+                    💰 KOL Holdings
                     <span className="ml-1">
                       {getSortIcon('kolHoldings')}
                     </span>
                   </div>
                 </th>
                 <th 
-                  className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer select-none hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
                   onClick={() => handleSort('kolTraders')}
                 >
                   <div className="flex items-center gap-1">
-                    KOL Traders
+                    📊 KOL Traders
                     <span className="ml-1">
                       {getSortIcon('kolTraders')}
                     </span>
                   </div>
                 </th>
                 <th 
-                  className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer select-none hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
                   onClick={() => handleSort('totalSwaps')}
                 >
                   <div className="flex items-center gap-1">
-                    Total Swaps
+                    🔄 Total Swaps
                     <span className="ml-1">
                       {getSortIcon('totalSwaps')}
                     </span>
                   </div>
                 </th>
                 <th 
-                  className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer select-none hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
                   onClick={() => handleSort('buyVolume')}
                 >
                   <div className="flex items-center gap-1">
-                    Buy Volume
+                    📈 Buy Volume
                     <span className="ml-1">
                       {getSortIcon('buyVolume')}
                     </span>
                   </div>
                 </th>
                 <th 
-                  className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer select-none hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
                   onClick={() => handleSort('sellVolume')}
                 >
                   <div className="flex items-center gap-1">
-                    Sell Volume
+                    📉 Sell Volume
                     <span className="ml-1">
                       {getSortIcon('sellVolume')}
                     </span>
                   </div>
                 </th>
                 <th 
-                  className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider cursor-pointer select-none hover:bg-gray-100"
+                  className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider cursor-pointer select-none hover:bg-gray-200 transition-colors"
                   onClick={() => handleSort('netVolume')}
                 >
                   <div className="flex items-center gap-1">
-                    Net Volume
+                    💵 Net Volume
                     <span className="ml-1">
                       {getSortIcon('netVolume')}
                     </span>
                   </div>
                 </th>
-                <th className="px-3 py-2.5 text-left text-xs font-medium text-gray-500 tracking-wider">
-                  <div className="flex items-center gap-1">Token Age</div>
+                <th className="px-4 py-4 text-left text-sm font-bold text-gray-700 tracking-wider">
+                  <div className="flex items-center gap-1">⏰ Token Age</div>
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="bg-gradient-to-br from-white to-gray-50 divide-y divide-gray-200">
               {displayTokens.map((token, index) => (
-                <tr key={token.id} className={`transition-colors hover:bg-gray-100 ${getRowBackground(index)}`}>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">#{token.rank}</div>
+                <tr key={token.id} className={`transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-transparent hover:scale-[1.01] ${getRowBackground(index)}`}>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-base font-bold text-gray-900">#{token.rank}</div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
+                  <td className="px-4 py-4 whitespace-nowrap">
                     <div className="min-w-0">
-                      <div className="w-fit flex items-center rounded-md p-0 transition-colors hover:bg-gray-100">
-                        <button className="bg-transparent hover:bg-transparent p-0 rounded-md flex items-center">
-                          <div className="flex items-center min-w-[100px] p-2">
-                            <div className="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300 overflow-hidden">
-                              <span className="text-gray-500 font-medium text-xs">
+                      <div className="w-fit flex items-center rounded-xl p-0 transition-all duration-300 hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-50">
+                        <button className="bg-transparent hover:bg-transparent p-0 rounded-xl flex items-center">
+                          <div className="flex items-center min-w-[120px] p-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center border-2 border-gray-400 overflow-hidden">
+                              <span className="text-gray-600 font-bold text-sm">
                                 {token.symbol.substring(0, 2).toUpperCase()}
                               </span>
                             </div>
                             <div className="flex flex-col ml-2 text-left">
-                              <span className="text-xs font-medium flex items-center gap-1">
+                              <span className="text-sm font-bold flex items-center gap-1">
                                 {token.symbol}
                                 {token.verified && (
-                                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none">
+                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
                                     <path 
                                       d="M9 12L11 14L15.5 9.5M7.33377 3.8187C8.1376 3.75455 8.90071 3.43846 9.51447 2.91542C10.9467 1.69486 13.0533 1.69486 14.4855 2.91542C15.0993 3.43846 15.8624 3.75455 16.6662 3.8187C18.5421 3.96839 20.0316 5.45794 20.1813 7.33377C20.2455 8.1376 20.5615 8.90071 21.0846 9.51447C22.3051 10.9467 22.3051 13.0533 21.0846 14.4855C20.5615 15.0993 20.2455 15.8624 20.1813 16.6662C20.0316 18.5421 18.5421 20.0316 16.6662 20.1813C15.8624 20.2455 15.0993 20.5615 14.4855 21.0846C13.0533 22.3051 10.9467 22.3051 9.51447 21.0846C8.90071 20.5615 8.1376 20.2455 7.33377 20.1813C5.45794 20.0316 3.96839 18.5421 3.8187 16.6662C3.75455 15.8624 3.43846 15.0993 2.91542 14.4855C1.69486 13.0533 1.69486 10.9467 2.91542 9.51447C3.43846 8.90071 3.75455 8.1376 3.8187 7.33377C3.96839 5.45794 5.45794 3.96839 7.33377 3.8187Z" 
                                       stroke="#10b981" 
@@ -425,53 +419,53 @@ const TopKOLTokens: React.FC = () => {
                                   </svg>
                                 )}
                               </span>
-                              <span className="text-[10px] text-gray-500">
-                                MC <span className="text-gray-600 font-bold">{token.marketCap}</span>
+                              <span className="text-xs text-gray-500 font-medium">
+                                💰 <span className="text-gray-700 font-bold">{token.marketCap}</span>
                               </span>
                             </div>
                           </div>
                         </button>
                         <div className="flex items-center gap-1 pr-2">
-                          <button className="hover:opacity-50 cursor-pointer px-1 flex items-center text-gray-500">
-                            <Copy className="w-3 h-3" />
+                          <button className="hover:opacity-70 hover:scale-110 transition-all cursor-pointer px-1 flex items-center text-gray-500">
+                            <Copy className="w-4 h-4" />
                           </button>
                           <a
                             href={`https://axiom.trade/t/${token.contractAddress}/@stalk`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="hover:opacity-50 px-1 text-gray-500"
+                            className="hover:opacity-70 hover:scale-110 transition-all px-1 text-gray-500"
                           >
-                            <ExternalLink className="w-2.5 h-2.5" />
+                            <ExternalLink className="w-4 h-4" />
                           </a>
                         </div>
                       </div>
                     </div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{token.kolHolders}</div>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-base font-bold text-gray-900">{token.kolHolders}</div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{token.kolHoldings}</div>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-base font-bold text-green-700">{token.kolHoldings}</div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{token.kolTraders}</div>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-base font-bold text-gray-900">{token.kolTraders}</div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{token.totalSwaps}</div>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-base font-bold text-blue-700">{token.totalSwaps}</div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="text-sm text-green-600">{token.buyVolume}</div>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-base font-bold text-green-600">{token.buyVolume}</div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="text-sm text-red-600">{token.sellVolume}</div>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-base font-bold text-red-600">{token.sellVolume}</div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className={`text-sm ${getNetVolumeColor(token.netVolume)}`}>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className={`text-base font-bold ${getNetVolumeColor(token.netVolume)}`}>
                       {token.netVolume}
                     </div>
                   </td>
-                  <td className="px-3 py-2.5 whitespace-nowrap">
-                    <div className="text-xs text-gray-600">
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-600 font-medium">
                       <span>{token.tokenAge}</span>
                     </div>
                   </td>

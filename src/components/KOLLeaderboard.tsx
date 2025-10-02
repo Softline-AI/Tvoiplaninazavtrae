@@ -229,50 +229,46 @@ const KOLLeaderboard: React.FC = () => {
       <div className="bg-gray-100 rounded-xl p-4 mb-6 sticky top-0 z-10">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex-1">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl md:text-3xl font-bold my-4 px-2 bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">🏆 KOL Champions</span>
-              {isLoadingReal && (
-                <div className="flex items-center gap-2 text-sm text-blue-600">
-                  <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="font-medium">Loading champions...</span>
-                </div>
-              )}
-            </div>
+            <h1 className="text-xl mb-1 font-semibold">KOL Leaderboard</h1>
+            <div className="text-gray-600">Top performing KOL traders ranked by volume and activity.</div>
           </div>
           
           <div className="flex-1 flex justify-center">
             <div className="flex items-center gap-2">
               <div className="relative">
-                <div className="inline-flex bg-white rounded-lg p-1">
+                <div className="inline-flex h-fit gap-2 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-lg bg-gray-50 border border-gray-300 p-0.5 mb-1">
                   <button
                     onClick={() => setTimePeriod('6h')}
-                    className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
+                    className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
                       timePeriod === '6h' 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-500 hover:text-gray-900'
                     }`}
                   >
-                    ⚡ 6H
+                    <div className="relative z-10 whitespace-nowrap transition-colors font-medium">6H</div>
+                    {timePeriod === '6h' && <span className="absolute z-0 inset-0 rounded-sm bg-white shadow-sm" />}
                   </button>
                   <button
                     onClick={() => setTimePeriod('1d')}
-                    className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
+                    className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
                       timePeriod === '1d' 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-500 hover:text-gray-900'
                     }`}
                   >
-                    🔥 24H
+                    <div className="relative z-10 whitespace-nowrap transition-colors font-medium">24H</div>
+                    {timePeriod === '1d' && <span className="absolute z-0 inset-0 rounded-sm bg-white shadow-sm" />}
                   </button>
                   <button
                     onClick={() => setTimePeriod('7d')}
-                    className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${
+                    className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
                       timePeriod === '7d' 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg' 
-                        : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                        ? 'bg-white text-gray-900 shadow-sm' 
+                        : 'text-gray-500 hover:text-gray-900'
                     }`}
                   >
-                    📊 7D
+                    <div className="relative z-10 whitespace-nowrap transition-colors font-medium">7D</div>
+                    {timePeriod === '7d' && <span className="absolute z-0 inset-0 rounded-sm bg-white shadow-sm" />}
                   </button>
                 </div>
               </div>
@@ -287,13 +283,13 @@ const KOLLeaderboard: React.FC = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="w-full bg-gradient-to-r from-white to-gray-50 border-2 border-gray-300 rounded-xl px-4 py-2 text-sm font-medium appearance-none cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium appearance-none cursor-pointer hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               >
-                <option value="overall">🏆 Overall Rank</option>
-                <option value="winRate">💰 Win Rate</option>
-                <option value="volume">📊 Volume</option>
-                <option value="pnl">💵 P&L</option>
-                <option value="activity">⚡ Most Active</option>
+                <option value="overall">Overall Rank</option>
+                <option value="winRate">Win Rate</option>
+                <option value="volume">Volume</option>
+                <option value="pnl">P&L</option>
+                <option value="activity">Most Active</option>
               </select>
               <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500 pointer-events-none" />
             </div>
@@ -302,16 +298,16 @@ const KOLLeaderboard: React.FC = () => {
       </div>
 
       {/* Leaderboard Table */}
-      <div className="border-2 border-gray-200 rounded-2xl relative overflow-hidden shadow-2xl bg-gradient-to-br from-white via-gray-50 to-white">
+      <div className="border border-gray-200 rounded-lg overflow-hidden bg-white">
         {/* Table Header */}
-        <div className="flex justify-between py-4 bg-gradient-to-r from-gray-100 via-gray-50 to-gray-100 rounded-t-2xl sticky top-0 z-10 px-6 border-b-2 border-gray-200">
+        <div className="flex justify-between py-4 bg-gray-50 sticky top-0 z-10 px-6 border-b border-gray-200">
           <div className="flex items-center flex-1">
-            <div className="flex items-center min-w-[40px] text-sm font-bold text-gray-700">🏆 Rank</div>
-            <div className="flex-1 text-sm font-bold text-gray-700 pl-6">👑 Champion Trader</div>
+            <div className="flex items-center min-w-[40px] text-sm font-medium text-gray-500">Rank</div>
+            <div className="flex-1 text-sm font-medium text-gray-500 pl-6">Trader</div>
           </div>
           <div className="flex items-center gap-8">
-            <div className="flex w-16 text-sm font-bold text-gray-700 justify-end">📊 Trades</div>
-            <div className="flex w-28 text-sm font-bold text-gray-700 justify-end">💰 Volume</div>
+            <div className="flex w-16 text-sm font-medium text-gray-500 justify-end">Trades</div>
+            <div className="flex w-28 text-sm font-medium text-gray-500 justify-end">Volume</div>
             <div className="flex w-4 text-xs justify-center"></div>
           </div>
         </div>
