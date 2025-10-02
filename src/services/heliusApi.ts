@@ -1,5 +1,5 @@
 // Helius API service for fetching real blockchain data
-const HELIUS_API_KEY = 'cc0ea229-5dc8-4e7d-9707-7c2692eeefbb';
+const HELIUS_API_KEY = 'your-helius-api-key-here';
 const HELIUS_BASE_URL = 'https://api.helius.xyz/v0';
 
 export interface TokenInfo {
@@ -82,6 +82,14 @@ class HeliusService {
 
   constructor() {
     this.apiKey = HELIUS_API_KEY;
+    
+    // Check if API key is configured
+    if (this.apiKey === 'your-helius-api-key-here' || !this.apiKey) {
+      console.warn('⚠️ Helius API key not configured. Using mock data only.');
+      this.isConnected = false;
+      return;
+    }
+    
     this.rpcUrl = `https://rpc.helius.xyz/?api-key=${this.apiKey}`;
     this.testConnection();
   }
@@ -146,6 +154,13 @@ class HeliusService {
   // Test API connection
   async testConnection(): Promise<boolean> {
     try {
+      // Skip connection test if API key not configured
+      if (this.apiKey === 'your-helius-api-key-here' || !this.apiKey) {
+        console.warn('⚠️ Skipping Helius API test - API key not configured');
+        this.isConnected = false;
+        return false;
+      }
+      
       console.log('🔌 Testing Helius API connection...');
       
       const response = await this.fetchWithRetry(this.rpcUrl, {
@@ -161,15 +176,21 @@ class HeliusService {
         const data = await response.json();
         if (data.result !== undefined) {
           console.log('✅ Helius API connected successfully! Current slot:', data.result);
+          this.isConnected = true;
+          return true;
         } else if (data.error) {
-          console.error('❌ Helius API error:', data.error);
+          console.error('❌ Helius API error:', data.error.message);
+          if (data.error.code === -32525) {
+            console.error('💡 This usually means invalid API key. Please check your Helius API key.');
+          }
           this.isConnected = false;
           return false;
         }
-        this.isConnected = true;
-        return true;
       } else {
         console.error('❌ Helius API connection failed:', response.status, response.statusText);
+        if (response.status === 525) {
+          console.error('💡 SSL handshake failed. This usually indicates an invalid API key.');
+        }
         this.isConnected = false;
         return false;
       }
