@@ -560,6 +560,16 @@ class HeliusService {
 
   // Get token prices from Jupiter API (fallback)
   async getTokenPrices(mintAddresses: string[]): Promise<Record<string, number>> {
+    // Skip API calls if not connected
+    if (!this.isConnected) {
+      console.warn('⚠️ Helius API not connected, returning mock token prices');
+      const fallbackPrices: Record<string, number> = {};
+      mintAddresses.forEach(mint => {
+        fallbackPrices[mint] = Math.random() * 10;
+      });
+      return fallbackPrices;
+    }
+
     try {
       if (mintAddresses.length === 0) {
         return {};
