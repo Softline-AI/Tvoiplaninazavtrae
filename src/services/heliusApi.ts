@@ -91,7 +91,10 @@ class HeliusService {
     }
     
     this.rpcUrl = `https://rpc.helius.xyz/?api-key=${this.apiKey}`;
-    this.testConnection();
+    // Only test connection if we have a real API key
+    if (this.apiKey !== 'your-helius-api-key-here') {
+      this.testConnection();
+    }
   }
 
   // Helper function to add delay between requests
@@ -199,6 +202,8 @@ class HeliusService {
       this.isConnected = false;
       return false;
     }
+    
+    return false;
   }
 
   // Check if API is connected
@@ -208,6 +213,12 @@ class HeliusService {
 
   // Get parsed transactions for a wallet using Helius Enhanced API
   async getEnhancedTransactions(walletAddress: string, limit: number = 50): Promise<WalletTransaction[]> {
+    // Skip API calls if not connected
+    if (!this.isConnected) {
+      console.warn('⚠️ Helius API not connected, returning mock data');
+      return this.generateMockTransactions(walletAddress, limit);
+    }
+    
     try {
       console.log(`💰 Fetching enhanced transactions for wallet: ${walletAddress}`);
       
@@ -228,7 +239,7 @@ class HeliusService {
       
       if (!response.ok) {
         console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
-        return [];
+        return this.generateMockTransactions(walletAddress, limit);
       }
 
       const data = await response.json();
@@ -236,7 +247,7 @@ class HeliusService {
       
       if (!data?.result || !Array.isArray(data.result)) {
         console.warn('No transaction data received');
-        return [];
+        return this.generateMockTransactions(walletAddress, limit);
       }
 
       const transactions: WalletTransaction[] = [];
@@ -272,7 +283,7 @@ class HeliusService {
       return transactions;
     } catch (error) {
       console.error('Error fetching enhanced transactions:', error);
-      return [];
+      return this.generateMockTransactions(walletAddress, limit);
     }
   }
 
