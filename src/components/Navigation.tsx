@@ -193,21 +193,20 @@ const Navigation: React.FC = () => {
                 </div>
               )}
             </div>
-          <a className="text-white hover:text-gray-300 transition-colors font-medium" href="#plans">
-            Tools
-          </a>
-          <Link 
-            to="/app" 
-            className="noir-button noir-shimmer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all h-9 px-4 py-2"
-          >
-            Open App
-          </Link>
+            <a className="text-white hover:text-gray-300 transition-colors font-medium" href="#plans">
+              Tools
+            </a>
+            <Link 
+              to="/app" 
+              className="noir-button noir-shimmer inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all h-9 px-4 py-2"
+            >
+              Open App
+            </Link>
+          </div>
         </div>
-      </div>
       </header>
     </nav>
   );
 };
 
-  )
-}
+export default Navigation;
