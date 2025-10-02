@@ -278,30 +278,8 @@ const KOLFeed: React.FC = () => {
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
       {/* Header */}
       <div className="mb-6">
-        <div className="flex items-center gap-2 mb-1">
-          <h1 className="text-2xl font-bold text-white noir-gradient-text">🔥 Live KOL Feed</h1>
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${
-              apiStatus === 'connected' ? 'noir-status-online' : 
-              apiStatus === 'failed' ? 'noir-status-offline' : 'noir-status-warning'
-            }`}></div>
-            <span className="text-sm font-medium text-gray-300">
-              {apiStatus === 'connected' ? 'Live Data' : 
-               apiStatus === 'failed' ? 'Demo Data' : 'Connecting...'}
-            </span>
-          </div>
-          <button
-            onClick={() => setUseRealData(!useRealData)}
-            className={`px-3 py-1 text-xs rounded-full transition-colors ${
-              useRealData 
-                ? 'bg-white/20 text-white hover:bg-white/30' 
-                : 'bg-white/10 text-gray-300 hover:bg-white/20'
-            }`}
-          >
-            {useRealData ? 'Real Data' : 'Demo Data'}
-          </button>
-        </div>
-        <div className="text-lg text-gray-300 font-light">⚡ Real-time whale movements & KOL trades</div>
+        <h1 className="text-xl mb-1 font-semibold text-white">KOL Feed</h1>
+        <div className="text-gray-600">Live feed of Key Opinion Leader trades and wallet activity.</div>
       </div>
 
       {/* Feed Table */}
@@ -314,7 +292,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>📊 Last Trade</span>
+                        <span>Last Trade</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-white" />
                         </button>
@@ -324,7 +302,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>👑 KOL Trader</span>
+                        <span>KOL Trader</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-white" />
                         </button>
@@ -334,7 +312,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>🪙 Token</span>
+                        <span>Token</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-gray-300" />
                         </button>
@@ -344,7 +322,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>💰 Market Cap</span>
+                        <span>Market Cap</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-gray-300" />
                         </button>
@@ -354,7 +332,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>📈 Bought</span>
+                        <span>Bought</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-gray-300" />
                         </button>
@@ -364,7 +342,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>📉 Sold</span>
+                        <span>Sold</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-gray-300" />
                         </button>
@@ -374,7 +352,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>💎 Holdings</span>
+                        <span>Holdings</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-gray-300" />
                         </button>
@@ -384,7 +362,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>💵 P&L</span>
+                        <span>P&L</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-gray-300" />
                         </button>
@@ -394,7 +372,7 @@ const KOLFeed: React.FC = () => {
                   <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-1">
                       <div className="flex items-center gap-1">
-                        <span>📊 P&L %</span>
+                        <span>P&L %</span>
                         <button className="opacity-70 hover:opacity-100 transition-opacity">
                           <Filter className="w-4 h-4 text-gray-300" />
                         </button>
@@ -403,7 +381,7 @@ const KOLFeed: React.FC = () => {
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-gray-300 tracking-wider">
                     <div className="flex items-center gap-2">
-                      ⏱️ Hold Time
+                      Hold Time
                       <span className="cursor-help">
                         <HelpCircle className="w-4 h-4 text-gray-300" />
                       </span>
@@ -421,7 +399,7 @@ const KOLFeed: React.FC = () => {
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex flex-col">
                         <span className={`text-sm font-bold uppercase tracking-wider ${getTransactionTypeColor(trade.lastTx)}`}>
-                          {trade.lastTx === 'buy' ? '🟢 BUY' : '🔴 SELL'}
+                          {trade.lastTx === 'buy' ? 'BUY' : 'SELL'}
                         </span>
                         <div>
                           <span className="text-sm text-gray-400 font-medium">{trade.timeAgo}</span>
@@ -597,8 +575,8 @@ const KOLFeed: React.FC = () => {
                     {/* Actions */}
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex justify-end">
-                        <button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 border border-white/30 rounded-xl px-4 py-2 text-sm font-bold text-white transition-all duration-300 flex items-center justify-center noir-glass shadow-lg hover:shadow-xl hover:scale-105">
-                          🔍 View Details
+                        <button className="noir-button-secondary px-4 py-2 text-sm font-medium rounded-lg">
+                          View Details
                         </button>
                       </div>
                     </td>
