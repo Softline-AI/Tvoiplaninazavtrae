@@ -8,33 +8,33 @@ interface FAQItem {
 }
 
 const FAQ: React.FC = () => {
-  const [openItems, setOpenItems] = useState<Set<string>>(new Set(['q1', 'q2', 'q3', 'q4', 'q5']));
+  const [openItems, setOpenItems] = useState<Set<string>>(new Set());
 
   const faqItems: FAQItem[] = [
     {
       id: 'q1',
-      question: 'What is StalkChain?',
-      answer: 'StalkChain is a powerful crypto analytics platform that helps you track whale movements, discover early opportunities, and monitor insider trading patterns in real-time on the Solana blockchain.'
+      question: 'What is SmartChain?',
+      answer: 'SmartChain is a powerful crypto analytics platform that helps you track whale movements, discover early opportunities, and monitor insider trading patterns in real-time on the Solana blockchain.'
     },
     {
       id: 'q2',
-      question: 'How does StalkChain work?',
-      answer: 'StalkChain analyzes on-chain data and market patterns to identify promising opportunities. Our platform tracks successful crypto traders and whales, providing you with real-time insights into their trading activities and potential market movements.'
+      question: 'How does SmartChain work?',
+      answer: 'SmartChain analyzes on-chain data and market patterns to identify promising opportunities. Our platform tracks successful crypto traders and whales, providing you with real-time insights into their trading activities and potential market movements.'
     },
     {
       id: 'q3',
-      question: 'What features does StalkChain offer?',
-      answer: 'StalkChain offers a comprehensive suite of tools including Live KOL Feed, Smart Money Tracker, Solana Tools, Wallet Finder, Cabal Finder, and Token Insiders. Premium members get access to additional features like Custom KOL Feed, Whales Open Orders tracking, and a private community.'
+      question: 'What features does SmartChain offer?',
+      answer: 'SmartChain offers a comprehensive suite of tools including Live KOL Feed, Smart Money Tracker, Solana Tools, Wallet Finder, Cabal Finder, and Token Insiders. Premium members get access to additional features like Custom KOL Feed, Whales Open Orders tracking, and a private community.'
     },
     {
       id: 'q4',
-      question: 'Is StalkChain suitable for beginners?',
-      answer: 'Yes! StalkChain is designed with an intuitive interface that makes it accessible for beginners while providing powerful insights for experienced traders. Our platform includes helpful documentation and guides to get you started.'
+      question: 'Is SmartChain suitable for beginners?',
+      answer: 'Yes! SmartChain is designed with an intuitive interface that makes it accessible for beginners while providing powerful insights for experienced traders. Our platform includes helpful documentation and guides to get you started.'
     },
     {
       id: 'q5',
       question: 'What subscription plans are available?',
-      answer: 'StalkChain offers two subscription tiers: Degen (0.42 SOL/month) and Legend (4.16 SOL/month). Each plan provides different levels of access to our tools and features. Both plans come with significant discounts when billed yearly.'
+      answer: 'SmartChain offers two subscription tiers: Degen (0.42 SOL/month) and Legend (4.16 SOL/month). Each plan provides different levels of access to our tools and features. Both plans come with significant discounts when billed yearly.'
     },
     {
       id: 'q6',
@@ -43,8 +43,8 @@ const FAQ: React.FC = () => {
     },
     {
       id: 'q7',
-      question: 'What makes StalkChain different?',
-      answer: 'StalkChain combines real-time data analysis, whale tracking, and pattern recognition to give you an edge in the crypto market. Our platform helps you identify opportunities before they go viral, backed by actual on-chain data and sophisticated tracking algorithms.'
+      question: 'What makes SmartChain different?',
+      answer: 'SmartChain combines real-time data analysis, whale tracking, and pattern recognition to give you an edge in the crypto market. Our platform helps you identify opportunities before they go viral, backed by actual on-chain data and sophisticated tracking algorithms.'
     }
   ];
 
@@ -67,7 +67,7 @@ const FAQ: React.FC = () => {
           Frequently Asked Questions
         </h2>
         <p className="text-xl noir-text-secondary">
-          Everything you need to know about StalkChain
+          Everything you need to know about SmartChain
         </p>
       </div>
 
