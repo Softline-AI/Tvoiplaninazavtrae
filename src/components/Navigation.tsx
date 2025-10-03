@@ -60,7 +60,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">KOL Feed</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Real-time feed of top influencer trades and wallet activity</div>
                           </div>
                         </Link>
                         
@@ -72,7 +71,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">KOL Leaderboard</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Rank and discover the most successful KOLs by performance</div>
                           </div>
                         </Link>
                         
@@ -84,7 +82,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">Top KOL Tokens</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">See trending tokens among KOLs with live sentiment updates</div>
                           </div>
                         </Link>
                       </div>
@@ -104,7 +101,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">Daily Trends</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Track the hottest tokens and market shifts every day</div>
                           </div>
                         </Link>
                         
@@ -116,7 +112,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">Top Tokens</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Monitor top-performing tokens by volume and smart money</div>
                           </div>
                         </Link>
                         
@@ -128,7 +123,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">Trends Analytics</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Deep-dive analytics on token trends and whale movements</div>
                           </div>
                         </Link>
                         
@@ -140,7 +134,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">Transactions</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Explore every smart money transaction with wallet attribution</div>
                           </div>
                         </Link>
                       </div>
@@ -164,7 +157,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">Wallet Finder</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Find and analyze any wallet. Uncover connections and holdings</div>
                           </div>
                         </Link>
                         
@@ -177,7 +169,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">Cabal Finder</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Discover new investment opportunities with analytics</div>
                           </div>
                         </Link>
                         
@@ -190,7 +181,6 @@ const Navigation: React.FC = () => {
                           </div>
                           <div className="flex-1 overflow-hidden">
                             <div className="font-medium text-white text-sm leading-tight break-words">Copy Traders</div>
-                            <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Copy the trades of the best traders</div>
                           </div>
                         </Link>
                       </div>
@@ -221,7 +211,6 @@ const Navigation: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-white text-sm leading-tight">Cabal Finder</div>
-                        <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Discover new investment opportunities with analytics</div>
                       </div>
                     </Link>
                     
@@ -234,7 +223,6 @@ const Navigation: React.FC = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="font-medium text-white text-sm leading-tight">Jupiter DCA Tracker</div>
-                        <div className="text-xs text-gray-300 leading-tight mt-0.5 break-words">Track Jupiter DCA performance and optimize your strategy</div>
                       </div>
                     </Link>
                   </div>

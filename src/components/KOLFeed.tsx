@@ -280,110 +280,36 @@ const KOLFeed: React.FC = () => {
               <thead className="bg-noir-dark border-b border-white/20">
                 <tr>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>Last Trade</span>
-                        <button className="opacity-70 hover:opacity-100 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
+                    Last Tx
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>KOL Trader</span>
-                        <button className="opacity-50 hover:opacity-70 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
+                    KOL Trader
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>Token</span>
-                        <button className="opacity-50 hover:opacity-70 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
+                    Token
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>Market Cap</span>
-                        <button className="opacity-50 hover:opacity-70 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
+                    Amount
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>Bought</span>
-                        <button className="opacity-50 hover:opacity-70 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
+                    Bought
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>Sold</span>
-                        <button className="opacity-50 hover:opacity-70 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
+                    Sold
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>Holdings</span>
-                        <button className="opacity-50 hover:opacity-70 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
+                    P&L
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>P&L</span>
-                        <button className="opacity-50 hover:opacity-70 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
+                    Holdings
                   </th>
                   <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1">
-                      <div className="flex items-center gap-1">
-                        <span>P&L %</span>
-                        <button className="opacity-50 hover:opacity-70 transition-opacity">
-                          <Filter className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    </div>
-                  </th>
-                  <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-2">
-                      Hold Time
-                      <span className="cursor-help">
-                        <HelpCircle className="w-4 h-4 text-white" />
-                      </span>
-                    </div>
-                  </th>
-                  <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                    <div className="flex items-center gap-1"></div>
+                    Actions
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
-                {trades.map((trade, index) => (
+                {displayTrades.map((trade, index) => (
                   <tr key={trade.id} className="transition-all duration-300 hover:bg-white/5 group">
                     {/* Last Tx */}
                     <td className="px-4 py-4 whitespace-nowrap">
@@ -391,7 +317,7 @@ const KOLFeed: React.FC = () => {
                         <span className={`text-sm font-bold uppercase tracking-wider ${getTransactionTypeColor(trade.lastTx)}`}>
                           {trade.lastTx === 'buy' ? 'BUY' : 'SELL'}
                         </span>
-                        <div>
+                        <div className="text-xs text-white/70 font-medium">
                           <span className="text-sm text-white/70 font-medium">{trade.timeAgo}</span>
                         </div>
                       </div>
@@ -400,7 +326,7 @@ const KOLFeed: React.FC = () => {
                     {/* KOL */}
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div>
-                        <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white flex items-center hover:bg-white/15 transition-all duration-300 cursor-pointer" style={{ overflow: 'hidden', height: '36px', width: '180px' }}>
+                        <div className="bg-white/10 border border-white/20 rounded-xl px-3 py-2 text-white flex items-center hover:bg-white/15 transition-all duration-300 cursor-pointer w-48">
                           <div className="flex items-center gap-2 flex-1">
                             <div className="relative">
                               <img
@@ -410,7 +336,7 @@ const KOLFeed: React.FC = () => {
                               />
                               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-noir-dark"></div>
                             </div>
-                            <span className="text-sm text-white font-medium truncate">
+                            <span className="text-sm text-white font-medium">
                               {trade.kolName}
                             </span>
                           </div>
@@ -441,35 +367,34 @@ const KOLFeed: React.FC = () => {
                     {/* Token */}
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border border-white/30 overflow-hidden">
                           <span className="text-white font-bold text-sm">
                             {trade.token.substring(0, 2).toUpperCase()}
                           </span>
-                        </div>
-                        <img
-                          alt={trade.token}
-                          className="absolute w-8 h-8 rounded-full border border-white/30 object-cover"
-                          src={trade.tokenIcon}
-                        />
                         <div>
                           <div className="text-sm font-bold text-white">{trade.token}</div>
-                          <div className="text-xs text-white/70">{trade.mcap}</div>
                         </div>
                       </div>
                     </td>
 
                     {/* Amount */}
                     <td className="px-4 py-4 whitespace-nowrap">
-                      <div className="text-sm font-bold text-white">{trade.bought !== '$0.00' ? trade.bought : trade.sold}</div>
+                      <div className="text-sm font-bold text-white">{trade.bought}</div>
+                    </td>
+
+                    {/* Bought */}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="text-sm font-bold text-green-600">{trade.bought}</div>
+                    </td>
+
+                    {/* Sold */}
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="text-sm font-bold text-red-600">{trade.sold}</div>
                     </td>
 
                     {/* P&L */}
                     <td className="px-4 py-4 whitespace-nowrap">
                       <div className={`text-sm font-bold ${trade.pnl.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
                         {trade.pnl}
-                      </div>
-                      <div className={`text-xs ${trade.pnlPercentage.startsWith('+') ? 'text-green-600' : 'text-red-600'}`}>
-                        {trade.pnlPercentage}
                       </div>
                     </td>
 
@@ -485,7 +410,7 @@ const KOLFeed: React.FC = () => {
                           <Copy className="w-4 h-4" />
                         </button>
                         <a
-                          href={`https://solscan.io/token/${trade.tokenContract}`}
+                          href={`https://solscan.io/account/${trade.walletAddress}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="hover:opacity-70 transition-all p-1 text-white/70"
@@ -502,32 +427,6 @@ const KOLFeed: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-        <div className="noir-card rounded-xl p-4">
-          <div className="text-xs text-white/70 mb-1">Active KOLs</div>
-          <div className="text-2xl font-bold text-white">234</div>
-          <div className="text-xs text-green-600">+12 today</div>
-        </div>
-        
-        <div className="noir-card rounded-xl p-4">
-          <div className="text-xs text-white/70 mb-1">Total Volume</div>
-          <div className="text-2xl font-bold text-white">$2.4M</div>
-          <div className="text-xs text-green-600">+8.5% 24h</div>
-        </div>
-        
-        <div className="noir-card rounded-xl p-4">
-          <div className="text-xs text-white/70 mb-1">Avg Win Rate</div>
-          <div className="text-2xl font-bold text-green-600">73.8%</div>
-          <div className="text-xs text-white/70">Last 7 days</div>
-        </div>
-        
-        <div className="noir-card rounded-xl p-4">
-          <div className="text-xs text-white/70 mb-1">Top Token</div>
-          <div className="text-2xl font-bold text-white">SOL</div>
-          <div className="text-xs text-white/70">Most traded</div>
-        </div>
-      </div>
     </div>
   );
 };
