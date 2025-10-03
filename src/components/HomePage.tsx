@@ -372,16 +372,24 @@ const HomePage: React.FC = () => {
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-          {/* Free Plan */}
-          <div 
-            className={`noir-card rounded-3xl p-10 noir-fade-in ${revealedElements.has('plan-free') ? 'revealed' : ''}`}
-            data-reveal-id="plan-free"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+          {/* Degen Plan */}
+          <div
+            className={`noir-card rounded-3xl p-10 noir-fade-in ${revealedElements.has('plan-degen') ? 'revealed' : ''}`}
+            data-reveal-id="plan-degen"
           >
             <div className="text-center">
-              <h3 className="text-3xl font-bold text-white mb-3">Free</h3>
-              <div className="text-5xl font-bold text-white mb-8">
-                $0<span className="text-xl noir-text-secondary">/month</span>
+              <h3 className="text-3xl font-bold text-white mb-3">Degen</h3>
+              <div className="text-5xl font-bold text-white mb-2">
+                {billingPeriod === 'yearly' ? '0.34' : '0.42'} SOL
+              </div>
+              <div className="text-lg noir-text-secondary mb-8">
+                /{billingPeriod === 'yearly' ? 'month' : 'month'}
+                {billingPeriod === 'yearly' && (
+                  <div className="text-sm text-green-400 mt-2">
+                    Billed annually (4.08 SOL/year)
+                  </div>
+                )}
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
@@ -391,7 +399,7 @@ const HomePage: React.FC = () => {
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
-                  <span className="text-lg">Basic KOL tracking</span>
+                  <span className="text-lg">Live KOL Feed</span>
                 </li>
                 <li className="flex items-center gap-4">
                   <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
@@ -400,7 +408,7 @@ const HomePage: React.FC = () => {
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
-                  <span className="text-lg">Limited wallet insights</span>
+                  <span className="text-lg">Smart Money Tracker</span>
                 </li>
                 <li className="flex items-center gap-4">
                   <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
@@ -409,19 +417,46 @@ const HomePage: React.FC = () => {
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
-                  <span className="text-lg">Community access</span>
+                  <span className="text-lg">Solana Tools</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <span className="text-lg">Wallet Finder</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <span className="text-lg">Cabal Finder</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <span className="text-lg">Token Insiders</span>
                 </li>
               </ul>
-              <button className="w-full noir-button-secondary h-14 rounded-lg font-semibold text-lg">
-                Get Started Free
+              <button className="w-full noir-button h-14 rounded-lg font-semibold text-lg">
+                Get Started
               </button>
             </div>
           </div>
 
-          {/* Pro Plan */}
-          <div 
-            className={`noir-card noir-border-glow rounded-3xl p-10 relative border-2 border-white noir-pulse noir-fade-in ${revealedElements.has('plan-pro') ? 'revealed' : ''}`}
-            data-reveal-id="plan-pro"
+          {/* Legend Plan */}
+          <div
+            className={`noir-card noir-border-glow rounded-3xl p-10 relative border-2 border-white noir-pulse noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
+            data-reveal-id="plan-legend"
           >
             <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
               <span className="bg-white text-noir-black px-6 py-2 rounded-full text-base font-bold noir-neon">
@@ -429,121 +464,77 @@ const HomePage: React.FC = () => {
               </span>
             </div>
             <div className="text-center">
-              <h3 className="text-3xl font-bold text-white mb-3">Pro</h3>
-              <div className="text-5xl font-bold text-white mb-8">
-                ${billingPeriod === 'yearly' ? '39' : '49'}
-                <span className="text-xl noir-text-secondary">
-                  /{billingPeriod === 'yearly' ? 'month' : 'month'}
-                </span>
+              <h3 className="text-3xl font-bold text-white mb-3 flex items-center justify-center gap-3">
+                Legend <Crown className="w-8 h-8 text-yellow-400" />
+              </h3>
+              <div className="text-5xl font-bold text-white mb-2">
+                {billingPeriod === 'yearly' ? '3.33' : '4.16'} SOL
+              </div>
+              <div className="text-lg noir-text-secondary mb-8">
+                /{billingPeriod === 'yearly' ? 'month' : 'month'}
                 {billingPeriod === 'yearly' && (
-                  <div className="text-sm text-green-400 mt-1">
-                    Billed annually ($468/year)
+                  <div className="text-sm text-green-400 mt-2">
+                    Billed annually (39.96 SOL/year)
                   </div>
                 )}
               </div>
               <ul className="space-y-5 mb-10 text-left">
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
                     <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
-                  <span className="text-lg">Advanced KOL analytics</span>
+                  <span className="text-lg">Everything in Degen</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
                     <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
-                  <span className="text-lg">Real-time alerts</span>
+                  <span className="text-lg">Custom KOL Feed</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
                     <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
-                  <span className="text-lg">Portfolio tracking</span>
+                  <span className="text-lg">Whales Open Orders</span>
                 </li>
                 <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
                     <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5" />
                     </svg>
                   </div>
-                  <span className="text-lg">API access</span>
+                  <span className="text-lg">Fresh Wallet Feeds</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <span className="text-lg">Insiders Scan</span>
+                </li>
+                <li className="flex items-center gap-4">
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
+                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
+                    </svg>
+                  </div>
+                  <span className="text-lg">Private Community</span>
                 </li>
               </ul>
               <button className="w-full noir-button h-14 rounded-lg font-semibold text-lg">
-                Start Pro Trial
-              </button>
-            </div>
-          </div>
-
-          {/* Legend Plan */}
-          <div 
-            className={`noir-card noir-spotlight rounded-3xl p-10 noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
-            data-reveal-id="plan-legend"
-          >
-            <div className="text-center">
-              <h3 className="text-3xl font-bold text-white mb-3 flex items-center justify-center gap-3 noir-neon">
-                Legend <Crown className="w-8 h-8 text-yellow-400" />
-              </h3>
-              <div className="text-5xl font-bold text-white mb-8">
-                ${billingPeriod === 'yearly' ? '79' : '99'}
-                <span className="text-xl noir-text-secondary">
-                  /{billingPeriod === 'yearly' ? 'month' : 'month'}
-                </span>
-                {billingPeriod === 'yearly' && (
-                  <div className="text-sm text-green-400 mt-1">
-                    Billed annually ($948/year)
-                  </div>
-                )}
-              </div>
-              <ul className="space-y-5 mb-10 text-left">
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Everything in Pro</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Insider scan tools</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Fresh wallet feeds</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Priority support</span>
-                </li>
-              </ul>
-              <button className="w-full noir-button-secondary h-14 rounded-lg font-semibold text-lg">
                 Go Legend
               </button>
             </div>
