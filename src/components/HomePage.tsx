@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  Check, 
-  Play, 
-  TrendingUp, 
-  BarChart3, 
-  Star, 
-  Wallet, 
-  Search, 
+import {
+  Check,
+  Play,
+  TrendingUp,
+  BarChart3,
+  Star,
+  Wallet,
+  Search,
   ChevronDown,
   ShieldCheck,
   Zap,
@@ -21,6 +21,7 @@ import {
   ArrowRight,
   CheckCircle
 } from 'lucide-react';
+import FAQ from './FAQ';
 
 interface Testimonial {
   id: number;
@@ -549,6 +550,9 @@ const HomePage: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQ />
     </main>
   );
 };
