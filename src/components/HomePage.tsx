@@ -330,214 +330,108 @@ const HomePage: React.FC = () => {
 
       {/* Pricing Section */}
       <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32">
-        <div 
-          className={`text-center mb-16 lg:mb-20 noir-fade-in ${revealedElements.has('pricing-title') ? 'revealed' : ''}`}
+        <div
+          className={`text-center mb-16 noir-fade-in ${revealedElements.has('pricing-title') ? 'revealed' : ''}`}
           data-reveal-id="pricing-title"
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8">
-            Choose Your Trading Edge
+          <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
+            Simple Pricing
           </h2>
-          <p className="text-xl md:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
-            Start free, upgrade when you're ready to unlock advanced features and maximize your profits.
+          <p className="text-xl noir-text-secondary max-w-2xl mx-auto">
+            Choose the plan that fits your trading strategy
           </p>
-          
-          {/* Billing Period Toggle */}
-          <div className="flex items-center justify-center mt-8 mb-4">
-            <div className="bg-noir-dark border border-white/20 rounded-xl p-1 flex">
-              <button
-                onClick={() => setBillingPeriod('monthly')}
-                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${
-                  billingPeriod === 'monthly'
-                    ? 'bg-white text-noir-black'
-                    : 'text-white hover:text-white/80'
-                }`}
-              >
-                Monthly
-              </button>
-              <button
-                onClick={() => setBillingPeriod('yearly')}
-                className={`px-6 py-3 rounded-lg text-sm font-medium transition-all ${
-                  billingPeriod === 'yearly'
-                    ? 'bg-white text-noir-black'
-                    : 'text-white hover:text-white/80'
-                }`}
-              >
-                Yearly
-                <span className="ml-2 text-xs bg-green-500 text-white px-2 py-1 rounded-full">
-                  Save 20%
-                </span>
-              </button>
-            </div>
-          </div>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Degen Plan */}
           <div
-            className={`noir-card rounded-3xl p-10 noir-fade-in ${revealedElements.has('plan-degen') ? 'revealed' : ''}`}
+            className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all noir-fade-in ${revealedElements.has('plan-degen') ? 'revealed' : ''}`}
             data-reveal-id="plan-degen"
           >
-            <div className="text-center">
-              <h3 className="text-3xl font-bold text-white mb-3">Degen</h3>
-              <div className="text-5xl font-bold text-white mb-2">
-                {billingPeriod === 'yearly' ? '0.34' : '0.42'} SOL
-              </div>
-              <div className="text-lg noir-text-secondary mb-8">
-                /{billingPeriod === 'yearly' ? 'month' : 'month'}
-                {billingPeriod === 'yearly' && (
-                  <div className="text-sm text-green-400 mt-2">
-                    Billed annually (4.08 SOL/year)
-                  </div>
-                )}
-              </div>
-              <ul className="space-y-5 mb-10 text-left">
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Live KOL Feed</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Smart Money Tracker</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Solana Tools</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Wallet Finder</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Cabal Finder</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Token Insiders</span>
-                </li>
-              </ul>
-              <button className="w-full noir-button h-14 rounded-lg font-semibold text-lg">
-                Get Started
-              </button>
+            <h3 className="text-2xl font-bold text-white mb-2">Degen</h3>
+            <div className="flex items-baseline gap-2 mb-6">
+              <span className="text-5xl font-bold text-white">0.42</span>
+              <span className="text-xl text-white/60">SOL/mo</span>
             </div>
+            <button className="w-full bg-white text-noir-black py-3 px-6 rounded-xl font-semibold hover:bg-white/90 transition-all mb-8">
+              Get Started
+            </button>
+            <ul className="space-y-3 text-left text-white/80">
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-white" />
+                <span>Live KOL Feed</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-white" />
+                <span>Smart Money Tracker</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-white" />
+                <span>Solana Tools</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-white" />
+                <span>Wallet Finder</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-white" />
+                <span>Cabal Finder</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-white" />
+                <span>Token Insiders</span>
+              </li>
+            </ul>
           </div>
 
           {/* Legend Plan */}
           <div
-            className={`noir-card noir-border-glow rounded-3xl p-10 relative border-2 border-white noir-pulse noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
+            className={`bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:border-white/30 transition-all relative noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
             data-reveal-id="plan-legend"
           >
-            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
-              <span className="bg-white text-noir-black px-6 py-2 rounded-full text-base font-bold noir-neon">
-                Most Popular
+            <div className="absolute -top-3 right-8">
+              <span className="bg-gradient-to-r from-yellow-400 to-amber-500 text-noir-black px-4 py-1 rounded-full text-sm font-bold">
+                Popular
               </span>
             </div>
-            <div className="text-center">
-              <h3 className="text-3xl font-bold text-white mb-3 flex items-center justify-center gap-3">
-                Legend <Crown className="w-8 h-8 text-yellow-400" />
-              </h3>
-              <div className="text-5xl font-bold text-white mb-2">
-                {billingPeriod === 'yearly' ? '3.33' : '4.16'} SOL
-              </div>
-              <div className="text-lg noir-text-secondary mb-8">
-                /{billingPeriod === 'yearly' ? 'month' : 'month'}
-                {billingPeriod === 'yearly' && (
-                  <div className="text-sm text-green-400 mt-2">
-                    Billed annually (39.96 SOL/year)
-                  </div>
-                )}
-              </div>
-              <ul className="space-y-5 mb-10 text-left">
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Everything in Degen</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Custom KOL Feed</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Whales Open Orders</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Fresh Wallet Feeds</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Insiders Scan</span>
-                </li>
-                <li className="flex items-center gap-4">
-                  <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-amber-600 via-yellow-600 to-amber-700 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent"></div>
-                    <svg className="w-4 h-4 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
-                      <path strokeWidth="3" d="M20 6L9 17l-5-5" />
-                    </svg>
-                  </div>
-                  <span className="text-lg">Private Community</span>
-                </li>
-              </ul>
-              <button className="w-full noir-button h-14 rounded-lg font-semibold text-lg">
-                Go Legend
-              </button>
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="text-2xl font-bold text-white">Legend</h3>
+              <Crown className="w-6 h-6 text-yellow-400" />
             </div>
+            <div className="flex items-baseline gap-2 mb-6">
+              <span className="text-5xl font-bold text-white">4.16</span>
+              <span className="text-xl text-white/60">SOL/mo</span>
+            </div>
+            <button className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 text-noir-black py-3 px-6 rounded-xl font-semibold hover:opacity-90 transition-all mb-8">
+              Go Legend
+            </button>
+            <ul className="space-y-3 text-left text-white/80">
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-yellow-400" />
+                <span>Everything in Degen</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-yellow-400" />
+                <span>Custom KOL Feed</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-yellow-400" />
+                <span>Whales Open Orders</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-yellow-400" />
+                <span>Fresh Wallet Feeds</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-yellow-400" />
+                <span>Insiders Scan</span>
+              </li>
+              <li className="flex items-center gap-3">
+                <Check className="w-5 h-5 text-yellow-400" />
+                <span>Private Community</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
