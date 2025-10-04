@@ -267,46 +267,51 @@ const KOLFeed: React.FC = () => {
 
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white tracking-tight">KOL Feed</h1>
-        <p className="text-white/60 mt-2">Real-time tracking of top crypto traders</p>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Live Trades</h1>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+          <span className="text-xs text-white/50 uppercase tracking-wider">Live</span>
+        </div>
       </div>
 
       <div className="mt-6">
-        <div className="bg-noir-dark/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden">
+        <div className="bg-noir-dark/40 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="min-w-full">
-              <thead className="bg-noir-dark/50 border-b border-white/10">
+              <thead className="bg-black/40 border-b border-white/10">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                     Trader
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                     Token
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                     Bought
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                     Sold
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                     P&L
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                     Holdings
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
 
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {displayTrades.map((trade, index) => (
-                  <tr key={trade.id} className="transition-all duration-200 hover:bg-white/5 group">
+                  <tr key={trade.id} className="transition-all duration-200 hover:bg-white/[0.02] group">
                     <td className="px-6 py-5 whitespace-nowrap">
                       <div className="flex flex-col gap-1">
                         <span className={`text-sm font-bold uppercase tracking-wide ${getTransactionTypeColor(trade.lastTx)}`}>

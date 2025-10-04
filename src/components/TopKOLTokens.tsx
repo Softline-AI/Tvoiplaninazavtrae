@@ -261,38 +261,35 @@ const TopKOLTokens: React.FC = () => {
 
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-white tracking-tight">Top KOL Tokens</h1>
-        <p className="text-white/60 mt-2">Most traded tokens by influential traders</p>
-        <div className="mb-3">
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold text-white tracking-tight">Trending Tokens</h1>
           
-          <div className="inline-flex mt-6">
-            <div className="flex gap-2 items-center flex-nowrap">
-              {['1h', '6h', '1d', '7d'].map((period) => (
-                <button
-                  key={period}
-                  onClick={() => setTimePeriod(period)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    timePeriod === period
-                      ? 'bg-white text-noir-black'
-                      : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-                  }`}
-                >
-                  {period === '1h' ? '1H' : period === '6h' ? '6H' : period === '1d' ? '1D' : '7D'}
-                </button>
-              ))}
-            </div>
+          <div className="flex gap-2">
+            {['1h', '6h', '1d', '7d'].map((period) => (
+              <button
+                key={period}
+                onClick={() => setTimePeriod(period)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  timePeriod === period
+                    ? 'bg-white text-noir-black'
+                    : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                {period === '1h' ? '1H' : period === '6h' ? '6H' : period === '1d' ? '1D' : '7D'}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="bg-noir-dark/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden mb-8">
+      <div className="bg-noir-dark/40 border border-white/10 rounded-xl overflow-hidden mb-8 shadow-2xl">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-noir-dark/50 border-b border-white/10">
+            <thead className="bg-black/40 border-b border-white/10">
               <tr>
                 <th
-                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
+                  className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('rank')}
                 >
                   <div className="flex items-center gap-1.5">
@@ -300,11 +297,11 @@ const TopKOLTokens: React.FC = () => {
                     {getSortIcon('rank')}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                   Token
                 </th>
                 <th
-                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
+                  className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('kolHolders')}
                 >
                   <div className="flex items-center gap-1.5">
@@ -313,7 +310,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
+                  className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('kolHoldings')}
                 >
                   <div className="flex items-center gap-1.5">
@@ -322,7 +319,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
+                  className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('buyVolume')}
                 >
                   <div className="flex items-center gap-1.5">
@@ -331,7 +328,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
+                  className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('sellVolume')}
                 >
                   <div className="flex items-center gap-1.5">
@@ -340,7 +337,7 @@ const TopKOLTokens: React.FC = () => {
                   </div>
                 </th>
                 <th
-                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
+                  className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('netVolume')}
                 >
                   <div className="flex items-center gap-1.5">
@@ -348,14 +345,14 @@ const TopKOLTokens: React.FC = () => {
                     {getSortIcon('netVolume')}
                   </div>
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
 
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {displayTokens.map((token, index) => (
-                <tr key={token.id} className="transition-all duration-200 hover:bg-white/5">
+                <tr key={token.id} className="transition-all duration-200 hover:bg-white/[0.02]">
                   <td className="px-6 py-5 whitespace-nowrap">
                     <span className="text-sm font-semibold text-white/70">#{token.rank}</span>
                   </td>

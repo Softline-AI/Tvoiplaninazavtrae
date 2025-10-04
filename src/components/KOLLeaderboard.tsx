@@ -204,58 +204,53 @@ const KOLLeaderboard: React.FC = () => {
 
   return (
     <div className="w-full mx-auto px-0 max-w-[1220px] md:px-10 py-5">
-      <div className="mb-8">
+      <div className="mb-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="flex-1">
-            <h1 className="text-3xl font-bold text-white tracking-tight">KOL Leaderboard</h1>
-            <p className="text-white/60 mt-2">Top performing traders ranked by volume</p>
-          </div>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Leaderboard</h1>
           
-          <div className="flex items-center gap-3">
-            <div className="flex gap-2">
-              {['6h', '1d', '7d'].map((period) => (
-                <button
-                  key={period}
-                  onClick={() => setTimePeriod(period)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    timePeriod === period
-                      ? 'bg-white text-noir-black'
-                      : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-                  }`}
-                >
-                  {period === '6h' ? '6H' : period === '1d' ? '24H' : '7D'}
-                </button>
-              ))}
-            </div>
+          <div className="flex gap-2">
+            {['6h', '1d', '7d'].map((period) => (
+              <button
+                key={period}
+                onClick={() => setTimePeriod(period)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  timePeriod === period
+                    ? 'bg-white text-noir-black'
+                    : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                {period === '6h' ? '6H' : period === '1d' ? '24H' : '7D'}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
-      <div className="bg-noir-dark/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden mt-6">
+      <div className="bg-noir-dark/40 border border-white/10 rounded-xl overflow-hidden mt-6 shadow-2xl">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-noir-dark/50 border-b border-white/10">
+            <thead className="bg-black/40 border-b border-white/10">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider w-20">
+                <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider w-20">
                   Rank
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                   Trader
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                   Trades
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                   Volume
                 </th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
 
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
               {displayTraders.map((trader) => (
-                <tr key={trader.id} className={`transition-all duration-200 hover:bg-white/5 ${getRowStyling(trader)}`}>
+                <tr key={trader.id} className={`transition-all duration-200 hover:bg-white/[0.02] ${getRowStyling(trader)}`}>
                   <td className="px-6 py-5 whitespace-nowrap">
                     {getRankDisplay(trader)}
                   </td>
@@ -306,7 +301,7 @@ const KOLLeaderboard: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-noir-dark/30 backdrop-blur-sm border border-white/10 rounded-xl mt-6 overflow-hidden">
+      <div className="bg-noir-dark/40 border border-white/10 rounded-xl mt-6 overflow-hidden shadow-2xl">
         <div className="p-6">
           <div className="flex items-center justify-between cursor-pointer" onClick={() => setShowExplanation(!showExplanation)}>
             <span className="text-sm font-medium text-white">How Rankings Work</span>
