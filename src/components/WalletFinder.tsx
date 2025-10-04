@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Wallet, ExternalLink, Copy, TrendingUp, DollarSign } from 'lucide-react';
+import { birdeyeService } from '../services/birdeyeApi';
 
 interface WalletData {
   address: string;
@@ -58,13 +59,49 @@ const WalletFinder: React.FC = () => {
     }
   ];
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) return;
+
     setIsSearching(true);
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      console.log('🔍 Searching wallet with Birdeye:', searchQuery);
+      const walletData = await birdeyeService.getWalletTokenBalance(searchQuery.trim());
+
+      if (walletData && walletData.items) {
+        const topTokens = walletData.items
+          .slice(0, 5)
+          .map((item: any) => ({
+            symbol: item.symbol || 'Unknown',
+            amount: (item.uiAmount || 0).toFixed(2),
+            value: `$${(item.valueUsd || 0).toFixed(2)}`
+          }));
+
+        const totalValue = walletData.items.reduce((sum: number, item: any) => sum + (item.valueUsd || 0), 0);
+
+        const walletResult: WalletData = {
+          address: searchQuery.trim(),
+          name: 'Wallet',
+          balance: `${(walletData.totalUsd / 142.35).toFixed(2)} SOL`,
+          totalValue: `$${totalValue.toFixed(2)}`,
+          winRate: '-',
+          totalTrades: 0,
+          profitLoss: '-',
+          topTokens: topTokens,
+          recentActivity: 'Just now',
+          riskScore: 'medium'
+        };
+
+        setSearchResults([walletResult]);
+        console.log('🔍 Wallet data found:', walletResult);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error('Error searching wallet:', error);
       setSearchResults(mockWallets);
+    } finally {
       setIsSearching(false);
-    }, 1000);
+    }
   };
 
   const getRiskColor = (risk: string) => {

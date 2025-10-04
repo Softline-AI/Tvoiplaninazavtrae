@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { Filter, Copy, ExternalLink, HelpCircle, AlertTriangle } from 'lucide-react';
 import { heliusService, type RealTimeKOLTrade } from '../services/heliusApi';
+import { birdeyeService } from '../services/birdeyeApi';
 
 interface KOLTrade {
   id: string;
@@ -36,10 +37,38 @@ const KOLFeed: React.FC = () => {
       setIsLoadingReal(true);
       setError(null);
       try {
-        console.log('📊 Loading real KOL data...');
+        console.log('📊 Loading real KOL data with Birdeye prices...');
         const realData = await heliusService.getRealTimeKOLData();
-        console.log('📊 Loaded KOL data:', realData);
-        setRealTrades(realData);
+
+        const uniqueTokens = [...new Set(realData.map(trade => trade.tokenContract))];
+        const prices = await birdeyeService.getMultipleTokenPrices(uniqueTokens);
+
+        const enrichedData = realData.map(trade => {
+          const priceData = prices[trade.tokenContract];
+          if (priceData) {
+            const tokenPrice = priceData.value;
+            const bought = parseFloat(trade.bought.replace(/[^0-9.]/g, ''));
+            const sold = parseFloat(trade.sold.replace(/[^0-9.]/g, ''));
+            const holding = parseFloat(trade.holding.replace(/[^0-9.]/g, '')) || 0;
+
+            const boughtValue = bought;
+            const soldValue = sold;
+            const holdingValue = holding * tokenPrice;
+            const totalValue = soldValue + holdingValue;
+            const pnl = totalValue - boughtValue;
+            const pnlPercentage = boughtValue > 0 ? (pnl / boughtValue) * 100 : 0;
+
+            return {
+              ...trade,
+              pnl: pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`,
+              pnlPercentage: pnl >= 0 ? `+${pnlPercentage.toFixed(2)}%` : `${pnlPercentage.toFixed(2)}%`,
+            };
+          }
+          return trade;
+        });
+
+        console.log('📊 Loaded KOL data with Birdeye prices:', enrichedData);
+        setRealTrades(enrichedData);
       } catch (error) {
         console.error('Error fetching real KOL data:', error);
         setError('Failed to load real-time data');
@@ -49,8 +78,6 @@ const KOLFeed: React.FC = () => {
     };
 
     fetchRealKOLTrades();
-
-    // Refresh data every 30 seconds
     const interval = setInterval(fetchRealKOLTrades, 30000);
     return () => clearInterval(interval);
   }, []);

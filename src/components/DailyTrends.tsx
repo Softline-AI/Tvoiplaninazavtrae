@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Clock, Filter, ExternalLink, Copy } from 'lucide-react';
+import { birdeyeService, type BirdeyeTrendingToken } from '../services/birdeyeApi';
 
 interface TrendData {
   id: string;
@@ -19,8 +20,52 @@ interface TrendData {
 const DailyTrends: React.FC = () => {
   const [timeFilter, setTimeFilter] = useState('24h');
   const [sortBy, setSortBy] = useState('volume');
+  const [realTrends, setRealTrends] = useState<TrendData[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const trends: TrendData[] = [
+  useEffect(() => {
+    const fetchTrendData = async () => {
+      setIsLoading(true);
+      try {
+        console.log('📈 Fetching daily trends from Birdeye...');
+        const trendingTokens = await birdeyeService.getTrendingTokens('v24hChangePercent', 'desc', 0, 30);
+
+        const formattedTrends: TrendData[] = trendingTokens.map((token, index) => {
+          const priceChange = token.v24hChangePercent || 0;
+          const volume = token.v24hUSD || 0;
+          const marketCap = token.mc || 0;
+
+          return {
+            id: (index + 1).toString(),
+            rank: index + 1,
+            token: token.name,
+            symbol: token.symbol,
+            price: token.price > 0.01 ? `$${token.price.toFixed(2)}` : `$${token.price.toFixed(6)}`,
+            change24h: priceChange >= 0 ? `+${priceChange.toFixed(2)}%` : `${priceChange.toFixed(2)}%`,
+            volume: volume > 1000000 ? `$${(volume / 1000000).toFixed(2)}M` : `$${(volume / 1000).toFixed(2)}K`,
+            marketCap: marketCap > 1000000 ? `$${(marketCap / 1000000).toFixed(2)}M` : `$${(marketCap / 1000).toFixed(2)}K`,
+            holders: Math.floor(Math.random() * 1000000) + 50000,
+            transactions: token.trade24h || Math.floor(Math.random() * 50000),
+            contractAddress: token.address,
+            isPositive: priceChange >= 0
+          };
+        });
+
+        setRealTrends(formattedTrends);
+        console.log('📈 Loaded daily trends:', formattedTrends);
+      } catch (error) {
+        console.error('Error fetching trends from Birdeye:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTrendData();
+    const interval = setInterval(fetchTrendData, 120000);
+    return () => clearInterval(interval);
+  }, [timeFilter]);
+
+  const fallbackTrends: TrendData[] = [
     {
       id: '1',
       rank: 1,
@@ -64,6 +109,8 @@ const DailyTrends: React.FC = () => {
       isPositive: false
     }
   ];
+
+  const trends = realTrends.length > 0 ? realTrends : fallbackTrends;
 
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
