@@ -261,26 +261,24 @@ const TopKOLTokens: React.FC = () => {
 
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
-      <div className="mb-6">
-        <h1 className="text-xl mb-1 font-semibold">Top KOL Tokens</h1>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-white tracking-tight">Top KOL Tokens</h1>
+        <p className="text-white/60 mt-2">Most traded tokens by influential traders</p>
         <div className="mb-3">
           
-          {/* Time Period Tabs */}
-          <div className="inline-flex mt-4">
-            <div className="flex h-fit gap-1 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-xl bg-noir-dark border border-white/20 p-1 mb-1">
+          <div className="inline-flex mt-6">
+            <div className="flex gap-2 items-center flex-nowrap">
               {['1h', '6h', '1d', '7d'].map((period) => (
                 <button
                   key={period}
                   onClick={() => setTimePeriod(period)}
-                  className={`z-0 w-full px-4 py-2 flex group relative justify-center items-center cursor-pointer transition-all duration-300 h-10 text-sm rounded-lg font-medium ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     timePeriod === period
                       ? 'bg-white text-noir-black'
-                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                      : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
                   }`}
                 >
-                  <div className="relative z-10 whitespace-nowrap transition-colors font-medium">
-                    {period === '1h' ? '1H' : period === '6h' ? '6H' : period === '1d' ? '1D' : '7D'}
-                  </div>
+                  {period === '1h' ? '1H' : period === '6h' ? '6H' : period === '1d' ? '1D' : '7D'}
                 </button>
               ))}
             </div>
@@ -288,187 +286,122 @@ const TopKOLTokens: React.FC = () => {
         </div>
       </div>
 
-      {/* Tokens Table */}
-      <div className="noir-card rounded-2xl overflow-hidden mb-8">
+      <div className="bg-noir-dark/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden mb-8">
         <div className="overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-noir-dark border-b border-white/20">
+            <thead className="bg-noir-dark/50 border-b border-white/10">
               <tr>
-                <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
+                <th
+                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('rank')}
                 >
-                  <div className="flex items-center gap-1">
-                    🏆 Rank
-                    <span className="ml-1">
-                      {getSortIcon('rank')}
-                    </span>
+                  <div className="flex items-center gap-1.5">
+                    Rank
+                    {getSortIcon('rank')}
                   </div>
                 </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                  <div className="flex items-center gap-1">🪙 Token</div>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  Token
                 </th>
-                <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
+                <th
+                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('kolHolders')}
                 >
-                  <div className="flex items-center gap-1">
-                    👑 KOL Holders
-                    <span className="ml-1">
-                      {getSortIcon('kolHolders')}
-                    </span>
+                  <div className="flex items-center gap-1.5">
+                    Holders
+                    {getSortIcon('kolHolders')}
                   </div>
                 </th>
-                <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
+                <th
+                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('kolHoldings')}
                 >
-                  <div className="flex items-center gap-1">
-                    💰 KOL Holdings
-                    <span className="ml-1">
-                      {getSortIcon('kolHoldings')}
-                    </span>
+                  <div className="flex items-center gap-1.5">
+                    Holdings
+                    {getSortIcon('kolHoldings')}
                   </div>
                 </th>
-                <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
-                  onClick={() => handleSort('kolTraders')}
-                >
-                  <div className="flex items-center gap-1">
-                    📊 KOL Traders
-                    <span className="ml-1">
-                      {getSortIcon('kolTraders')}
-                    </span>
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
-                  onClick={() => handleSort('totalSwaps')}
-                >
-                  <div className="flex items-center gap-1">
-                    🔄 Total Swaps
-                    <span className="ml-1">
-                      {getSortIcon('totalSwaps')}
-                    </span>
-                  </div>
-                </th>
-                <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
+                <th
+                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('buyVolume')}
                 >
-                  <div className="flex items-center gap-1">
-                    📈 Buy Volume
-                    <span className="ml-1">
-                      {getSortIcon('buyVolume')}
-                    </span>
+                  <div className="flex items-center gap-1.5">
+                    Buy Vol
+                    {getSortIcon('buyVolume')}
                   </div>
                 </th>
-                <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
+                <th
+                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('sellVolume')}
                 >
-                  <div className="flex items-center gap-1">
-                    📉 Sell Volume
-                    <span className="ml-1">
-                      {getSortIcon('sellVolume')}
-                    </span>
+                  <div className="flex items-center gap-1.5">
+                    Sell Vol
+                    {getSortIcon('sellVolume')}
                   </div>
                 </th>
-                <th 
-                  className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider cursor-pointer select-none hover:bg-white/10 transition-colors"
+                <th
+                  className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider cursor-pointer select-none hover:bg-white/5 transition-colors"
                   onClick={() => handleSort('netVolume')}
                 >
-                  <div className="flex items-center gap-1">
-                    💵 Net Volume
-                    <span className="ml-1">
-                      {getSortIcon('netVolume')}
-                    </span>
+                  <div className="flex items-center gap-1.5">
+                    Net Vol
+                    {getSortIcon('netVolume')}
                   </div>
                 </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                  <div className="flex items-center gap-1">⏰ Token Age</div>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/10">
+            <tbody className="divide-y divide-white/5">
               {displayTokens.map((token, index) => (
-                <tr key={token.id} className="transition-all duration-300 hover:bg-white/5">
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-white">#{token.rank}</div>
+                <tr key={token.id} className="transition-all duration-200 hover:bg-white/5">
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-white/70">#{token.rank}</span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="min-w-0">
-                      <div className="w-fit flex items-center rounded-xl p-0 transition-all duration-300 hover:bg-white/10">
-                        <button className="bg-transparent hover:bg-transparent p-0 rounded-xl flex items-center">
-                          <div className="flex items-center min-w-[120px] p-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border-2 border-white/30 overflow-hidden">
-                              <span className="text-white font-bold text-sm">
-                                {token.symbol.substring(0, 2).toUpperCase()}
-                              </span>
-                            </div>
-                            <div className="flex flex-col ml-2 text-left">
-                              <span className="text-sm font-bold flex items-center gap-1 text-white">
-                                {token.symbol}
-                                {token.verified && (
-                                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none">
-                                    <path 
-                                      d="M9 12L11 14L15.5 9.5M7.33377 3.8187C8.1376 3.75455 8.90071 3.43846 9.51447 2.91542C10.9467 1.69486 13.0533 1.69486 14.4855 2.91542C15.0993 3.43846 15.8624 3.75455 16.6662 3.8187C18.5421 3.96839 20.0316 5.45794 20.1813 7.33377C20.2455 8.1376 20.5615 8.90071 21.0846 9.51447C22.3051 10.9467 22.3051 13.0533 21.0846 14.4855C20.5615 15.0993 20.2455 15.8624 20.1813 16.6662C20.0316 18.5421 18.5421 20.0316 16.6662 20.1813C15.8624 20.2455 15.0993 20.5615 14.4855 21.0846C13.0533 22.3051 10.9467 22.3051 9.51447 21.0846C8.90071 20.5615 8.1376 20.2455 7.33377 20.1813C5.45794 20.0316 3.96839 18.5421 3.8187 16.6662C3.75455 15.8624 3.43846 15.0993 2.91542 14.4855C1.69486 13.0533 1.69486 10.9467 2.91542 9.51447C3.43846 8.90071 3.75455 8.1376 3.8187 7.33377C3.96839 5.45794 5.45794 3.96839 7.33377 3.8187Z" 
-                                      stroke="#10b981" 
-                                      strokeWidth="2" 
-                                      strokeLinecap="round" 
-                                      strokeLinejoin="round"
-                                    />
-                                  </svg>
-                                )}
-                              </span>
-                              <span className="text-xs text-white/70 font-medium">
-                                💰 <span className="text-white font-bold">{token.marketCap}</span>
-                              </span>
-                            </div>
-                          </div>
-                        </button>
-                        <div className="flex items-center gap-1 pr-2">
-                          <button className="hover:opacity-70 hover:scale-110 transition-all cursor-pointer px-1 flex items-center text-white/70">
-                            <Copy className="w-4 h-4" />
-                          </button>
-                          <a
-                            href={`https://axiom.trade/t/${token.contractAddress}/@stalk`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="hover:opacity-70 hover:scale-110 transition-all px-1 text-white/70"
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </a>
-                        </div>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/20">
+                        <span className="text-white font-bold text-xs">
+                          {token.symbol.substring(0, 2).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-white">{token.symbol}</span>
+                        <span className="text-xs text-white/50">{token.marketCap}</span>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-white">{token.kolHolders}</div>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="text-sm font-medium text-white/80">{token.kolHolders}</span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-green-700">{token.kolHoldings}</div>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="text-sm font-medium text-white/80">{token.kolHoldings}</span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-white">{token.kolTraders}</div>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="text-sm font-medium text-green-500">{token.buyVolume}</span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-blue-700">{token.totalSwaps}</div>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="text-sm font-medium text-red-500">{token.sellVolume}</span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-green-600">{token.buyVolume}</div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-base font-bold text-red-600">{token.sellVolume}</div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className={`text-base font-bold ${getNetVolumeColor(token.netVolume)}`}>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className={`text-sm font-semibold ${getNetVolumeColor(token.netVolume)}`}>
                       {token.netVolume}
-                    </div>
+                    </span>
                   </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm text-white/70 font-medium">
-                      <span>{token.tokenAge}</span>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <div className="flex items-center gap-1.5">
+                      <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white">
+                        <Copy className="w-4 h-4" />
+                      </button>
+                      <a
+                        href={`https://axiom.trade/t/${token.contractAddress}/@stalk`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
                     </div>
                   </td>
                 </tr>
