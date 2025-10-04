@@ -34,7 +34,7 @@ const FAQ: React.FC = () => {
     {
       id: 'q5',
       question: 'What subscription plans are available?',
-      answer: 'SmartChain offers two subscription tiers: Degen (0.42 SOL/month) and Legend (4.16 SOL/month). Each plan provides different levels of access to our tools and features. Both plans come with significant discounts when billed yearly.'
+      answer: 'SmartChain offers three subscription tiers: Free ($0/month) with basic features, Pro ($199/month or $159/month billed yearly), and Legend ($399/month or $319/month billed yearly) with full access to all premium features including API access and 1-on-1 support. Save 20% with annual billing.'
     },
     {
       id: 'q6',
