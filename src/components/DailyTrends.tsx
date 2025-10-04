@@ -27,8 +27,27 @@ const DailyTrends: React.FC = () => {
     const fetchTrendData = async () => {
       setIsLoading(true);
       try {
-        console.log('📈 Fetching daily trends from Birdeye...');
-        const trendingTokens = await birdeyeService.getTrendingTokens('v24hChangePercent', 'desc', 0, 30);
+        console.log(`📈 Fetching daily trends from Birdeye for ${timeFilter}...`);
+
+        let limit = 30;
+        let sortField = 'v24hChangePercent';
+
+        switch(timeFilter) {
+          case '1h':
+            limit = 20;
+            break;
+          case '6h':
+            limit = 25;
+            break;
+          case '24h':
+            limit = 30;
+            break;
+          case '7d':
+            limit = 40;
+            break;
+        }
+
+        const trendingTokens = await birdeyeService.getTrendingTokens(sortField, 'desc', 0, limit);
 
         const formattedTrends: TrendData[] = trendingTokens.map((token, index) => {
           const priceChange = token.v24hChangePercent || 0;
@@ -52,7 +71,7 @@ const DailyTrends: React.FC = () => {
         });
 
         setRealTrends(formattedTrends);
-        console.log('📈 Loaded daily trends:', formattedTrends);
+        console.log(`📈 Loaded ${formattedTrends.length} trends for ${timeFilter}`);
       } catch (error) {
         console.error('Error fetching trends from Birdeye:', error);
       } finally {

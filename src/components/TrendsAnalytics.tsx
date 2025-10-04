@@ -14,7 +14,64 @@ const TrendsAnalytics: React.FC = () => {
   const [timeRange, setTimeRange] = useState('24h');
   const [category, setCategory] = useState('all');
 
-  const analytics: AnalyticsData[] = [
+  const getAnalyticsForTimeRange = (range: string): AnalyticsData[] => {
+    const baseMultiplier = range === '1h' ? 0.1 : range === '6h' ? 0.4 : range === '24h' ? 1 : range === '7d' ? 5 : 20;
+
+    return [
+      {
+        id: '1',
+        metric: 'Total Smart Money Volume',
+        value: `$${(2.4 * baseMultiplier).toFixed(1)}B`,
+        change: `+${(15.2 + Math.random() * 5).toFixed(1)}%`,
+        trend: 'up',
+        description: 'Volume from wallets with >$1M portfolio'
+      },
+      {
+        id: '2',
+        metric: 'Whale Transactions',
+        value: `${Math.floor(1234 * baseMultiplier)}`,
+        change: `+${(8.7 + Math.random() * 3).toFixed(1)}%`,
+        trend: 'up',
+        description: `Transactions >$100K in the last ${range}`
+      },
+      {
+        id: '3',
+        metric: 'New Token Discoveries',
+        value: `${Math.floor(89 * baseMultiplier)}`,
+        change: `${Math.random() > 0.5 ? '+' : '-'}${(Math.random() * 10).toFixed(1)}%`,
+        trend: Math.random() > 0.5 ? 'up' : 'down',
+        description: 'Tokens first bought by smart money'
+      },
+      {
+        id: '4',
+        metric: 'Average Hold Time',
+        value: range === '1h' ? '2.3 hrs' : range === '6h' ? '8.5 hrs' : range === '24h' ? '4.2 days' : range === '7d' ? '6.8 days' : '12.4 days',
+        change: `+${(12.5 + Math.random() * 5).toFixed(1)}%`,
+        trend: 'up',
+        description: 'Average holding period for profitable trades'
+      },
+      {
+        id: '5',
+        metric: 'Success Rate',
+        value: `${(67.8 + Math.random() * 5).toFixed(1)}%`,
+        change: `+${(2.3 + Math.random() * 2).toFixed(1)}%`,
+        trend: 'up',
+        description: 'Percentage of profitable smart money trades'
+      },
+      {
+        id: '6',
+        metric: 'Market Dominance',
+        value: `${(23.4 + Math.random() * 3).toFixed(1)}%`,
+        change: `${Math.random() > 0.6 ? '+' : '-'}${(Math.random() * 3).toFixed(1)}%`,
+        trend: Math.random() > 0.6 ? 'up' : 'down',
+        description: 'Smart money share of total market volume'
+      }
+    ];
+  };
+
+  const analytics: AnalyticsData[] = getAnalyticsForTimeRange(timeRange);
+
+  const staticAnalytics: AnalyticsData[] = [
     {
       id: '1',
       metric: 'Total Smart Money Volume',

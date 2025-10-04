@@ -27,8 +27,27 @@ const TopTokens: React.FC = () => {
     const fetchTokenData = async () => {
       setIsLoading(true);
       try {
-        console.log('📈 Fetching top tokens from Birdeye...');
-        const trendingTokens = await birdeyeService.getTrendingTokens('v24hUSD', 'desc', 0, 20);
+        console.log(`📈 Fetching top tokens from Birdeye for ${timeFilter}...`);
+
+        let limit = 20;
+        let sortField = 'v24hUSD';
+
+        switch(timeFilter) {
+          case '1h':
+            limit = 15;
+            break;
+          case '6h':
+            limit = 20;
+            break;
+          case '24h':
+            limit = 30;
+            break;
+          case '7d':
+            limit = 50;
+            break;
+        }
+
+        const trendingTokens = await birdeyeService.getTrendingTokens(sortField, 'desc', 0, limit);
 
         const formattedTokens: TopToken[] = trendingTokens.map((token, index) => {
           const priceChange = token.v24hChangePercent || 0;
@@ -52,7 +71,7 @@ const TopTokens: React.FC = () => {
         });
 
         setRealTokens(formattedTokens);
-        console.log('📈 Loaded top tokens:', formattedTokens);
+        console.log(`📈 Loaded ${formattedTokens.length} top tokens for ${timeFilter}`);
       } catch (error) {
         console.error('Error fetching token data from Birdeye:', error);
       } finally {

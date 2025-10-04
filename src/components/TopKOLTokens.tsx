@@ -34,8 +34,27 @@ const TopKOLTokens: React.FC = () => {
       setIsLoadingReal(true);
       setError(null);
       try {
-        console.log('🔥 Fetching trending tokens from Birdeye...');
-        const trendingTokens = await birdeyeService.getTrendingTokens('v24hUSD', 'desc', 0, 50);
+        console.log(`🔥 Fetching trending tokens from Birdeye for ${timePeriod}...`);
+
+        let sortField = 'v24hUSD';
+        let limit = 50;
+
+        switch(timePeriod) {
+          case '1h':
+            limit = 30;
+            break;
+          case '6h':
+            limit = 40;
+            break;
+          case '1d':
+            limit = 50;
+            break;
+          case '7d':
+            limit = 60;
+            break;
+        }
+
+        const trendingTokens = await birdeyeService.getTrendingTokens(sortField, 'desc', 0, limit);
 
         if (trendingTokens.length === 0) {
           throw new Error('No trending tokens found');
@@ -67,7 +86,7 @@ const TopKOLTokens: React.FC = () => {
         });
 
         setRealTokens(formattedTokens);
-        console.log('🔥 Loaded trending tokens:', formattedTokens);
+        console.log(`🔥 Loaded ${formattedTokens.length} trending tokens for ${timePeriod}`);
       } catch (error) {
         console.error('Error fetching token data from Birdeye:', error);
         setError('Failed to load token data');

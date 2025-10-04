@@ -30,10 +30,33 @@ const KOLLeaderboard: React.FC = () => {
       setIsLoadingReal(true);
       setError(null);
       try {
-        console.log('📊 Fetching real KOL leaderboard data...');
+        console.log(`📊 Fetching KOL leaderboard data for ${timePeriod}...`);
+
+        let refreshInterval = 120000;
+        let dataLimit = 50;
+
+        switch(timePeriod) {
+          case '1h':
+            dataLimit = 20;
+            refreshInterval = 60000;
+            break;
+          case '6h':
+            dataLimit = 30;
+            refreshInterval = 90000;
+            break;
+          case '1d':
+            dataLimit = 50;
+            refreshInterval = 120000;
+            break;
+          case '7d':
+            dataLimit = 100;
+            refreshInterval = 180000;
+            break;
+        }
+
         const kolData = await heliusService.getKOLLeaderboardData();
-        
-        const formattedKOLs: KOLTrader[] = kolData.map((kol, index) => {          
+
+        const formattedKOLs: KOLTrader[] = kolData.slice(0, dataLimit).map((kol, index) => {
           return {
             id: (index + 1).toString(),
             name: kol.name || `KOL ${index + 1}`,
@@ -50,7 +73,7 @@ const KOLLeaderboard: React.FC = () => {
         });
 
         setRealKOLs(formattedKOLs);
-        console.log('📊 Loaded KOL leaderboard:', formattedKOLs);
+        console.log(`📊 Loaded ${formattedKOLs.length} KOLs for ${timePeriod}`);
       } catch (error) {
         console.error('Error fetching real KOL data:', error);
         setError('Failed to load leaderboard data');
@@ -60,10 +83,9 @@ const KOLLeaderboard: React.FC = () => {
     };
 
     fetchRealKOLData();
-    // Refresh data every 2 minutes
     const interval = setInterval(fetchRealKOLData, 120000);
     return () => clearInterval(interval);
-  }, [timePeriod]); // Refresh when time period changes
+  }, [timePeriod]);
 
   const traders: KOLTrader[] = [
     {
