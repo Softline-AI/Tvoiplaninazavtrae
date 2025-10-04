@@ -369,21 +369,17 @@ const HomePage: React.FC = () => {
 
         {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {/* Starter Plan */}
+          {/* Free Plan */}
           <div
-            className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in ${revealedElements.has('plan-starter') ? 'revealed' : ''}`}
-            data-reveal-id="plan-starter"
+            className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in ${revealedElements.has('plan-free') ? 'revealed' : ''}`}
+            data-reveal-id="plan-free"
           >
-            <h3 className="text-2xl font-bold text-white mb-2">Starter</h3>
+            <h3 className="text-2xl font-bold text-white mb-2">Free</h3>
             <div className="flex items-baseline gap-2 mb-6">
-              <span className="text-4xl font-bold text-white">
-                ${billingPeriod === 'yearly' ? '79' : '99'}
-              </span>
+              <span className="text-4xl font-bold text-white">$0</span>
               <span className="text-lg text-white/60">/mo</span>
             </div>
-            {billingPeriod === 'yearly' && (
-              <p className="text-sm text-green-400 mb-4">Billed $948/year</p>
-            )}
+            <div className="h-6 mb-4"></div>
             <button className="w-full bg-white text-noir-black py-3 px-6 rounded-xl font-semibold hover:bg-white/90 transition-all mb-6">
               Get Started
             </button>
