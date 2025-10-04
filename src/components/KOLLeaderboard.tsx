@@ -184,29 +184,17 @@ const KOLLeaderboard: React.FC = () => {
     if (trader.isTopPerformer) {
       return (
         <div className="flex items-center gap-2">
-          <span className="font-bold text-amber-500 text-lg">#{trader.rank}</span>
-          <Crown className="w-6 h-6 text-amber-500" />
+          <span className="font-semibold text-amber-400 text-base">#{trader.rank}</span>
+          <Crown className="w-4 h-4 text-amber-400" />
         </div>
       );
     }
-    if (trader.isSecondPlace) {
-      return <span className="font-bold text-blue-600 text-base">#{trader.rank}</span>;
-    }
-    if (trader.rank === 3) {
-      return <span className="font-bold text-amber-700 text-base">#{trader.rank}</span>;
-    }
-    return <span className="font-medium">#{trader.rank}</span>;
+    return <span className="font-medium text-white/70 text-sm">#{trader.rank}</span>;
   };
 
   const getRowStyling = (trader: KOLTrader) => {
     if (trader.isTopPerformer) {
-      return 'bg-gradient-to-r from-amber-50 to-transparent border-l-4 border-amber-400 shadow-sm';
-    }
-    if (trader.isSecondPlace) {
-      return 'bg-gradient-to-r from-blue-50 to-transparent border-l-2 border-blue-300';
-    }
-    if (trader.rank === 3) {
-      return 'bg-gradient-to-r from-zinc-50 to-transparent border-l-2 border-zinc-300';
+      return 'border-l-2 border-amber-400/50';
     }
     return '';
   };
@@ -216,238 +204,122 @@ const KOLLeaderboard: React.FC = () => {
 
   return (
     <div className="w-full mx-auto px-0 max-w-[1220px] md:px-10 py-5">
-      {/* Header */}
-      <div className="bg-gray-100 rounded-xl p-4 mb-6 sticky top-0 z-10">
+      <div className="mb-8">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-xl mb-1 font-semibold">KOL Leaderboard</h1>
+            <h1 className="text-3xl font-bold text-white tracking-tight">KOL Leaderboard</h1>
+            <p className="text-white/60 mt-2">Top performing traders ranked by volume</p>
           </div>
           
-          <div className="flex-1 flex justify-center">
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <div className="inline-flex h-fit gap-2 items-center flex-nowrap overflow-x-scroll scrollbar-hide rounded-lg bg-noir-dark border border-white/20 p-0.5 mb-1">
-                  <button
-                    onClick={() => setTimePeriod('6h')}
-                    className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
-                      timePeriod === '6h' 
-                        ? 'bg-white text-noir-black shadow-sm' 
-                        : 'text-white/70 hover:text-white'
-                    }`}
-                  >
-                    <div className="relative z-10 whitespace-nowrap transition-colors font-medium">6H</div>
-                    {timePeriod === '6h' && <span className="absolute z-0 inset-0 rounded-sm bg-white shadow-sm" />}
-                  </button>
-                  <button
-                    onClick={() => setTimePeriod('1d')}
-                    className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
-                      timePeriod === '1d' 
-                        ? 'bg-white text-noir-black shadow-sm' 
-                        : 'text-white/70 hover:text-white'
-                    }`}
-                  >
-                    <div className="relative z-10 whitespace-nowrap transition-colors font-medium">24H</div>
-                    {timePeriod === '1d' && <span className="absolute z-0 inset-0 rounded-sm bg-white shadow-sm" />}
-                  </button>
-                  <button
-                    onClick={() => setTimePeriod('7d')}
-                    className={`z-0 w-full px-3 py-1 flex group relative justify-center items-center cursor-pointer transition-opacity h-8 text-sm rounded-sm ${
-                      timePeriod === '7d' 
-                        ? 'bg-white text-noir-black shadow-sm' 
-                        : 'text-white/70 hover:text-white'
-                    }`}
-                  >
-                    <div className="relative z-10 whitespace-nowrap transition-colors font-medium">7D</div>
-                    {timePeriod === '7d' && <span className="absolute z-0 inset-0 rounded-sm bg-white shadow-sm" />}
-                  </button>
-                </div>
-              </div>
-              <button className="p-3 hover:bg-white/10 rounded-xl transition-all duration-300 hover:scale-110">
-                <RefreshCw className="w-5 h-5 text-white/70" />
-              </button>
-            </div>
-          </div>
-
-          <div className="flex-1 flex justify-end">
-            <div className="relative max-w-[160px] min-w-[100px]">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full bg-noir-dark border border-white/20 rounded-lg px-4 py-2 text-sm font-medium appearance-none cursor-pointer hover:bg-noir-gray focus:outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30 transition-all text-white"
-              >
-                <option value="overall">Overall Rank</option>
-                <option value="winRate">Win Rate</option>
-                <option value="volume">Volume</option>
-                <option value="pnl">P&L</option>
-                <option value="activity">Most Active</option>
-              </select>
-              <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/70 pointer-events-none" />
+          <div className="flex items-center gap-3">
+            <div className="flex gap-2">
+              {['6h', '1d', '7d'].map((period) => (
+                <button
+                  key={period}
+                  onClick={() => setTimePeriod(period)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                    timePeriod === period
+                      ? 'bg-white text-noir-black'
+                      : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+                  }`}
+                >
+                  {period === '6h' ? '6H' : period === '1d' ? '24H' : '7D'}
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Leaderboard Table */}
-      <div className="noir-card rounded-2xl overflow-hidden">
-        {/* Table Header */}
-        <div className="flex justify-between py-4 bg-noir-dark sticky top-0 z-10 px-6 border-b border-white/20">
-          <div className="flex items-center flex-1">
-            <div className="flex items-center min-w-[40px] text-sm font-medium text-white">Rank</div>
-            <div className="flex-1 text-sm font-medium text-white pl-6">Trader</div>
-          </div>
-          <div className="flex items-center gap-8">
-            <div className="flex w-16 text-sm font-medium text-white justify-end">Trades</div>
-            <div className="flex w-28 text-sm font-medium text-white justify-end">Volume</div>
-            <div className="flex w-4 text-xs justify-center"></div>
-          </div>
-        </div>
+      <div className="bg-noir-dark/30 backdrop-blur-sm border border-white/10 rounded-2xl overflow-hidden mt-6">
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead className="bg-noir-dark/50 border-b border-white/10">
+              <tr>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider w-20">
+                  Rank
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  Trader
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  Trades
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
+                  Volume
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 
-        <hr className="border-white/20" />
-
-        {/* Table Rows */}
-        <div className="divide-y divide-white/10">
-          {displayTraders.map((trader) => (
-            <div key={trader.id} className="relative">
-              <div className={`w-full flex justify-between items-center h-20 text-sm hover:bg-white/5 transition-all duration-300 ${getRowStyling(trader)}`}>
-                <div className="flex items-center pl-6 flex-1">
-                  <div className="flex items-center min-w-[40px]">
-                    <div className="flex items-center gap-1">
-                      {getRankDisplay(trader)}
-                    </div>
-                  </div>
-                  <div className="font-medium">
-                    <div className="bg-white/10 hover:bg-white/15 rounded-xl px-3 py-2 text-white flex items-center transition-all duration-300 cursor-pointer group" style={{ overflow: 'hidden', height: '40px', width: 'auto' }}>
-                      <div className="flex-1 flex items-center justify-start cursor-pointer text-white min-w-0">
-                        <div className="relative">
-                          <div className="relative mr-2">
-                            <div className="relative">
-                              <div className="w-[32px] h-[32px] rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border-2 border-white/30">
-                                <span className="text-white font-bold text-sm">
-                                  {trader.name.substring(0, 2).toUpperCase()}
-                                </span>
-                              </div>
-                              <img
-                                alt={trader.name}
-                                className="absolute inset-0 rounded-full border-2 border-white/30 object-cover w-[32px] h-[32px]"
-                                src={trader.avatar}
-                                style={{ display: 'block' }}
-                              />
-                            </div>
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-gradient-to-br from-green-400 to-green-600 rounded-full border-2 border-white shadow-lg"></div>
-                          </div>
-                        </div>
-                        <span className="font-bold mr-2 text-white truncate text-base">
-                          {trader.name}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1 flex-shrink-0">
-                        <a
-                          className="hover:opacity-70 hover:scale-110 transition-all px-1 text-white/70"
-                          href={`https://solscan.io/account/${trader.walletAddress}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/5">
+              {displayTraders.map((trader) => (
+                <tr key={trader.id} className={`transition-all duration-200 hover:bg-white/5 ${getRowStyling(trader)}`}>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    {getRankDisplay(trader)}
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <img
+                        alt={trader.name}
+                        className="w-10 h-10 rounded-full object-cover border border-white/20"
+                        src={trader.avatar}
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-semibold text-white">{trader.name}</span>
                         <a
                           href={`https://twitter.com/${trader.twitterHandle}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:opacity-70 hover:scale-110 transition-all p-1 text-blue-400 group-hover:text-blue-300"
+                          className="text-xs text-white/50 hover:text-white/80 transition-colors"
                         >
-                          <svg className="w-4 h-4" viewBox="0 0 512 512" fill="currentColor">
-                            <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
-                          </svg>
+                          @{trader.twitterHandle}
                         </a>
                       </div>
                     </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-8">
-                  <div className="flex justify-end w-16">
-                    <div className="flex items-center gap-1">
-                      <span className="text-green-600 font-bold text-base">📈{trader.buyCount}</span>
-                      <span className="text-white/50 font-bold">/</span>
-                      <span className="text-red-600 font-bold text-base">📉{trader.sellCount}</span>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-medium text-green-500">{trader.buyCount}</span>
+                      <span className="text-white/30">/</span>
+                      <span className="text-sm font-medium text-red-500">{trader.sellCount}</span>
                     </div>
-                  </div>
-                  <div className="flex justify-end w-28 text-green-700 font-bold text-lg">
-                    {trader.volume}
-                  </div>
-                  <div className="pr-4"></div>
-                </div>
-              </div>
-            </div>
-          ))}
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-white">{trader.volume}</span>
+                  </td>
+                  <td className="px-6 py-5 whitespace-nowrap">
+                    <a
+                      href={`https://solscan.io/account/${trader.walletAddress}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white inline-flex"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Explanation Section */}
-      <div className="noir-card rounded-xl mt-6 overflow-hidden">
-        <div className="p-4">
+      <div className="bg-noir-dark/30 backdrop-blur-sm border border-white/10 rounded-xl mt-6 overflow-hidden">
+        <div className="p-6">
           <div className="flex items-center justify-between cursor-pointer" onClick={() => setShowExplanation(!showExplanation)}>
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-white">How KOL Rankings Work</span>
-              <span className="text-xs text-white/70 bg-white/10 px-2 py-0.5 rounded-full">🏆 Ranking System</span>
-            </div>
-            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
-              <ChevronDown className={`w-4 h-4 text-white/70 transition-transform ${showExplanation ? 'rotate-180' : ''}`} />
+            <span className="text-sm font-medium text-white">How Rankings Work</span>
+            <button className="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
+              <ChevronDown className={`w-4 h-4 text-white/60 transition-transform ${showExplanation ? 'rotate-180' : ''}`} />
             </button>
           </div>
           
           {showExplanation && (
-            <div className="pt-3 pb-1">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-medium mb-3 text-white text-sm">Ranking Factors</h4>
-                  <div className="bg-noir-dark rounded-lg p-3 border border-white/10 space-y-3">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-medium text-xs">V</div>
-                        <span className="text-xs font-medium text-white">Total Trading Volume (USD)</span>
-                      </div>
-                      <p className="text-xs text-white/70 pl-7">Includes BUY/SELL and DCA fills.</p>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-medium text-xs">A</div>
-                        <span className="text-xs font-medium text-white">Trading Activity (Buy/Sell Counts)</span>
-                      </div>
-                      <p className="text-xs text-white/70 pl-7">Counts BUY/SELL trades and DCA fills.</p>
-                    </div>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-3 text-white text-sm">How Rankings Are Determined</h4>
-                  <div className="bg-noir-dark rounded-lg p-3 border border-white/10">
-                    <ol className="text-xs space-y-3">
-                      <li className="pb-2 border-b border-white/10">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-medium">1</div>
-                          <span className="font-medium text-white">Transaction Aggregation</span>
-                        </div>
-                        <p className="mt-1 text-white/70 pl-7">Spot trades and DCA fills are gathered for each KOL in the selected timeframe.</p>
-                      </li>
-                      <li className="pb-2 border-b border-white/10">
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-medium">2</div>
-                          <span className="font-medium text-white">Metric Calculation</span>
-                        </div>
-                        <p className="mt-1 text-white/70 pl-7">Total Trading Volume (USD), Buy, and Sell Transactions are calculated.</p>
-                      </li>
-                      <li>
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center font-medium">3</div>
-                          <span className="font-medium text-white">Sorting & Ranking</span>
-                        </div>
-                        <p className="mt-1 text-white/70 pl-7">KOLs are ranked by Total Trading Volume (USD). Trading Activity is a secondary sorter.</p>
-                      </li>
-                    </ol>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-4 text-xs text-center text-white/50">
-                <span>Rankings update approximately every 30 minutes</span>
+            <div className="pt-4 space-y-3">
+              <div className="text-xs text-white/60 space-y-2">
+                <p>Traders are ranked by total trading volume in the selected timeframe.</p>
+                <p>Includes both buy and sell transactions from real-time on-chain data.</p>
               </div>
             </div>
           )}
