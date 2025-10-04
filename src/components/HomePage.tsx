@@ -335,10 +335,10 @@ const HomePage: React.FC = () => {
           data-reveal-id="pricing-title"
         >
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
-            Simple Pricing
+            Choose Your Plan
           </h2>
           <p className="text-xl noir-text-secondary max-w-2xl mx-auto mb-8">
-            Choose the plan that fits your trading strategy
+            Start free or unlock premium features to dominate the market
           </p>
 
           {/* Billing Toggle */}
