@@ -61,12 +61,34 @@ interface BirdeyeTrendingToken {
 
 class BirdeyeService {
   private headers: HeadersInit;
+  private cache: Map<string, { data: any; timestamp: number }> = new Map();
+  private readonly CACHE_DURATION = 30000;
 
   constructor() {
     this.headers = {
       'X-API-KEY': BIRDEYE_API_KEY || '',
       'Accept': 'application/json',
     };
+  }
+
+  private getCacheKey(url: string): string {
+    return url;
+  }
+
+  private getFromCache(key: string): any | null {
+    const cached = this.cache.get(key);
+    if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
+      return cached.data;
+    }
+    return null;
+  }
+
+  private setCache(key: string, data: any): void {
+    this.cache.set(key, { data, timestamp: Date.now() });
+    if (this.cache.size > 100) {
+      const firstKey = this.cache.keys().next().value;
+      this.cache.delete(firstKey);
+    }
   }
 
   async getTokenPrice(address: string): Promise<BirdeyeTokenPrice | null> {
@@ -92,10 +114,16 @@ class BirdeyeService {
   async getMultipleTokenPrices(addresses: string[]): Promise<Record<string, BirdeyeTokenPrice>> {
     try {
       const addressList = addresses.join(',');
-      const response = await fetch(
-        `${BIRDEYE_BASE_URL}/defi/multi_price?list_address=${addressList}`,
-        { headers: this.headers }
-      );
+      const url = `${BIRDEYE_BASE_URL}/defi/multi_price?list_address=${addressList}`;
+      const cacheKey = this.getCacheKey(url);
+
+      const cached = this.getFromCache(cacheKey);
+      if (cached) {
+        console.log('📦 Using cached token prices');
+        return cached;
+      }
+
+      const response = await fetch(url, { headers: this.headers });
 
       if (!response.ok) {
         console.error('Birdeye API error:', response.status);
@@ -103,7 +131,9 @@ class BirdeyeService {
       }
 
       const data = await response.json();
-      return data.data || {};
+      const prices = data.data || {};
+      this.setCache(cacheKey, prices);
+      return prices;
     } catch (error) {
       console.error('Error fetching multiple token prices from Birdeye:', error);
       return {};
@@ -132,10 +162,16 @@ class BirdeyeService {
 
   async getTrendingTokens(sortBy: string = 'rank', sortType: string = 'asc', offset: number = 0, limit: number = 50): Promise<BirdeyeTrendingToken[]> {
     try {
-      const response = await fetch(
-        `${BIRDEYE_BASE_URL}/defi/tokenlist?sort_by=${sortBy}&sort_type=${sortType}&offset=${offset}&limit=${limit}`,
-        { headers: this.headers }
-      );
+      const url = `${BIRDEYE_BASE_URL}/defi/tokenlist?sort_by=${sortBy}&sort_type=${sortType}&offset=${offset}&limit=${limit}`;
+      const cacheKey = this.getCacheKey(url);
+
+      const cached = this.getFromCache(cacheKey);
+      if (cached) {
+        console.log('📦 Using cached trending tokens');
+        return cached;
+      }
+
+      const response = await fetch(url, { headers: this.headers });
 
       if (!response.ok) {
         console.error('Birdeye API error:', response.status);
@@ -143,7 +179,9 @@ class BirdeyeService {
       }
 
       const data = await response.json();
-      return data.data?.tokens || [];
+      const tokens = data.data?.tokens || [];
+      this.setCache(cacheKey, tokens);
+      return tokens;
     } catch (error) {
       console.error('Error fetching trending tokens from Birdeye:', error);
       return [];

@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Eye, AlertTriangle, TrendingUp, Clock, ExternalLink, Copy } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Eye, AlertTriangle, TrendingUp, Clock, ExternalLink, Copy, Shield, ShieldAlert } from 'lucide-react';
+import { birdeyeService } from '../services/birdeyeApi';
 
 interface InsiderActivity {
   id: string;
@@ -14,11 +15,51 @@ interface InsiderActivity {
   confidence: 'high' | 'medium' | 'low';
   description: string;
   contractAddress: string;
+  securityScore?: number;
+  topHoldersPercent?: number;
 }
 
 const InsiderScan: React.FC = () => {
   const [alertLevel, setAlertLevel] = useState('all');
   const [timeFilter, setTimeFilter] = useState('1h');
+  const [enrichedActivities, setEnrichedActivities] = useState<InsiderActivity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSecurityData = async () => {
+      setIsLoading(true);
+      try {
+        console.log('🔒 Fetching security data for insider activities...');
+
+        const enriched = await Promise.all(
+          activities.map(async (activity) => {
+            const security = await birdeyeService.getTokenSecurity(activity.contractAddress);
+
+            if (security) {
+              return {
+                ...activity,
+                securityScore: 100 - security.topHoldersPercent,
+                topHoldersPercent: security.topHoldersPercent
+              };
+            }
+            return activity;
+          })
+        );
+
+        setEnrichedActivities(enriched);
+        console.log('🔒 Security data loaded:', enriched);
+      } catch (error) {
+        console.error('Error fetching security data:', error);
+        setEnrichedActivities(activities);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSecurityData();
+    const interval = setInterval(fetchSecurityData, 300000);
+    return () => clearInterval(interval);
+  }, [timeFilter]);
 
   const activities: InsiderActivity[] = [
     {
@@ -167,7 +208,7 @@ const InsiderScan: React.FC = () => {
 
       {/* Activities List */}
       <div className="space-y-4">
-        {activities.map((activity) => (
+        {(enrichedActivities.length > 0 ? enrichedActivities : activities).map((activity) => (
           <div key={activity.id} className="noir-card rounded-xl p-6">
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -208,6 +249,27 @@ const InsiderScan: React.FC = () => {
                     <div className="text-xs text-green-600 font-bold">{activity.value}</div>
                   </div>
                 </div>
+
+                {activity.securityScore !== undefined && (
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="flex items-center gap-2">
+                      {activity.securityScore > 70 ? (
+                        <Shield className="w-4 h-4 text-green-600" />
+                      ) : (
+                        <ShieldAlert className="w-4 h-4 text-red-600" />
+                      )}
+                      <span className="text-xs text-white/70">Security Score:</span>
+                      <span className={`text-sm font-bold ${activity.securityScore > 70 ? 'text-green-600' : 'text-red-600'}`}>
+                        {activity.securityScore.toFixed(0)}%
+                      </span>
+                    </div>
+                    {activity.topHoldersPercent !== undefined && (
+                      <div className="text-xs text-white/50">
+                        Top holders: {activity.topHoldersPercent.toFixed(1)}%
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Description */}
                 <div className="bg-noir-dark rounded-lg p-3 mb-4">
