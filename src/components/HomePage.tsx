@@ -337,60 +337,124 @@ const HomePage: React.FC = () => {
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">
             Simple Pricing
           </h2>
-          <p className="text-xl noir-text-secondary max-w-2xl mx-auto">
+          <p className="text-xl noir-text-secondary max-w-2xl mx-auto mb-8">
             Choose the plan that fits your trading strategy
           </p>
+
+          {/* Billing Toggle */}
+          <div className="flex items-center justify-center gap-3">
+            <button
+              onClick={() => setBillingPeriod('monthly')}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                billingPeriod === 'monthly'
+                  ? 'bg-white text-noir-black'
+                  : 'text-white/60 hover:text-white'
+              }`}
+            >
+              Monthly
+            </button>
+            <button
+              onClick={() => setBillingPeriod('yearly')}
+              className={`px-6 py-2 rounded-lg font-semibold transition-all ${
+                billingPeriod === 'yearly'
+                  ? 'bg-white text-noir-black'
+                  : 'text-white/60 hover:text-white'
+              }`}
+            >
+              Yearly
+              <span className="ml-2 text-xs text-green-400">Save 20%</span>
+            </button>
+          </div>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Degen Plan */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          {/* Starter Plan */}
           <div
-            className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 hover:border-white/20 transition-all noir-fade-in ${revealedElements.has('plan-degen') ? 'revealed' : ''}`}
-            data-reveal-id="plan-degen"
+            className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in ${revealedElements.has('plan-starter') ? 'revealed' : ''}`}
+            data-reveal-id="plan-starter"
           >
-            <h3 className="text-2xl font-bold text-white mb-2">Degen</h3>
+            <h3 className="text-2xl font-bold text-white mb-2">Starter</h3>
             <div className="flex items-baseline gap-2 mb-6">
-              <span className="text-5xl font-bold text-white">0.42</span>
-              <span className="text-xl text-white/60">SOL/mo</span>
+              <span className="text-4xl font-bold text-white">
+                ${billingPeriod === 'yearly' ? '79' : '99'}
+              </span>
+              <span className="text-lg text-white/60">/mo</span>
             </div>
-            <button className="w-full bg-white text-noir-black py-3 px-6 rounded-xl font-semibold hover:bg-white/90 transition-all mb-8">
+            {billingPeriod === 'yearly' && (
+              <p className="text-sm text-green-400 mb-4">Billed $948/year</p>
+            )}
+            <button className="w-full bg-white text-noir-black py-3 px-6 rounded-xl font-semibold hover:bg-white/90 transition-all mb-6">
               Get Started
             </button>
-            <ul className="space-y-3 text-left text-white/80">
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-white" />
+            <ul className="space-y-2.5 text-left text-white/80 text-sm">
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
                 <span>Live KOL Feed</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-white" />
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
                 <span>Smart Money Tracker</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-white" />
-                <span>Solana Tools</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-white" />
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
                 <span>Wallet Finder</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-white" />
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
+                <span>Token Insiders</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Pro Plan */}
+          <div
+            className={`bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in ${revealedElements.has('plan-pro') ? 'revealed' : ''}`}
+            data-reveal-id="plan-pro"
+          >
+            <h3 className="text-2xl font-bold text-white mb-2">Pro</h3>
+            <div className="flex items-baseline gap-2 mb-6">
+              <span className="text-4xl font-bold text-white">
+                ${billingPeriod === 'yearly' ? '159' : '199'}
+              </span>
+              <span className="text-lg text-white/60">/mo</span>
+            </div>
+            {billingPeriod === 'yearly' && (
+              <p className="text-sm text-green-400 mb-4">Billed $1,908/year</p>
+            )}
+            <button className="w-full bg-white text-noir-black py-3 px-6 rounded-xl font-semibold hover:bg-white/90 transition-all mb-6">
+              Get Started
+            </button>
+            <ul className="space-y-2.5 text-left text-white/80 text-sm">
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
+                <span>Everything in Starter</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
                 <span>Cabal Finder</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-white" />
-                <span>Token Insiders</span>
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
+                <span>Fresh Wallet Feeds</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
+                <span>Custom KOL Feed</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-white" />
+                <span>Insiders Scan</span>
               </li>
             </ul>
           </div>
 
           {/* Legend Plan */}
           <div
-            className={`bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-8 hover:border-white/30 transition-all relative noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
+            className={`bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:border-white/30 transition-all relative noir-fade-in ${revealedElements.has('plan-legend') ? 'revealed' : ''}`}
             data-reveal-id="plan-legend"
           >
-            <div className="absolute -top-3 right-8">
+            <div className="absolute -top-3 right-6">
               <span className="bg-gradient-to-r from-yellow-400 to-amber-500 text-noir-black px-4 py-1 rounded-full text-sm font-bold">
                 Popular
               </span>
@@ -400,36 +464,41 @@ const HomePage: React.FC = () => {
               <Crown className="w-6 h-6 text-yellow-400" />
             </div>
             <div className="flex items-baseline gap-2 mb-6">
-              <span className="text-5xl font-bold text-white">4.16</span>
-              <span className="text-xl text-white/60">SOL/mo</span>
+              <span className="text-4xl font-bold text-white">
+                ${billingPeriod === 'yearly' ? '319' : '399'}
+              </span>
+              <span className="text-lg text-white/60">/mo</span>
             </div>
-            <button className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 text-noir-black py-3 px-6 rounded-xl font-semibold hover:opacity-90 transition-all mb-8">
+            {billingPeriod === 'yearly' && (
+              <p className="text-sm text-green-400 mb-4">Billed $3,828/year</p>
+            )}
+            <button className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 text-noir-black py-3 px-6 rounded-xl font-semibold hover:opacity-90 transition-all mb-6">
               Go Legend
             </button>
-            <ul className="space-y-3 text-left text-white/80">
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-yellow-400" />
-                <span>Everything in Degen</span>
+            <ul className="space-y-2.5 text-left text-white/80 text-sm">
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-yellow-400" />
+                <span>Everything in Pro</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-yellow-400" />
-                <span>Custom KOL Feed</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-yellow-400" />
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-yellow-400" />
                 <span>Whales Open Orders</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-yellow-400" />
-                <span>Fresh Wallet Feeds</span>
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-yellow-400" />
+                <span>Priority Alerts</span>
               </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-yellow-400" />
-                <span>Insiders Scan</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-yellow-400" />
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-yellow-400" />
                 <span>Private Community</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-yellow-400" />
+                <span>API Access</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="w-4 h-4 text-yellow-400" />
+                <span>1-on-1 Support</span>
               </li>
             </ul>
           </div>
