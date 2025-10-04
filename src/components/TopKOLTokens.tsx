@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { ChevronUp, ChevronDown, Copy, ExternalLink } from 'lucide-react';
-import { heliusService, type TokenInfo } from '../services/heliusApi';
+import { birdeyeService, type BirdeyeTrendingToken } from '../services/birdeyeApi';
 
 interface Token {
   id: string;
@@ -34,42 +34,42 @@ const TopKOLTokens: React.FC = () => {
       setIsLoadingReal(true);
       setError(null);
       try {
-        console.log('🔥 Fetching real trending tokens...');
-        const trendingTokens = await heliusService.getTrendingTokens();
-        
+        console.log('🔥 Fetching trending tokens from Birdeye...');
+        const trendingTokens = await birdeyeService.getTrendingTokens('v24hUSD', 'desc', 0, 50);
+
         if (trendingTokens.length === 0) {
           throw new Error('No trending tokens found');
         }
-        
-        const prices = await heliusService.getTokenPrices(trendingTokens.map(t => t.mint));
-        
+
         const formattedTokens: Token[] = trendingTokens.map((token, index) => {
-          const price = prices[token.mint] || token.price || 0;
-          const marketCap = token.marketCap || (price * parseFloat(token.supply) / Math.pow(10, token.decimals));
-          
+          const marketCap = token.mc || 0;
+          const buyVol = token.buy24h || 0;
+          const sellVol = token.sell24h || 0;
+          const netVol = buyVol - sellVol;
+
           return {
             id: (index + 1).toString(),
             rank: index + 1,
             symbol: token.symbol,
             name: token.name,
-            marketCap: `$${(marketCap / 1000000).toFixed(2)}M`,
+            marketCap: marketCap > 1000000 ? `$${(marketCap / 1000000).toFixed(2)}M` : `$${(marketCap / 1000).toFixed(2)}K`,
             kolHolders: Math.floor(Math.random() * 10) + 1,
-            kolHoldings: `$${(Math.random() * 100000).toFixed(0)}`,
-            kolTraders: Math.floor(Math.random() * 10) + 1,
-            totalSwaps: Math.floor(Math.random() * 100) + 1,
-            buyVolume: `$${(Math.random() * 50000).toFixed(0)}`,
-            sellVolume: `$${(Math.random() * 50000).toFixed(0)}`,
-            netVolume: Math.random() > 0.5 ? `+$${(Math.random() * 10000).toFixed(0)}` : `-$${(Math.random() * 10000).toFixed(0)}`,
-            tokenAge: `${Math.floor(Math.random() * 30)}d ${Math.floor(Math.random() * 24)}h`,
-            contractAddress: token.mint,
-            verified: Math.random() > 0.7
+            kolHoldings: `$${(token.liquidity / 1000).toFixed(2)}K`,
+            kolTraders: token.trade24h || 0,
+            totalSwaps: token.trade24h || 0,
+            buyVolume: buyVol > 1000 ? `$${(buyVol / 1000).toFixed(2)}K` : `$${buyVol.toFixed(0)}`,
+            sellVolume: sellVol > 1000 ? `$${(sellVol / 1000).toFixed(2)}K` : `$${sellVol.toFixed(0)}`,
+            netVolume: netVol >= 0 ? `+$${(netVol / 1000).toFixed(2)}K` : `-$${(Math.abs(netVol) / 1000).toFixed(2)}K`,
+            tokenAge: '-',
+            contractAddress: token.address,
+            verified: false
           };
         });
 
         setRealTokens(formattedTokens);
         console.log('🔥 Loaded trending tokens:', formattedTokens);
       } catch (error) {
-        console.error('Error fetching real token data:', error);
+        console.error('Error fetching token data from Birdeye:', error);
         setError('Failed to load token data');
       } finally {
         setIsLoadingReal(false);
@@ -77,10 +77,9 @@ const TopKOLTokens: React.FC = () => {
     };
 
     fetchRealTokenData();
-    // Refresh data every 3 minutes
     const interval = setInterval(fetchRealTokenData, 180000);
     return () => clearInterval(interval);
-  }, [timePeriod]); // Refresh when time period changes
+  }, [timePeriod]);
 
   const tokens: Token[] = [
     {
