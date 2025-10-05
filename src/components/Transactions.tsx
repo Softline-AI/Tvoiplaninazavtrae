@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowDownLeft, Clock, Filter, ExternalLink, Copy } from 'lucide-react';
+import { flaskService } from '../services/flaskApi';
 
 interface Transaction {
   id: string;
@@ -19,8 +20,23 @@ interface Transaction {
 const Transactions: React.FC = () => {
   const [filter, setFilter] = useState('all');
   const [timeRange, setTimeRange] = useState('24h');
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const transactions: Transaction[] = [
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      setIsLoading(true);
+      console.log('🔄 Fetching transactions from Flask API...');
+      const data = await flaskService.getTransactions(timeRange, filter);
+      setTransactions(data);
+      setIsLoading(false);
+      console.log('✅ Transactions loaded:', data.length);
+    };
+
+    fetchTransactions();
+  }, [timeRange, filter]);
+
+  const mockTransactions: Transaction[] = [
     {
       id: '1',
       signature: '5ThrLJDFpJqaFL36AvAX8ECZmz6n4vZvqMYvpHHkpump',
@@ -166,7 +182,20 @@ const Transactions: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {transactions.map((tx) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-8 text-center text-white/70">
+                    Loading transactions...
+                  </td>
+                </tr>
+              ) : transactions.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-4 py-8 text-center text-white/70">
+                    No transactions found. Start Flask server: cd backend && python app.py
+                  </td>
+                </tr>
+              ) : (
+                transactions.map((tx) => (
                 <tr key={tx.id} className="transition-all duration-300 hover:bg-white/5">
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(tx.type)}`}>
@@ -226,7 +255,8 @@ const Transactions: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              ))
+              )}
             </tbody>
           </table>
         </div>
