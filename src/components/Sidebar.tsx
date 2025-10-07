@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-  Play,
-  Target,
   BarChart3,
   Star,
   TrendingUp,
@@ -11,9 +9,7 @@ import {
   Search,
   Users,
   Zap,
-  Repeat,
-  Crown,
-  ChevronRight
+  Repeat
 } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
@@ -63,26 +59,23 @@ const Sidebar: React.FC = () => {
       icon: <Zap className="w-4 h-4" />,
       label: 'Insider Scan',
       href: '/app/insider-scan',
-      badge: 'LEGEND'
+      badge: 'LGND'
     },
     {
       icon: <Repeat className="w-4 h-4" />,
-      label: 'Live DCA Feed',
+      label: 'Live DCA',
       href: '/app/live-dca-feed',
-      badge: 'LEGEND'
+      badge: 'LGND'
     }
   ];
 
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="sidebar-modern w-64 h-full p-4 flex flex-col">
-      <div className="mb-6">
-        <Link to="/" className="flex items-center gap-3 px-3 py-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg">
-            <span className="text-white font-bold">S</span>
-          </div>
-          <span className="text-lg font-semibold text-white">SmartChain</span>
+    <div className="sidebar-dark w-64 h-full p-4 flex flex-col">
+      <div className="mb-8">
+        <Link to="/" className="text-lg font-bold text-white tracking-tight px-3">
+          SMARTCHAIN
         </Link>
       </div>
 
@@ -96,7 +89,7 @@ const Sidebar: React.FC = () => {
             {item.icon}
             <span className="flex-1">{item.label}</span>
             {item.badge && (
-              <span className={item.badge === 'PRO' ? 'badge-pro' : 'badge-legend'}>
+              <span className="badge-white">
                 {item.badge}
               </span>
             )}
@@ -107,10 +100,9 @@ const Sidebar: React.FC = () => {
       <div className="mt-4 pt-4 border-t border-white/10">
         <Link
           to="/app/upgrade"
-          className="flex items-center justify-center gap-2 w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-3 px-4 rounded-xl font-medium shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+          className="btn-white w-full text-center block"
         >
-          <Crown className="w-5 h-5" />
-          Upgrade Plan
+          Upgrade
         </Link>
       </div>
     </div>
