@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Copy, ExternalLink, TrendingUp, TrendingDown } from 'lucide-react';
+import { Copy, ExternalLink, TrendingUp, TrendingDown, Clock, DollarSign } from 'lucide-react';
 import { heliusService, type RealTimeKOLTrade } from '../services/heliusApi';
 import { birdeyeService } from '../services/birdeyeApi';
 
@@ -13,16 +13,20 @@ interface KOLTrade {
   twitterHandle: string;
   token: string;
   tokenContract: string;
+  mcap: string;
   bought: string;
   sold: string;
   holding: string;
   pnl: string;
   pnlPercentage: string;
+  aht?: string;
 }
 
 const KOLFeed: React.FC = () => {
   const [realTrades, setRealTrades] = useState<RealTimeKOLTrade[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
+  const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
+  const [sortBy, setSortBy] = useState<'time' | 'pnl'>('time');
 
   useEffect(() => {
     const fetchRealKOLTrades = async () => {
@@ -80,11 +84,13 @@ const KOLFeed: React.FC = () => {
       twitterHandle: 'vibed333',
       token: 'DBA',
       tokenContract: '5ToPP9Mq9H4fkRQ68V9knabtXDTbpjDLbikTgzwUpump',
-      bought: '$439',
-      sold: '$622',
+      mcap: '$27.08K',
+      bought: '$439.42',
+      sold: '$622.13',
       holding: 'sold all',
-      pnl: '+$182',
-      pnlPercentage: '+41%'
+      pnl: '+$182.71',
+      pnlPercentage: '+41.58%',
+      aht: '4min 19s'
     },
     {
       id: '2',
@@ -96,11 +102,13 @@ const KOLFeed: React.FC = () => {
       twitterHandle: 'cupseyy',
       token: 'REALCOIN',
       tokenContract: 'Ghrcrh9YgyU6baT3Wt5XNiQ7UXWNNYSZMEuCcauspump',
-      bought: '$480',
-      sold: '$2.2K',
-      holding: '$564',
-      pnl: '+$2.3K',
-      pnlPercentage: '+483%'
+      mcap: '$109.92K',
+      bought: '$479.97',
+      sold: '$2.24K',
+      holding: '$563.68',
+      pnl: '+$2.32K',
+      pnlPercentage: '+483.52%',
+      aht: '46min 4s'
     },
     {
       id: '3',
@@ -112,11 +120,13 @@ const KOLFeed: React.FC = () => {
       twitterHandle: 'untaxxable',
       token: 'DBA',
       tokenContract: '5ToPP9Mq9H4fkRQ68V9knabtXDTbpjDLbikTgzwUpump',
-      bought: '$0',
-      sold: '$432',
-      holding: '$0',
-      pnl: '+$432',
-      pnlPercentage: '-'
+      mcap: '$27.08K',
+      bought: '$0.00',
+      sold: '$431.79',
+      holding: '$0.00',
+      pnl: '+$431.79',
+      pnlPercentage: '-',
+      aht: '-'
     },
     {
       id: '4',
@@ -128,49 +138,180 @@ const KOLFeed: React.FC = () => {
       twitterHandle: 'untaxxable',
       token: 'Nothing',
       tokenContract: 'C3QgEAkQ4DNCf73GKNHnWz6PHTL186DwDrkSexFBbonk',
-      bought: '$254',
-      sold: '$247',
-      holding: 'sold',
-      pnl: '-$7',
-      pnlPercentage: '-3%'
+      mcap: '$9.25K',
+      bought: '$254.00',
+      sold: '$247.27',
+      holding: 'sold all',
+      pnl: '-$6.74',
+      pnlPercentage: '-2.65%',
+      aht: '13s'
+    },
+    {
+      id: '5',
+      lastTx: 'sell',
+      timeAgo: '12m',
+      kolName: 'Crypto Bull',
+      kolAvatar: 'https://images.pexels.com/photos/1559486/pexels-photo-1559486.jpeg?auto=compress&cs=tinysrgb&w=40&h=40&dpr=1',
+      walletAddress: '8xKm3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR',
+      twitterHandle: 'cryptobull',
+      token: 'MOON',
+      tokenContract: 'D4xN3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR',
+      mcap: '$156.3K',
+      bought: '$1.2K',
+      sold: '$3.8K',
+      holding: '$450',
+      pnl: '+$3.05K',
+      pnlPercentage: '+254.2%',
+      aht: '2h 15m'
+    },
+    {
+      id: '6',
+      lastTx: 'buy',
+      timeAgo: '15m',
+      kolName: 'Whale Hunter',
+      kolAvatar: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=40&h=40&dpr=1',
+      walletAddress: '9yLm4WZ5CptM6vsH3zpfR267KTenbnwm0L6geMxlQnbNS',
+      twitterHandle: 'whalehunter',
+      token: 'PEPE',
+      tokenContract: 'E5yN4WZ5CptM6vsH3zpfR267KTenbnwm0L6geMxlQnbNS',
+      mcap: '$2.3M',
+      bought: '$5.6K',
+      sold: '$0',
+      holding: '$8.9K',
+      pnl: '+$3.3K',
+      pnlPercentage: '+58.9%',
+      aht: '35min'
     }
   ];
 
   const displayTrades = realTrades.length > 0 ? realTrades : mockTrades;
 
+  const filteredTrades = displayTrades.filter(trade => {
+    if (filter === 'all') return true;
+    return trade.lastTx === filter;
+  });
+
+  const sortedTrades = [...filteredTrades].sort((a, b) => {
+    if (sortBy === 'pnl') {
+      const pnlA = parseFloat(a.pnl.replace(/[^0-9.-]/g, ''));
+      const pnlB = parseFloat(b.pnl.replace(/[^0-9.-]/g, ''));
+      return pnlB - pnlA;
+    }
+    return 0;
+  });
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  const stats = {
+    totalTrades: displayTrades.length,
+    buyTrades: displayTrades.filter(t => t.lastTx === 'buy').length,
+    sellTrades: displayTrades.filter(t => t.lastTx === 'sell').length,
+    avgPnl: displayTrades.reduce((acc, t) => {
+      const pnl = parseFloat(t.pnl.replace(/[^0-9.-]/g, ''));
+      return acc + (isNaN(pnl) ? 0 : pnl);
+    }, 0) / displayTrades.length
   };
 
   return (
     <div className="w-full max-w-7xl mx-auto p-6 fade-in">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white mb-1">Live Trades</h1>
-          <p className="text-sm text-gray">Real-time KOL trading activity</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Live KOL Trading Feed</h1>
+          <p className="text-sm text-gray">Real-time tracking of Key Opinion Leader trades</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-black border border-white/10">
+        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black border border-white/10">
           <div className="status-dot"></div>
-          <span className="text-xs font-medium text-white">LIVE</span>
+          <span className="text-xs font-bold text-white tracking-wider">LIVE</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-        {displayTrades.map((trade, index) => (
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="card-dark p-4">
+          <div className="text-xs text-gray mb-1">Total Trades</div>
+          <div className="text-2xl font-bold text-white">{stats.totalTrades}</div>
+        </div>
+        <div className="card-dark p-4">
+          <div className="text-xs text-gray mb-1">Buy Trades</div>
+          <div className="text-2xl font-bold text-white">{stats.buyTrades}</div>
+        </div>
+        <div className="card-dark p-4">
+          <div className="text-xs text-gray mb-1">Sell Trades</div>
+          <div className="text-2xl font-bold text-white">{stats.sellTrades}</div>
+        </div>
+        <div className="card-dark p-4">
+          <div className="text-xs text-gray mb-1">Avg P&L</div>
+          <div className={`text-2xl font-bold ${stats.avgPnl >= 0 ? 'text-white' : 'text-gray'}`}>
+            {stats.avgPnl >= 0 ? '+' : ''}{stats.avgPnl.toFixed(0)}
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 mb-6">
+        <div className="flex items-center gap-2 card-dark p-1 rounded-lg">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
+              filter === 'all' ? 'bg-white text-black' : 'text-gray hover:text-white'
+            }`}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setFilter('buy')}
+            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
+              filter === 'buy' ? 'bg-white text-black' : 'text-gray hover:text-white'
+            }`}
+          >
+            Buys
+          </button>
+          <button
+            onClick={() => setFilter('sell')}
+            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
+              filter === 'sell' ? 'bg-white text-black' : 'text-gray hover:text-white'
+            }`}
+          >
+            Sells
+          </button>
+        </div>
+
+        <div className="flex items-center gap-2 card-dark p-1 rounded-lg">
+          <button
+            onClick={() => setSortBy('time')}
+            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
+              sortBy === 'time' ? 'bg-white text-black' : 'text-gray hover:text-white'
+            }`}
+          >
+            Recent
+          </button>
+          <button
+            onClick={() => setSortBy('pnl')}
+            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
+              sortBy === 'pnl' ? 'bg-white text-black' : 'text-gray hover:text-white'
+            }`}
+          >
+            Top P&L
+          </button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {sortedTrades.map((trade, index) => (
           <div
             key={trade.id}
-            className="card-dark p-5 slide-in"
+            className="card-dark p-6 slide-in"
             style={{ animationDelay: `${index * 0.05}s` }}
           >
-            <div className="flex items-start justify-between mb-4">
+            <div className="flex items-start justify-between mb-5">
               <div className="flex items-center gap-3">
                 <img
                   src={trade.kolAvatar}
                   alt={trade.kolName}
-                  className="w-10 h-10 rounded-full border border-white/10 object-cover"
+                  className="w-12 h-12 rounded-full border-2 border-white/10 object-cover"
                 />
                 <div>
-                  <h3 className="text-white font-semibold text-sm">{trade.kolName}</h3>
+                  <h3 className="text-white font-bold text-base">{trade.kolName}</h3>
                   <a
                     href={`https://twitter.com/${trade.twitterHandle}`}
                     target="_blank"
@@ -181,74 +322,89 @@ const KOLFeed: React.FC = () => {
                   </a>
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end gap-1">
                 <span
-                  className={`px-2 py-1 rounded text-xs font-bold ${
+                  className={`px-3 py-1 rounded text-xs font-bold ${
                     trade.lastTx === 'buy'
-                      ? 'bg-white/10 text-white'
-                      : 'bg-white/5 text-gray'
+                      ? 'bg-white text-black'
+                      : 'bg-white/10 text-white'
                   }`}
                 >
                   {trade.lastTx.toUpperCase()}
                 </span>
-                <span className="text-xs text-gray">{trade.timeAgo}</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mb-4 pb-4 border-b border-white/10">
-              <div>
-                <p className="text-xs text-gray mb-1">Token</p>
-                <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
-                    <span className="text-white font-bold text-xs">
-                      {trade.token.substring(0, 2).toUpperCase()}
-                    </span>
-                  </div>
-                  <span className="text-white font-semibold text-sm">{trade.token}</span>
+                <div className="flex items-center gap-1 text-xs text-gray">
+                  <Clock className="w-3 h-3" />
+                  <span>{trade.timeAgo}</span>
                 </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="mb-5 pb-5 border-b border-white/10">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray mb-2">Token</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
+                      <span className="text-white font-bold text-xs">
+                        {trade.token.substring(0, 2).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-white font-bold text-base">{trade.token}</span>
+                      <div className="text-xs text-gray flex items-center gap-1">
+                        <DollarSign className="w-3 h-3" />
+                        {trade.mcap}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {trade.aht && trade.aht !== '-' && (
+                  <div className="text-right">
+                    <p className="text-xs text-gray mb-1">Hold Time</p>
+                    <p className="text-sm font-semibold text-white">{trade.aht}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4 mb-5">
               <div>
                 <p className="text-xs text-gray mb-1">Bought</p>
-                <p className="text-sm font-semibold text-white">{trade.bought}</p>
+                <p className="text-base font-bold text-white">{trade.bought}</p>
               </div>
               <div>
                 <p className="text-xs text-gray mb-1">Sold</p>
-                <p className="text-sm font-semibold text-white">{trade.sold}</p>
+                <p className="text-base font-bold text-white">{trade.sold}</p>
               </div>
               <div>
                 <p className="text-xs text-gray mb-1">Holdings</p>
-                <p className="text-sm font-semibold text-white">{trade.holding}</p>
+                <p className="text-base font-bold text-white">{trade.holding}</p>
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-white/10">
-              <div className="flex items-center gap-3">
-                <div>
-                  <p className="text-xs text-gray mb-1">P&L</p>
-                  <div className="flex items-center gap-2">
-                    {trade.pnl.startsWith('+') ? (
-                      <TrendingUp className="w-4 h-4 text-white" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4 text-gray" />
-                    )}
-                    <span className="text-base font-bold text-white">
-                      {trade.pnl}
-                    </span>
-                    <span className="text-sm text-gray">
-                      {trade.pnlPercentage}
-                    </span>
-                  </div>
+            <div className="flex items-center justify-between pt-5 border-t border-white/10">
+              <div>
+                <p className="text-xs text-gray mb-2">Profit & Loss</p>
+                <div className="flex items-center gap-2">
+                  {trade.pnl.startsWith('+') ? (
+                    <TrendingUp className="w-5 h-5 text-white" />
+                  ) : (
+                    <TrendingDown className="w-5 h-5 text-gray" />
+                  )}
+                  <span className={`text-xl font-bold ${trade.pnl.startsWith('+') ? 'text-white' : 'text-gray'}`}>
+                    {trade.pnl}
+                  </span>
+                  <span className={`text-sm font-semibold ${trade.pnl.startsWith('+') ? 'text-white' : 'text-gray'}`}>
+                    ({trade.pnlPercentage})
+                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() => copyToClipboard(trade.walletAddress)}
-                  className="p-2 hover:bg-white/10 rounded transition-all text-gray hover:text-white"
-                  title="Copy wallet"
+                  className="p-2 hover:bg-white/10 rounded-lg transition-all text-gray hover:text-white"
+                  title="Copy wallet address"
                 >
                   <Copy className="w-4 h-4" />
                 </button>
@@ -256,7 +412,7 @@ const KOLFeed: React.FC = () => {
                   href={`https://solscan.io/account/${trade.walletAddress}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 hover:bg-white/10 rounded transition-all text-gray hover:text-white"
+                  className="p-2 hover:bg-white/10 rounded-lg transition-all text-gray hover:text-white"
                   title="View on Solscan"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -266,6 +422,12 @@ const KOLFeed: React.FC = () => {
           </div>
         ))}
       </div>
+
+      {sortedTrades.length === 0 && (
+        <div className="card-dark text-center py-20">
+          <p className="text-gray text-lg">No trades match your filters</p>
+        </div>
+      )}
     </div>
   );
 };
