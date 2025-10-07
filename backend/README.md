@@ -1,15 +1,17 @@
-# Flask Backend для StalkX
+# Backend для StalkX
 
-## Установка
+## Вариант 1: Python HTTP Server (без зависимостей) - РЕКОМЕНДУЕТСЯ
+
+```bash
+cd backend
+python3 app_simple.py
+```
+
+## Вариант 2: Flask (требует установки)
 
 ```bash
 cd backend
 pip install -r requirements.txt
-```
-
-## Запуск
-
-```bash
 python app.py
 ```
 
