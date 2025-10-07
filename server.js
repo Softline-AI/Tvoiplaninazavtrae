@@ -57,6 +57,19 @@ app.post('/laser-stream', async (req, res) => {
   }
 });
 
+app.post('/webhook', (req, res) => {
+  const data = req.body;
+
+  if (data.type === 'TRANSFER') {
+    const amount = data.amount;
+    if (amount > 10000) {
+      console.log(`Крупный перевод: ${amount} токенов`);
+    }
+  }
+
+  res.status(200).json({ message: 'Webhook обработан' });
+});
+
 app.listen(port, () => {
   console.log(`Сервер слушает на http://localhost:${port}`);
 });
