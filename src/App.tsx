@@ -24,18 +24,27 @@ import MyStalks from './components/MyStalks';
 const App: React.FC = () => {
   return (
     <Router>
-      <Navigation />
-      <Routes>
-        {/* Landing Page Route */}
-        <Route path="/" element={
-          <div className="min-h-screen noir-bg">
-            <HomePage />
-          </div>
-        } />
+      <div className="fixed inset-0 z-0 overflow-hidden">
+        <iframe
+          src="https://player.vimeo.com/video/1125525358?background=1&autoplay=1&loop=1&muted=1&controls=0"
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-20"
+          allow="autoplay; fullscreen"
+          style={{ border: 'none' }}
+        />
+      </div>
+      <div className="relative z-10">
+        <Navigation />
+        <Routes>
+          {/* Landing Page Route */}
+          <Route path="/" element={
+            <div className="min-h-screen">
+              <HomePage />
+            </div>
+          } />
         
         {/* App Routes with Sidebar */}
         <Route path="/app/*" element={
-          <div className="h-screen flex flex-col noir-bg">
+          <div className="h-screen flex flex-col">
             <div className="lg:flex lg:max-h-screen h-screen max-w-screen w-screen lg:overflow-hidden">
               <div className="lg:overflow-y-auto">
                 <Sidebar />
@@ -76,7 +85,8 @@ const App: React.FC = () => {
             </div>
           </div>
         } />
-      </Routes>
+        </Routes>
+      </div>
     </Router>
   );
 };
