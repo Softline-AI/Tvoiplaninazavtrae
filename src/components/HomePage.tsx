@@ -98,9 +98,12 @@ const HomePage: React.FC = () => {
               <video
                 className="w-full h-full object-cover"
                 controls
+                autoPlay
+                loop
+                muted
                 poster="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800&h=450&dpr=1"
               >
-                <source src="/demo-video.mp4" type="video/mp4" />
+                <source src="https://ru.files.fm/f/3txfxck5pm" type="video/mp4" />
                 <div className="flex items-center justify-center h-full bg-noir-dark">
                   <div className="text-center">
                     <Play className="w-20 h-20 text-white mx-auto mb-6" />
