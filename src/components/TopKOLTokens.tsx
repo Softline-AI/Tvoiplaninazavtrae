@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { ChevronUp, ChevronDown, Copy, ExternalLink } from 'lucide-react';
+import { ChevronUp, ChevronDown, Copy, ExternalLink, Search, X, Users } from 'lucide-react';
 import { birdeyeService, type BirdeyeTrendingToken } from '../services/birdeyeApi';
 
 interface Token {
@@ -28,6 +28,10 @@ const TopKOLTokens: React.FC = () => {
   const [realTokens, setRealTokens] = useState<Token[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [filterTab, setFilterTab] = useState<'all' | 'buy' | 'sell'>('all');
+  const [socialAccountsOnly, setSocialAccountsOnly] = useState(false);
+  const [publicKOLsOnly, setPublicKOLsOnly] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const fetchRealTokenData = async () => {
@@ -277,12 +281,26 @@ const TopKOLTokens: React.FC = () => {
   // Use real data if available, otherwise fallback to mock data
   const displayTokens = realTokens.length > 0 ? realTokens : tokens;
 
+  // Filter tokens based on search query
+  const filteredTokens = displayTokens.filter(token => {
+    const matchesSearch = searchQuery === '' ||
+      token.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      token.contractAddress.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesSearch;
+  });
+
+  const clearSearch = () => {
+    setSearchQuery('');
+  };
+
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold text-white tracking-tight">Trending Tokens</h1>
-          
+
           <div className="flex gap-2">
             {['1h', '6h', '1d', '7d'].map((period) => (
               <button
@@ -297,6 +315,106 @@ const TopKOLTokens: React.FC = () => {
                 {period === '1h' ? '1H' : period === '6h' ? '6H' : period === '1d' ? '1D' : '7D'}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Filter Controls */}
+        <div className="relative w-full p-3 flex flex-col md:flex-row items-stretch md:items-center gap-4 bg-white/5 border border-white/10 rounded-xl mb-4">
+          {/* Tabs */}
+          <div className="flex-1">
+            <div className="inline-flex h-fit gap-2 items-center flex-nowrap rounded-lg p-1 bg-white">
+              <button
+                onClick={() => setFilterTab('all')}
+                className={`relative z-10 w-full px-3 py-1 flex justify-center items-center cursor-pointer transition-all h-8 text-sm rounded-lg ${
+                  filterTab === 'all'
+                    ? 'bg-gray-100 text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setFilterTab('buy')}
+                className={`relative z-10 w-full px-3 py-1 flex justify-center items-center cursor-pointer transition-all h-8 text-sm rounded-lg ${
+                  filterTab === 'buy'
+                    ? 'bg-gray-100 text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Buy
+              </button>
+              <button
+                onClick={() => setFilterTab('sell')}
+                className={`relative z-10 w-full px-3 py-1 flex justify-center items-center cursor-pointer transition-all h-8 text-sm rounded-lg ${
+                  filterTab === 'sell'
+                    ? 'bg-gray-100 text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+              >
+                Sell
+              </button>
+            </div>
+          </div>
+
+          {/* Toggle Switches */}
+          <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-white rounded-xl px-3 h-9">
+              <svg className="w-4 h-4 text-gray-600" viewBox="0 0 512 512" fill="currentColor">
+                <path d="M389.2 48h70.6L305.6 224.2 487 464H345L233.7 318.6 106.5 464H35.8L200.7 275.5 26.8 48H172.4L272.9 180.9 389.2 48zM364.4 421.8h39.1L151.1 88h-42L364.4 421.8z" />
+              </svg>
+              <label className="group relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={socialAccountsOnly}
+                  onChange={(e) => setSocialAccountsOnly(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="relative w-10 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 transition-colors">
+                  <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
+                    socialAccountsOnly ? 'translate-x-4' : ''
+                  }`}></div>
+                </div>
+              </label>
+            </div>
+
+            <div className="flex items-center gap-2 bg-white rounded-xl px-3 h-9">
+              <Users className="w-4 h-4 text-gray-600" />
+              <label className="group relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={publicKOLsOnly}
+                  onChange={(e) => setPublicKOLsOnly(e.target.checked)}
+                  className="sr-only peer"
+                />
+                <div className="relative w-10 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 transition-colors">
+                  <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow-sm transition-transform ${
+                    publicKOLsOnly ? 'translate-x-4' : ''
+                  }`}></div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          {/* Search Input */}
+          <div className="flex-1 min-w-[300px]">
+            <div className="relative w-full inline-flex items-center bg-white rounded-xl px-3 h-10 shadow-sm">
+              <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filter by KOL or token address/ticker..."
+                className="w-full pl-2 pr-8 bg-transparent outline-none text-sm text-gray-900 placeholder-gray-500"
+              />
+              {searchQuery && (
+                <button
+                  onClick={clearSearch}
+                  className="absolute right-3 p-1 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-4 h-4 text-gray-400" />
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -379,7 +497,7 @@ const TopKOLTokens: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {displayTokens.map((token, index) => (
+              {filteredTokens.map((token, index) => (
                 <tr key={token.id} className="transition-all duration-200 hover:bg-white/[0.02]">
                   <td className="px-6 py-5 whitespace-nowrap">
                     <span className="text-sm font-semibold text-white/70">#{token.rank}</span>
