@@ -302,6 +302,16 @@ const TopKOLTokens: React.FC = () => {
       </div>
 
       <div className="bg-noir-dark/40 border border-white/10 rounded-xl overflow-hidden mb-8 shadow-2xl">
+        <div className="flex py-2 bg-default-50 rounded-t-xl sticky z-10">
+          <div className="flex pl-5 w-60 text-xs min-w-[200px]">KOL</div>
+          <div className="flex w-20 text-xs min-w-[80px]">Type</div>
+          <div className="flex w-64 text-xs pl-5 min-w-[190px]">Token</div>
+          <div className="flex w-28 text-xs">USD Amount</div>
+          <div className="flex w-32 text-xs">Amount</div>
+          <div className="flex w-36 text-xs">Price</div>
+          <div className="flex w-32 text-xs">Time</div>
+          <div className="flex w-14 text-xs"></div>
+        </div>
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead className="bg-black/40 border-b border-white/10">
