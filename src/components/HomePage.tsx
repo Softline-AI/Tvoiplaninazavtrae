@@ -49,13 +49,14 @@ const HomePage: React.FC = () => {
       <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 w-full h-full">
           <iframe
-            src="https://streamable.com/e/b7wh6d?autoplay=1&loop=1&muted=1"
+            src="https://streamable.com/o/b7wh6d?autoplay=1&loop=1&nocontrols=1&muted=1"
             frameBorder="0"
             width="100%"
             height="100%"
-            allow="autoplay"
-            className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
-            style={{ transform: 'scale(1.5)' }}
+            allow="autoplay; fullscreen"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full opacity-20 pointer-events-none"
+            style={{ transform: 'scale(1.8)', objectFit: 'cover' }}
           ></iframe>
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-noir-black/60 via-noir-black/40 to-noir-black"></div>
