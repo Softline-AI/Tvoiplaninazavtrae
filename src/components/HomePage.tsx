@@ -126,35 +126,43 @@ const HomePage: React.FC = () => {
       <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
         <div className="text-center mb-16">
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
-            How It Works
+            See SmartChain in Action
           </h2>
           <p className="text-xl text-gray max-w-3xl mx-auto">
-            Three simple steps to start tracking smart money
+            Real-time intelligence at your fingertips
           </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             {
-              step: "01",
-              title: "Create Account",
-              description: "Sign up in seconds. No credit card required to start."
+              image: "https://images.pexels.com/photos/6802042/pexels-photo-6802042.jpeg?auto=compress&cs=tinysrgb&w=800",
+              title: "Live Transaction Feed",
+              description: "Watch whale movements as they happen. Every buy, sell, and transfer tracked in real-time across the blockchain."
             },
             {
-              step: "02",
-              title: "Choose Tools",
-              description: "Select KOLs to track, set up alerts, customize your dashboard."
+              image: "https://images.pexels.com/photos/7567443/pexels-photo-7567443.jpeg?auto=compress&cs=tinysrgb&w=800",
+              title: "Advanced Analytics",
+              description: "Deep insights into trading patterns, portfolio positions, and profit tracking. Know what's working before everyone else."
             },
             {
-              step: "03",
-              title: "Track & Profit",
-              description: "Monitor live trades, get instant alerts, make informed decisions."
+              image: "https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800",
+              title: "Smart Alerts",
+              description: "Get instant notifications when KOLs make moves. Never miss an opportunity with customizable alert filters."
             }
           ].map((item, index) => (
-            <div key={index} className="text-center">
-              <div className="text-6xl font-bold text-white/10 mb-4">{item.step}</div>
-              <h3 className="text-2xl font-bold text-white mb-3">{item.title}</h3>
-              <p className="text-gray leading-relaxed">{item.description}</p>
+            <div key={index} className="card-dark overflow-hidden">
+              <div className="aspect-video overflow-hidden">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
+                <p className="text-gray text-sm leading-relaxed">{item.description}</p>
+              </div>
             </div>
           ))}
         </div>
