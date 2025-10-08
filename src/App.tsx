@@ -25,12 +25,7 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="fixed inset-0 z-0 overflow-hidden bg-black">
-        <iframe
-          src="https://player.vimeo.com/video/1125525358?background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0"
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-50"
-          allow="autoplay; fullscreen"
-          style={{ border: 'none', width: '100vw', height: '100vh', objectFit: 'cover' }}
-        />
+        <div className="animated-3d-background"></div>
       </div>
       <div className="relative z-10" style={{ background: 'transparent' }}>
         <Navigation />
