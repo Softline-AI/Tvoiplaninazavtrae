@@ -215,219 +215,124 @@ const KOLFeed: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 fade-in">
+    <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Live KOL Trading Feed</h1>
-          <p className="text-sm text-gray">Real-time tracking of Key Opinion Leader trades</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Live Trades</h1>
         </div>
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg bg-black border border-white/10">
-          <div className="status-dot"></div>
-          <span className="text-xs font-bold text-white tracking-wider">LIVE</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="card-dark p-4">
-          <div className="text-xs text-gray mb-1">Total Trades</div>
-          <div className="text-2xl font-bold text-white">{stats.totalTrades}</div>
-        </div>
-        <div className="card-dark p-4">
-          <div className="text-xs text-gray mb-1">Buy Trades</div>
-          <div className="text-2xl font-bold text-white">{stats.buyTrades}</div>
-        </div>
-        <div className="card-dark p-4">
-          <div className="text-xs text-gray mb-1">Sell Trades</div>
-          <div className="text-2xl font-bold text-white">{stats.sellTrades}</div>
-        </div>
-        <div className="card-dark p-4">
-          <div className="text-xs text-gray mb-1">Avg P&L</div>
-          <div className={`text-2xl font-bold ${stats.avgPnl >= 0 ? 'text-white' : 'text-gray'}`}>
-            {stats.avgPnl >= 0 ? '+' : ''}{stats.avgPnl.toFixed(0)}
-          </div>
+        <div className="flex items-center gap-2">
+          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+          <span className="text-xs text-white/50 uppercase tracking-wider">Live</span>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex items-center gap-2 card-dark p-1 rounded-lg">
-          <button
-            onClick={() => setFilter('all')}
-            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
-              filter === 'all' ? 'bg-white text-black' : 'text-gray hover:text-white'
-            }`}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setFilter('buy')}
-            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
-              filter === 'buy' ? 'bg-white text-black' : 'text-gray hover:text-white'
-            }`}
-          >
-            Buys
-          </button>
-          <button
-            onClick={() => setFilter('sell')}
-            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
-              filter === 'sell' ? 'bg-white text-black' : 'text-gray hover:text-white'
-            }`}
-          >
-            Sells
-          </button>
-        </div>
-
-        <div className="flex items-center gap-2 card-dark p-1 rounded-lg">
-          <button
-            onClick={() => setSortBy('time')}
-            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
-              sortBy === 'time' ? 'bg-white text-black' : 'text-gray hover:text-white'
-            }`}
-          >
-            Recent
-          </button>
-          <button
-            onClick={() => setSortBy('pnl')}
-            className={`px-4 py-2 rounded text-xs font-semibold transition-all ${
-              sortBy === 'pnl' ? 'bg-white text-black' : 'text-gray hover:text-white'
-            }`}
-          >
-            Top P&L
-          </button>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {sortedTrades.map((trade, index) => (
-          <div
-            key={trade.id}
-            className="card-dark p-6 slide-in"
-            style={{ animationDelay: `${index * 0.05}s` }}
-          >
-            <div className="flex items-start justify-between mb-5">
-              <div className="flex items-center gap-3">
-                <img
-                  src={trade.kolAvatar}
-                  alt={trade.kolName}
-                  className="w-12 h-12 rounded-full border-2 border-white/10 object-cover"
-                />
-                <div>
-                  <h3 className="text-white font-bold text-base">{trade.kolName}</h3>
-                  <a
-                    href={`https://twitter.com/${trade.twitterHandle}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs text-gray hover:text-white transition-colors"
-                  >
-                    @{trade.twitterHandle}
-                  </a>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                <span
-                  className={`px-3 py-1 rounded text-xs font-bold ${
-                    trade.lastTx === 'buy'
-                      ? 'bg-white text-black'
-                      : 'bg-white/10 text-white'
-                  }`}
-                >
-                  {trade.lastTx.toUpperCase()}
-                </span>
-                <div className="flex items-center gap-1 text-xs text-gray">
-                  <Clock className="w-3 h-3" />
-                  <span>{trade.timeAgo}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-5 pb-5 border-b border-white/10">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-gray mb-2">Token</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/10">
-                      <span className="text-white font-bold text-xs">
-                        {trade.token.substring(0, 2).toUpperCase()}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-white font-bold text-base">{trade.token}</span>
-                      <div className="text-xs text-gray flex items-center gap-1">
-                        <DollarSign className="w-3 h-3" />
-                        {trade.mcap}
+      <div className="mt-6">
+        <div className="bg-noir-dark/40 border border-white/10 rounded-xl overflow-hidden shadow-2xl">
+          <div className="overflow-x-auto">
+            <table className="min-w-full">
+              <thead className="bg-black/40 border-b border-white/10">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">Type</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">Trader</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">Token</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">Bought</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">Sold</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">P&L</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">Holdings</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {sortedTrades.map((trade) => (
+                  <tr key={trade.id} className="transition-all duration-200 hover:bg-white/[0.02] group">
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="flex flex-col gap-1">
+                        <span className={`text-sm font-bold uppercase tracking-wide ${
+                          trade.lastTx === 'buy' ? 'text-green-600' : 'text-red-600'
+                        }`}>
+                          {trade.lastTx}
+                        </span>
+                        <span className="text-xs text-white/50">{trade.timeAgo} ago</span>
                       </div>
-                    </div>
-                  </div>
-                </div>
-                {trade.aht && trade.aht !== '-' && (
-                  <div className="text-right">
-                    <p className="text-xs text-gray mb-1">Hold Time</p>
-                    <p className="text-sm font-semibold text-white">{trade.aht}</p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 mb-5">
-              <div>
-                <p className="text-xs text-gray mb-1">Bought</p>
-                <p className="text-base font-bold text-white">{trade.bought}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray mb-1">Sold</p>
-                <p className="text-base font-bold text-white">{trade.sold}</p>
-              </div>
-              <div>
-                <p className="text-xs text-gray mb-1">Holdings</p>
-                <p className="text-base font-bold text-white">{trade.holding}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between pt-5 border-t border-white/10">
-              <div>
-                <p className="text-xs text-gray mb-2">Profit & Loss</p>
-                <div className="flex items-center gap-2">
-                  {trade.pnl.startsWith('+') ? (
-                    <TrendingUp className="w-5 h-5 text-white" />
-                  ) : (
-                    <TrendingDown className="w-5 h-5 text-gray" />
-                  )}
-                  <span className={`text-xl font-bold ${trade.pnl.startsWith('+') ? 'text-white' : 'text-gray'}`}>
-                    {trade.pnl}
-                  </span>
-                  <span className={`text-sm font-semibold ${trade.pnl.startsWith('+') ? 'text-white' : 'text-gray'}`}>
-                    ({trade.pnlPercentage})
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => copyToClipboard(trade.walletAddress)}
-                  className="p-2 hover:bg-white/10 rounded-lg transition-all text-gray hover:text-white"
-                  title="Copy wallet address"
-                >
-                  <Copy className="w-4 h-4" />
-                </button>
-                <a
-                  href={`https://solscan.io/account/${trade.walletAddress}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="p-2 hover:bg-white/10 rounded-lg transition-all text-gray hover:text-white"
-                  title="View on Solscan"
-                >
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <img
+                          alt={trade.kolName}
+                          className="w-10 h-10 rounded-full object-cover border border-white/20"
+                          src={trade.kolAvatar}
+                        />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-semibold text-white">{trade.kolName}</span>
+                          <a
+                            href={`https://twitter.com/${trade.twitterHandle}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-white/50 hover:text-white/80 transition-colors"
+                          >
+                            @{trade.twitterHandle}
+                          </a>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/20">
+                          <span className="text-white font-bold text-xs">
+                            {trade.token.substring(0, 2).toUpperCase()}
+                          </span>
+                        </div>
+                        <span className="text-sm font-semibold text-white">{trade.token}</span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <span className="text-sm font-medium text-green-500">{trade.bought}</span>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <span className="text-sm font-medium text-red-500">{trade.sold}</span>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="flex flex-col gap-0.5">
+                        <span className={`text-sm font-semibold ${
+                          trade.pnl.startsWith('+') ? 'text-green-500' : 'text-red-500'
+                        }`}>
+                          {trade.pnl}
+                        </span>
+                        <span className={`text-xs ${
+                          trade.pnl.startsWith('+') ? 'text-green-500/70' : 'text-red-500/70'
+                        }`}>
+                          {trade.pnlPercentage}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <span className="text-sm font-medium text-white/80">{trade.holding}</span>
+                    </td>
+                    <td className="px-6 py-5 whitespace-nowrap">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => copyToClipboard(trade.walletAddress)}
+                          className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        <a
+                          href={`https://solscan.io/account/${trade.walletAddress}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        ))}
-      </div>
-
-      {sortedTrades.length === 0 && (
-        <div className="card-dark text-center py-20">
-          <p className="text-gray text-lg">No trades match your filters</p>
         </div>
-      )}
+      </div>
     </div>
   );
 };
