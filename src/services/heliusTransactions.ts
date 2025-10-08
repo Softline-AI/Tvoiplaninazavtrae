@@ -1,7 +1,7 @@
 const HELIUS_API_KEYS = [
-  import.meta.env.HELIUS_API_KEY_1 || '23820805-b04f-45a2-9d4b-e70d588bd406',
-  import.meta.env.HELIUS_API_KEY_2 || 'e8716d73-d001-4b9a-9370-0a4ef7ac8d28',
-  import.meta.env.HELIUS_API_KEY_3 || 'cc0ea229-5dc8-4e7d-9707-7c2692eeefbb',
+  import.meta.env.VITE_HELIUS_API_KEY_1 || '23820805-b04f-45a2-9d4b-e70d588bd406',
+  import.meta.env.VITE_HELIUS_API_KEY_2 || 'e8716d73-d001-4b9a-9370-0a4ef7ac8d28',
+  import.meta.env.VITE_HELIUS_API_KEY_3 || 'cc0ea229-5dc8-4e7d-9707-7c2692eeefbb',
 ];
 
 let currentKeyIndex = 0;
