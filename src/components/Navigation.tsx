@@ -23,12 +23,24 @@ const Navigation: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const products = [
-    { name: 'KOL Feed', path: '/app/kol-feed', description: 'Track influential traders' },
-    { name: 'Fresh Wallets', path: '/app/fresh-wallets', description: 'New wallet activity' },
-    { name: 'Insider Scan', path: '/app/insider-scan', description: 'Insider trading alerts' },
-    { name: 'Live DCA Feed', path: '/app/live-dca', description: 'Dollar cost averaging' },
-  ];
+  const products = {
+    'KOL Screener': [
+      { name: 'KOL Feed', path: '/app/kol-feed', description: 'Real-time feed of top influencer trades and wallet activity' },
+      { name: 'KOL Leaderboard', path: '/app/kol-leaderboard', description: 'Rank and discover the most successful KOLs by performance' },
+      { name: 'Top KOL Tokens', path: '/app/top-kol-tokens', description: 'See trending tokens among KOLs with live sentiment updates' },
+    ],
+    'Smart Money Tracker': [
+      { name: 'Daily Trends', path: '/app/daily-trends', description: 'Track the hottest tokens and market shifts every day' },
+      { name: 'Top Tokens', path: '/app/top-tokens', description: 'Monitor top-performing tokens by volume and smart money' },
+      { name: 'Trends Analytics', path: '/app/trends', description: 'Deep-dive analytics on token trends and whale movements' },
+      { name: 'Transactions', path: '/app/transactions', description: 'Explore every smart money transaction with wallet attribution' },
+    ],
+    'Solana Tools': [
+      { name: 'Wallet Finder', path: '/app/wallet-finder', description: 'Find and analyze any wallet. Uncover connections and holdings' },
+      { name: 'Cabal Finder', path: '/app/cabal-finder', description: 'Discover new investment opportunities with analytics' },
+      { name: 'Copy Traders', path: '/app/copy-traders', description: 'Copy the trades of the best traders' },
+    ],
+  };
 
   const tools = [
     { name: 'Wallet Finder', path: '/app/wallet-finder', description: 'Search any wallet' },
@@ -60,18 +72,27 @@ const Navigation: React.FC = () => {
                 </button>
 
                 {isProductsOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-64 noir-card border border-white/10 rounded-lg shadow-xl py-2">
-                    {products.map((product) => (
-                      <Link
-                        key={product.path}
-                        to={product.path}
-                        onClick={() => setIsProductsOpen(false)}
-                        className="block px-4 py-3 hover:bg-white/5 transition-colors"
-                      >
-                        <div className="font-medium text-white text-sm">{product.name}</div>
-                        <div className="text-xs text-gray-400 mt-0.5">{product.description}</div>
-                      </Link>
-                    ))}
+                  <div className="absolute top-full left-0 mt-2 w-[800px] noir-card border border-white/10 rounded-lg shadow-xl p-6">
+                    <div className="grid grid-cols-3 gap-6">
+                      {Object.entries(products).map(([category, items]) => (
+                        <div key={category} className="space-y-3">
+                          <h3 className="font-semibold text-sm text-white mb-3">{category}</h3>
+                          <div className="space-y-2">
+                            {items.map((product) => (
+                              <Link
+                                key={product.path}
+                                to={product.path}
+                                onClick={() => setIsProductsOpen(false)}
+                                className="block p-2 rounded-lg hover:bg-white/5 transition-colors group"
+                              >
+                                <div className="font-medium text-white text-sm leading-tight">{product.name}</div>
+                                <div className="text-xs text-gray-400 leading-tight mt-0.5">{product.description}</div>
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -133,15 +154,20 @@ const Navigation: React.FC = () => {
           <div className="px-6 py-4 space-y-4">
             <div>
               <div className="font-medium text-white mb-2">Products</div>
-              {products.map((product) => (
-                <Link
-                  key={product.path}
-                  to={product.path}
-                  className="block text-sm text-gray hover:text-white transition-colors py-2 pl-4"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {product.name}
-                </Link>
+              {Object.entries(products).map(([category, items]) => (
+                <div key={category} className="mb-3">
+                  <div className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1 pl-4">{category}</div>
+                  {items.map((product) => (
+                    <Link
+                      key={product.path}
+                      to={product.path}
+                      className="block text-sm text-gray hover:text-white transition-colors py-2 pl-4"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {product.name}
+                    </Link>
+                  ))}
+                </div>
               ))}
             </div>
 
