@@ -111,7 +111,8 @@ const Transactions: React.FC = () => {
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl mb-1 font-semibold text-white">Smart Money Transactions</h1>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Transactions</h1>
+        <p className="text-sm text-white/60 mt-1">Detailed transaction log with wallet attribution - track institutional player actions</p>
       </div>
 
       {/* Filters */}

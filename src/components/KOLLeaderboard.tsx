@@ -205,9 +205,12 @@ const KOLLeaderboard: React.FC = () => {
   return (
     <div className="w-full mx-auto px-0 max-w-[1220px] md:px-10 py-5">
       <div className="mb-6">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-white tracking-tight">Leaderboard</h1>
-          
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">KOL Leaderboard</h1>
+            <p className="text-sm text-white/60 mt-1">Rankings by success and profit - study strategies of successful traders</p>
+          </div>
+
           <div className="flex gap-2">
             {['6h', '1d', '7d'].map((period) => (
               <button

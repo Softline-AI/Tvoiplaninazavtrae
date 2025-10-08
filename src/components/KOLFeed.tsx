@@ -218,13 +218,19 @@ const KOLFeed: React.FC = () => {
 
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">Live Trades</h1>
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">KOL Feed</h1>
+            <p className="text-sm text-white/60 mt-1">Transaction stream from 500+ influential traders with ~2 second delay</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-xs text-white/50 uppercase tracking-wider">Live</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-          <span className="text-xs text-white/50 uppercase tracking-wider">Live</span>
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2">
+          <p className="text-sm text-blue-400 font-medium">The ultimate on-chain alpha</p>
         </div>
       </div>
 

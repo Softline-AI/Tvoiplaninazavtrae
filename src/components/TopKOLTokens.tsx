@@ -298,8 +298,11 @@ const TopKOLTokens: React.FC = () => {
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
       <div className="mb-6">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-white tracking-tight">Trending Tokens</h1>
+        <div className="flex items-center justify-between mb-3">
+          <div>
+            <h1 className="text-2xl font-bold text-white tracking-tight">Top KOL Tokens</h1>
+            <p className="text-sm text-white/60 mt-1">Tokens actively traded by KOLs with sentiment updates</p>
+          </div>
 
           <div className="flex gap-2">
             {['1h', '6h', '1d', '7d'].map((period) => (
@@ -316,6 +319,10 @@ const TopKOLTokens: React.FC = () => {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2 mb-4">
+          <p className="text-sm text-blue-400 font-medium">The ultimate on-chain alpha</p>
         </div>
 
         {/* Filter Controls */}

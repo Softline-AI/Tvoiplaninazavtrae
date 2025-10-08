@@ -153,7 +153,8 @@ const CopyTraders: React.FC = () => {
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-xl mb-1 font-semibold text-white">Copy Traders</h1>
+        <h1 className="text-2xl font-bold text-white tracking-tight">Copy Traders</h1>
+        <p className="text-sm text-white/60 mt-1">Copy trades from the best traders in real-time</p>
       </div>
 
       {/* Filters */}
