@@ -47,15 +47,17 @@ const HomePage: React.FC = () => {
   return (
     <main className="noir-bg min-h-screen">
       <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative overflow-hidden">
-        <video
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src="https://cdn-cf-east.streamable.com/video/mp4/b7wh6d.mp4" type="video/mp4" />
-        </video>
+        <div className="absolute inset-0 w-full h-full">
+          <iframe
+            src="https://streamable.com/e/b7wh6d?autoplay=1&loop=1&muted=1"
+            frameBorder="0"
+            width="100%"
+            height="100%"
+            allow="autoplay"
+            className="absolute inset-0 w-full h-full object-cover opacity-20 pointer-events-none"
+            style={{ transform: 'scale(1.5)' }}
+          ></iframe>
+        </div>
         <div className="absolute inset-0 bg-gradient-to-b from-noir-black/60 via-noir-black/40 to-noir-black"></div>
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4 relative z-10">
           <div className="flex-1 flex flex-col items-start text-left">
