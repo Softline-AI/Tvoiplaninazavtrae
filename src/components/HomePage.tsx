@@ -52,6 +52,11 @@ const HomePage: React.FC = () => {
         loop
         muted
         playsInline
+        style={{ objectPosition: 'center' }}
+        onLoadedMetadata={(e) => {
+          const video = e.currentTarget;
+          video.currentTime = 1;
+        }}
       >
         <source src="https://i.imgur.com/FwZWuvj.mp4" type="video/mp4" />
       </video>
