@@ -4,6 +4,7 @@ import Navigation from './components/Navigation';
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import KOLFeed from './components/KOLFeed';
+import KOLProfile from './components/KOLProfile';
 import KOLLeaderboard from './components/KOLLeaderboard';
 import TopKOLTokens from './components/TopKOLTokens';
 import DailyTrends from './components/DailyTrends';
@@ -44,6 +45,7 @@ const App: React.FC = () => {
                   <Routes>
                     <Route path="/" element={<KOLLeaderboard />} />
                     <Route path="/kol-feed" element={<KOLFeed />} />
+                    <Route path="/kol-profile/:walletAddress" element={<KOLProfile />} />
                     <Route path="/kol-leaderboard" element={<KOLLeaderboard />} />
                     <Route path="/top-kol-tokens" element={<TopKOLTokens />} />
                     <Route path="/daily-trends" element={<DailyTrends />} />

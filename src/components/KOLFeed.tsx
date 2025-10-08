@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Copy, ExternalLink, TrendingUp, TrendingDown, Clock, DollarSign } from 'lucide-react';
 import { heliusService, type RealTimeKOLTrade } from '../services/heliusApi';
 import { birdeyeService } from '../services/birdeyeApi';
@@ -23,6 +24,7 @@ interface KOLTrade {
 }
 
 const KOLFeed: React.FC = () => {
+  const navigate = useNavigate();
   const [realTrades, setRealTrades] = useState<RealTimeKOLTrade[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
@@ -256,7 +258,10 @@ const KOLFeed: React.FC = () => {
                       </div>
                     </td>
                     <td className="px-6 py-5 whitespace-nowrap">
-                      <div className="flex items-center gap-3">
+                      <div
+                        className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+                        onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
+                      >
                         <img
                           alt={trade.kolName}
                           className="w-10 h-10 rounded-full object-cover border border-white/20"
@@ -269,6 +274,7 @@ const KOLFeed: React.FC = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-xs text-white/50 hover:text-white/80 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             @{trade.twitterHandle}
                           </a>
