@@ -46,8 +46,18 @@ const HomePage: React.FC = () => {
 
   return (
     <main className="noir-bg min-h-screen">
-      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative">
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4">
+      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative overflow-hidden">
+        <video
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src="https://drive.google.com/uc?export=download&id=133brmb1JfxkI94qmvmCghn2-KyzR1OUd" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 bg-gradient-to-b from-noir-black/60 via-noir-black/40 to-noir-black"></div>
+        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4 relative z-10">
           <div className="flex-1 flex flex-col items-start text-left">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text">
               Follow the smart money trail
@@ -94,25 +104,12 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="flex-1">
-            <div className="aspect-video noir-card noir-spotlight rounded-2xl overflow-hidden noir-glow">
-              <video
-                className="w-full h-full object-cover"
-                controls
-                autoPlay
-                loop
-                muted
-                playsInline
-                poster="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800&h=450&dpr=1"
-              >
-                <source src="https://drive.google.com/uc?export=download&id=133brmb1JfxkI94qmvmCghn2-KyzR1OUd" type="video/mp4" />
-                <div className="flex items-center justify-center h-full bg-noir-dark">
-                  <div className="text-center">
-                    <Play className="w-20 h-20 text-white mx-auto mb-6" />
-                    <p className="text-white font-medium text-xl">SmartChain Demo Video</p>
-                    <p className="noir-text-secondary text-lg mt-3">Click to play demonstration</p>
-                  </div>
-                </div>
-              </video>
+            <div className="aspect-video noir-card noir-spotlight rounded-2xl overflow-hidden noir-glow bg-noir-dark flex items-center justify-center">
+              <div className="text-center px-8">
+                <Play className="w-20 h-20 text-white mx-auto mb-6" />
+                <p className="text-white font-medium text-xl">SmartChain Demo Video</p>
+                <p className="noir-text-secondary text-lg mt-3">Watch how SmartChain helps you track smart money</p>
+              </div>
             </div>
           </div>
         </div>
