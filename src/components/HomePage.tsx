@@ -262,7 +262,7 @@ const HomePage: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in revealed">
+          <div className="bg-noir-black/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in revealed">
             <h3 className="text-2xl font-bold text-white mb-2">Free</h3>
             <div className="flex items-baseline gap-2 mb-6">
               <span className="text-4xl font-bold text-white">$0</span>
@@ -282,7 +282,7 @@ const HomePage: React.FC = () => {
             </ul>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in revealed">
+          <div className="bg-noir-black/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in revealed">
             <h3 className="text-2xl font-bold text-white mb-2">Pro</h3>
             <div className="flex items-baseline gap-2 mb-6">
               <span className="text-4xl font-bold text-white">
@@ -306,7 +306,7 @@ const HomePage: React.FC = () => {
             </ul>
           </div>
 
-          <div className="bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:border-white/30 transition-all relative noir-fade-in revealed">
+          <div className="bg-noir-black/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:border-white/30 transition-all relative noir-fade-in revealed">
             <div className="absolute -top-3 right-6">
               <span className="bg-gradient-to-r from-yellow-400 to-amber-500 text-noir-black px-4 py-1 rounded-full text-sm font-bold">
                 Popular
