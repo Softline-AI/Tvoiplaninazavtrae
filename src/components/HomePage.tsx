@@ -48,7 +48,7 @@ const HomePage: React.FC = () => {
     <main className="noir-bg min-h-screen">
       <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative overflow-hidden">
         <video
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
+          className="absolute inset-0 w-full h-full object-cover opacity-50"
           autoPlay
           loop
           muted
@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
         >
           <source src="https://i.imgur.com/FwZWuvj.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-noir-black/60 via-noir-black/40 to-noir-black"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/30 to-noir-black"></div>
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4 relative z-10">
           <div className="flex-1 flex flex-col items-start text-left">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text">
