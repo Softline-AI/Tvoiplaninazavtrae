@@ -45,18 +45,19 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <main className="noir-bg min-h-screen">
-      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative overflow-hidden">
-        <video
-          className="absolute inset-0 w-full h-full object-cover opacity-50"
-          autoPlay
-          loop
-          muted
-          playsInline
-        >
-          <source src="https://i.imgur.com/FwZWuvj.mp4" type="video/mp4" />
-        </video>
-        <div className="absolute inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/30 to-noir-black"></div>
+    <main className="noir-bg min-h-screen relative">
+      <video
+        className="fixed inset-0 w-full h-full object-cover opacity-50 z-0"
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src="https://i.imgur.com/FwZWuvj.mp4" type="video/mp4" />
+      </video>
+      <div className="fixed inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/50 to-noir-black z-0"></div>
+
+      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4 relative z-10">
           <div className="flex-1 flex flex-col items-start text-left">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text">
@@ -115,7 +116,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <div className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32">
+      <div className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
         <div className="flex flex-col items-center mb-16 lg:mb-20 max-w-4xl mx-auto noir-fade-in revealed">
           <h2 className="text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-6 noir-gradient-text">
             Your Edge in the Fastest-Moving Market
@@ -170,7 +171,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      <section className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32">
+      <section className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
         <div className="text-center mb-16 lg:mb-20 noir-fade-in revealed">
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-gradient-text mb-8">
             Traders Using SmartChain
@@ -230,7 +231,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32">
+      <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
         <div className="text-center mb-16 noir-fade-in revealed">
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">Choose Your Plan</h2>
           <p className="text-xl noir-text-secondary max-w-2xl mx-auto mb-8">
@@ -337,7 +338,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="w-full max-w-3xl mx-auto px-4 py-20">
+      <section className="w-full max-w-3xl mx-auto px-4 py-20 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Frequently Asked Questions</h2>
           <p className="text-xl noir-text-secondary">Everything you need to know about SmartChain</p>
