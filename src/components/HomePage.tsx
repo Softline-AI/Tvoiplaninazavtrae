@@ -51,6 +51,51 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
+        <div className="text-center mb-16">
+          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
+            Your Edge in the Fastest-Moving Market
+          </h2>
+          <p className="text-xl text-gray max-w-3xl mx-auto">
+            While others rely on Twitter rumors and gut feelings, you'll trade with institutional-grade intelligence
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {[
+            {
+              image: "https://images.pexels.com/photos/8370752/pexels-photo-8370752.jpeg?auto=compress&cs=tinysrgb&w=800",
+              title: "KOL Tracking",
+              description: "Monitor 1000+ Key Opinion Leaders and their trading activity. Follow the smartest traders and replicate their winning strategies."
+            },
+            {
+              image: "https://images.pexels.com/photos/7567592/pexels-photo-7567592.jpeg?auto=compress&cs=tinysrgb&w=800",
+              title: "Whale Monitoring",
+              description: "Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts."
+            },
+            {
+              image: "https://images.pexels.com/photos/6802042/pexels-photo-6802042.jpeg?auto=compress&cs=tinysrgb&w=800",
+              title: "Pattern Detection",
+              description: "Advanced algorithms identify insider trading patterns and coordinated buying. Stay ahead of pumps and protect against dumps."
+            }
+          ].map((item, index) => (
+            <div key={index} className="card-dark overflow-hidden group">
+              <div className="aspect-video overflow-hidden bg-black/50">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                />
+              </div>
+              <div className="p-8">
+                <h3 className="text-2xl font-bold text-white mb-4">{item.title}</h3>
+                <p className="text-gray leading-relaxed">{item.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section id="features" className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
         <div className="text-center mb-16">
           <h2 className="text-5xl md:text-6xl font-bold text-white mb-6">
