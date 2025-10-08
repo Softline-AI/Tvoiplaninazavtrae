@@ -1,5 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Target, TrendingUp, Bell, Settings, ExternalLink, Copy, Plus } from 'lucide-react';
+import { supabase } from '../services/supabaseClient';
+
+interface MonitoredWallet {
+  id: string;
+  wallet_address: string;
+  label: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
 
 interface Stalk {
   id: string;
@@ -22,6 +32,28 @@ interface Stalk {
 const MyStalks: React.FC = () => {
   const [activeTab, setActiveTab] = useState('active');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [monitoredWallets, setMonitoredWallets] = useState<MonitoredWallet[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchMonitoredWallets();
+  }, []);
+
+  const fetchMonitoredWallets = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('monitored_wallets')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setMonitoredWallets(data || []);
+    } catch (error) {
+      console.error('Error fetching monitored wallets:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const stalks: Stalk[] = [
     {
@@ -152,6 +184,112 @@ const MyStalks: React.FC = () => {
       {/* Active Stalks */}
       {activeTab === 'active' && (
         <div className="space-y-4">
+          {/* Monitored Wallets from Database */}
+          {loading ? (
+            <div className="noir-card rounded-xl p-12 text-center">
+              <div className="text-white/70">Loading monitored wallets...</div>
+            </div>
+          ) : monitoredWallets.length > 0 ? (
+            monitoredWallets.map((wallet) => (
+              <div key={wallet.id} className="noir-card rounded-xl p-6">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="text-2xl">👛</div>
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="text-lg font-bold text-white">
+                            {wallet.label || 'Monitored Wallet'}
+                          </h3>
+                          <div className="px-2 py-1 rounded-full text-xs font-medium text-blue-600 bg-blue-600/10">
+                            WALLET
+                          </div>
+                          <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+                            wallet.is_active ? 'text-green-600 bg-green-600/10' : 'text-white/70 bg-white/10'
+                          }`}>
+                            <Bell className="w-3 h-3" />
+                            {wallet.is_active ? 'ACTIVE' : 'PAUSED'}
+                          </div>
+                        </div>
+                        <div className="text-sm text-white/70">
+                          Tracking wallet transactions
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-noir-dark rounded-lg p-3 mb-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <div className="text-xs text-white/70 mb-1">Wallet Address</div>
+                          <div className="text-sm font-mono text-white">
+                            {wallet.wallet_address.slice(0, 8)}...{wallet.wallet_address.slice(-4)}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => navigator.clipboard.writeText(wallet.wallet_address)}
+                            className="hover:opacity-70 transition-all p-1 text-white/70"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+                          <a
+                            href={`https://solscan.io/account/${wallet.wallet_address}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:opacity-70 transition-all p-1 text-white/70"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      <div className="bg-noir-dark rounded-lg p-3">
+                        <div className="text-xs text-white/70 mb-1">Status</div>
+                        <div className="text-sm font-bold text-white">
+                          {wallet.is_active ? 'Monitoring' : 'Paused'}
+                        </div>
+                      </div>
+
+                      <div className="bg-noir-dark rounded-lg p-3">
+                        <div className="text-xs text-white/70 mb-1">Added</div>
+                        <div className="text-sm font-bold text-white">
+                          {new Date(wallet.created_at).toLocaleDateString()}
+                        </div>
+                      </div>
+
+                      <div className="bg-noir-dark rounded-lg p-3">
+                        <div className="text-xs text-white/70 mb-1">Type</div>
+                        <div className="text-sm font-bold text-white">Wallet</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-2 ml-4">
+                    <button className="hover:opacity-70 transition-all p-2 text-white/70">
+                      <Settings className="w-5 h-5" />
+                    </button>
+                    <button className={`hover:opacity-70 transition-all p-2 ${
+                      wallet.is_active ? 'text-green-600' : 'text-white/70'
+                    }`}>
+                      <Bell className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="noir-card rounded-xl p-12 text-center">
+              <Target className="w-16 h-16 text-white/30 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-white mb-2">No Monitored Wallets</h3>
+              <p className="text-white/70">
+                Add wallets to start monitoring their transactions
+              </p>
+            </div>
+          )}
+
+          {/* Example Stalks */}
           {stalks.map((stalk) => (
             <div key={stalk.id} className="noir-card rounded-xl p-6">
               <div className="flex items-start justify-between">
