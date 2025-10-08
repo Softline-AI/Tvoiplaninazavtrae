@@ -101,9 +101,10 @@ const HomePage: React.FC = () => {
                 autoPlay
                 loop
                 muted
+                playsInline
                 poster="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=800&h=450&dpr=1"
               >
-                <source src="https://ru.files.fm/f/3txfxck5pm" type="video/mp4" />
+                <source src="https://drive.google.com/uc?export=download&id=133brmb1JfxkI94qmvmCghn2-KyzR1OUd" type="video/mp4" />
                 <div className="flex items-center justify-center h-full bg-noir-dark">
                   <div className="text-center">
                     <Play className="w-20 h-20 text-white mx-auto mb-6" />
