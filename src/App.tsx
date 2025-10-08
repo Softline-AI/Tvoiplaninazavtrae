@@ -24,15 +24,15 @@ import MyStalks from './components/MyStalks';
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="fixed inset-0 z-0 overflow-hidden">
+      <div className="fixed inset-0 z-0 overflow-hidden bg-black">
         <iframe
-          src="https://player.vimeo.com/video/1125525358?background=1&autoplay=1&loop=1&muted=1&controls=0"
-          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-20"
+          src="https://player.vimeo.com/video/1125525358?background=1&autoplay=1&loop=1&muted=1&controls=0&autopause=0"
+          className="absolute inset-0 w-full h-full pointer-events-none opacity-50"
           allow="autoplay; fullscreen"
-          style={{ border: 'none' }}
+          style={{ border: 'none', width: '100vw', height: '100vh', objectFit: 'cover' }}
         />
       </div>
-      <div className="relative z-10">
+      <div className="relative z-10" style={{ background: 'transparent' }}>
         <Navigation />
         <Routes>
           {/* Landing Page Route */}
