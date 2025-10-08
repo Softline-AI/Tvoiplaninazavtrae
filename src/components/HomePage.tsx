@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
               description: 'Monitor 1000+ Key Opinion Leaders and their trading activity. Follow the smartest traders and replicate their winning strategies.'
             },
             {
-              image: 'https://i.imgur.com/BzRBTjg.jpeg',
+              image: 'https://i.imgur.com/6idYRZS.jpeg',
               title: 'Whale Monitoring',
               description: 'Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts.'
             },
