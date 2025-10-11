@@ -302,6 +302,21 @@ const InsiderScan: React.FC = () => {
         ))}
       </div>
 
+      {/* Pattern Detection */}
+      <div className="noir-card rounded-xl p-6 mt-8">
+        <h3 className="text-lg font-semibold text-white mb-4">Pattern Detection</h3>
+        <div className="bg-noir-dark rounded-lg p-4 mb-6">
+          <p className="text-sm text-white/70 mb-4">AI-powered detection of coordinated trading patterns and insider activity signals</p>
+          <div className="relative w-full overflow-hidden rounded-lg">
+            <img
+              src="https://i.imgur.com/eHO2mdd.jpeg"
+              alt="Pattern Detection Analysis"
+              className="w-full h-auto object-cover"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Alert Settings */}
       <div className="noir-card rounded-xl p-6 mt-8">
         <h3 className="text-lg font-semibold text-white mb-4">Alert Settings</h3>
