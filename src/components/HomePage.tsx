@@ -110,11 +110,13 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="flex-1">
-            <img
-              src="https://i.imgur.com/eHO2mdd.jpeg"
-              alt="SmartChain Analytics Dashboard"
-              className="w-full h-auto"
-            />
+            <div className="relative w-full">
+              <img
+                src="https://i.imgur.com/eHO2mdd.jpeg"
+                alt="SmartChain Analytics Dashboard"
+                className="w-full h-auto object-contain"
+              />
+            </div>
           </div>
         </div>
       </section>
