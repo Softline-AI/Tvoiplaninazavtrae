@@ -144,7 +144,7 @@ const HomePage: React.FC = () => {
               description: 'Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts.'
             },
             {
-              image: 'https://images.pexels.com/photos/6802042/pexels-photo-6802042.jpeg?auto=compress&cs=tinysrgb&w=800',
+              image: 'https://i.imgur.com/eHO2mdd.jpeg',
               title: 'Pattern Detection',
               description: 'Advanced algorithms identify insider trading patterns and coordinated buying. Stay ahead of pumps and protect against dumps.'
             }
