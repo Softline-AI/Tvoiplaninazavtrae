@@ -24,7 +24,6 @@ const KOLLeaderboard: React.FC = () => {
   const [realKOLs, setRealKOLs] = useState<KOLTrader[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showTwitterOnly, setShowTwitterOnly] = useState(false);
 
   useEffect(() => {
     const fetchRealKOLData = async () => {
@@ -202,12 +201,7 @@ const KOLLeaderboard: React.FC = () => {
 
   const displayTraders = realKOLs.length > 0 ? realKOLs : traders;
 
-  const filteredTraders = displayTraders.filter(trader => {
-    if (showTwitterOnly && !trader.twitterHandle) return false;
-    return true;
-  });
-
-  const sortedTraders = [...filteredTraders].sort((a, b) => {
+  const sortedTraders = [...displayTraders].sort((a, b) => {
     if (sortBy === 'volume') {
       const volumeA = parseFloat(a.volume.replace(/[^0-9.]/g, ''));
       const volumeB = parseFloat(b.volume.replace(/[^0-9.]/g, ''));
@@ -297,18 +291,6 @@ const KOLLeaderboard: React.FC = () => {
             </button>
           </div>
 
-          <div className="h-6 w-px bg-white/10"></div>
-
-          <button
-            onClick={() => setShowTwitterOnly(!showTwitterOnly)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-              showTwitterOnly
-                ? 'bg-blue-600 text-white'
-                : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-            }`}
-          >
-            Twitter Only
-          </button>
         </div>
       </div>
 

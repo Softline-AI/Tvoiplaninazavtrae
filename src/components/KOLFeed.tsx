@@ -29,7 +29,6 @@ const KOLFeed: React.FC = () => {
   const [isLoadingReal, setIsLoadingReal] = useState(true);
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
   const [sortBy, setSortBy] = useState<'time' | 'pnl' | 'volume'>('time');
-  const [showTwitterOnly, setShowTwitterOnly] = useState(false);
 
   useEffect(() => {
     const fetchRealKOLTrades = async () => {
@@ -191,7 +190,6 @@ const KOLFeed: React.FC = () => {
 
   const filteredTrades = displayTrades.filter(trade => {
     if (filter !== 'all' && trade.lastTx !== filter) return false;
-    if (showTwitterOnly && !trade.twitterHandle) return false;
     return true;
   });
 
@@ -313,18 +311,6 @@ const KOLFeed: React.FC = () => {
             </button>
           </div>
 
-          <div className="h-6 w-px bg-white/10"></div>
-
-          <button
-            onClick={() => setShowTwitterOnly(!showTwitterOnly)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-              showTwitterOnly
-                ? 'bg-blue-600 text-white'
-                : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-            }`}
-          >
-            Twitter Only
-          </button>
         </div>
       </div>
 
