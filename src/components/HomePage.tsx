@@ -110,11 +110,11 @@ const HomePage: React.FC = () => {
           </div>
 
           <div className="flex-1">
-            <div className="relative w-full">
+            <div className="aspect-video noir-card noir-spotlight rounded-2xl overflow-hidden noir-glow">
               <img
-                src="https://i.imgur.com/eHO2mdd.jpeg"
+                src="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=1200"
                 alt="SmartChain Analytics Dashboard"
-                className="w-full h-auto object-contain"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
@@ -151,11 +151,11 @@ const HomePage: React.FC = () => {
           ].map((feature, index) => (
             <div key={index} className="group noir-card noir-spotlight rounded-2xl p-10 noir-fade-in revealed">
               <div className="flex flex-col items-center text-center h-full">
-                <div className="w-full mb-6 transition-all duration-300">
+                <div className="w-full aspect-video bg-noir-gray rounded-xl overflow-hidden mb-6 transition-all duration-300">
                   <img
                     src={feature.image}
                     alt={feature.title}
-                    className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">{feature.title}</h3>
