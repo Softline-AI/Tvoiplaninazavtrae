@@ -28,7 +28,8 @@ const KOLFeed: React.FC = () => {
   const [realTrades, setRealTrades] = useState<RealTimeKOLTrade[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
-  const [sortBy, setSortBy] = useState<'time' | 'pnl'>('time');
+  const [sortBy, setSortBy] = useState<'time' | 'pnl' | 'volume'>('time');
+  const [showTwitterOnly, setShowTwitterOnly] = useState(false);
 
   useEffect(() => {
     const fetchRealKOLTrades = async () => {
@@ -189,8 +190,9 @@ const KOLFeed: React.FC = () => {
   const displayTrades = realTrades.length > 0 ? realTrades : mockTrades;
 
   const filteredTrades = displayTrades.filter(trade => {
-    if (filter === 'all') return true;
-    return trade.lastTx === filter;
+    if (filter !== 'all' && trade.lastTx !== filter) return false;
+    if (showTwitterOnly && !trade.twitterHandle) return false;
+    return true;
   });
 
   const sortedTrades = [...filteredTrades].sort((a, b) => {
@@ -198,6 +200,15 @@ const KOLFeed: React.FC = () => {
       const pnlA = parseFloat(a.pnl.replace(/[^0-9.-]/g, ''));
       const pnlB = parseFloat(b.pnl.replace(/[^0-9.-]/g, ''));
       return pnlB - pnlA;
+    }
+    if (sortBy === 'volume') {
+      const boughtA = parseFloat(a.bought.replace(/[^0-9.-]/g, ''));
+      const boughtB = parseFloat(b.bought.replace(/[^0-9.-]/g, ''));
+      const soldA = parseFloat(a.sold.replace(/[^0-9.-]/g, ''));
+      const soldB = parseFloat(b.sold.replace(/[^0-9.-]/g, ''));
+      const volumeA = boughtA + soldA;
+      const volumeB = boughtB + soldB;
+      return volumeB - volumeA;
     }
     return 0;
   });
@@ -229,8 +240,91 @@ const KOLFeed: React.FC = () => {
             <span className="text-xs text-white/50 uppercase tracking-wider">Live</span>
           </div>
         </div>
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2">
+        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2 mb-4">
           <p className="text-sm text-blue-400 font-medium">The ultimate on-chain alpha</p>
+        </div>
+
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setFilter('all')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                filter === 'all'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              All
+            </button>
+            <button
+              onClick={() => setFilter('buy')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                filter === 'buy'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Buy
+            </button>
+            <button
+              onClick={() => setFilter('sell')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                filter === 'sell'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Sell
+            </button>
+          </div>
+
+          <div className="h-6 w-px bg-white/10"></div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSortBy('time')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                sortBy === 'time'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Time
+            </button>
+            <button
+              onClick={() => setSortBy('pnl')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                sortBy === 'pnl'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              P&L
+            </button>
+            <button
+              onClick={() => setSortBy('volume')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                sortBy === 'volume'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Volume
+            </button>
+          </div>
+
+          <div className="h-6 w-px bg-white/10"></div>
+
+          <button
+            onClick={() => setShowTwitterOnly(!showTwitterOnly)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              showTwitterOnly
+                ? 'bg-blue-600 text-white'
+                : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+            }`}
+          >
+            Twitter Only
+          </button>
         </div>
       </div>
 

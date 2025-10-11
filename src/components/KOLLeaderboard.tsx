@@ -19,11 +19,12 @@ interface KOLTrader {
 
 const KOLLeaderboard: React.FC = () => {
   const [timePeriod, setTimePeriod] = useState('1d');
-  const [sortBy, setSortBy] = useState('overall');
+  const [sortBy, setSortBy] = useState<'volume' | 'trades' | 'buyCount' | 'sellCount'>('volume');
   const [showExplanation, setShowExplanation] = useState(false);
   const [realKOLs, setRealKOLs] = useState<KOLTrader[]>([]);
   const [isLoadingReal, setIsLoadingReal] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showTwitterOnly, setShowTwitterOnly] = useState(false);
 
   useEffect(() => {
     const fetchRealKOLData = async () => {
@@ -199,8 +200,32 @@ const KOLLeaderboard: React.FC = () => {
     return '';
   };
 
-  // Use real data if available, otherwise fallback to mock data
   const displayTraders = realKOLs.length > 0 ? realKOLs : traders;
+
+  const filteredTraders = displayTraders.filter(trader => {
+    if (showTwitterOnly && !trader.twitterHandle) return false;
+    return true;
+  });
+
+  const sortedTraders = [...filteredTraders].sort((a, b) => {
+    if (sortBy === 'volume') {
+      const volumeA = parseFloat(a.volume.replace(/[^0-9.]/g, ''));
+      const volumeB = parseFloat(b.volume.replace(/[^0-9.]/g, ''));
+      return volumeB - volumeA;
+    }
+    if (sortBy === 'trades') {
+      const tradesA = a.buyCount + a.sellCount;
+      const tradesB = b.buyCount + b.sellCount;
+      return tradesB - tradesA;
+    }
+    if (sortBy === 'buyCount') {
+      return b.buyCount - a.buyCount;
+    }
+    if (sortBy === 'sellCount') {
+      return b.sellCount - a.sellCount;
+    }
+    return 0;
+  });
 
   return (
     <div className="w-full mx-auto px-0 max-w-[1220px] md:px-10 py-5">
@@ -227,6 +252,64 @@ const KOLLeaderboard: React.FC = () => {
             ))}
           </div>
         </div>
+
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSortBy('volume')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                sortBy === 'volume'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Volume
+            </button>
+            <button
+              onClick={() => setSortBy('trades')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                sortBy === 'trades'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Total Trades
+            </button>
+            <button
+              onClick={() => setSortBy('buyCount')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                sortBy === 'buyCount'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Buys
+            </button>
+            <button
+              onClick={() => setSortBy('sellCount')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                sortBy === 'sellCount'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Sells
+            </button>
+          </div>
+
+          <div className="h-6 w-px bg-white/10"></div>
+
+          <button
+            onClick={() => setShowTwitterOnly(!showTwitterOnly)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              showTwitterOnly
+                ? 'bg-blue-600 text-white'
+                : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+            }`}
+          >
+            Twitter Only
+          </button>
+        </div>
       </div>
 
       <div className="bg-noir-dark/40 border border-white/10 rounded-xl overflow-hidden mt-6 shadow-2xl">
@@ -252,7 +335,7 @@ const KOLLeaderboard: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {displayTraders.map((trader) => (
+              {sortedTraders.map((trader) => (
                 <tr key={trader.id} className={`transition-all duration-200 hover:bg-white/[0.02] ${getRowStyling(trader)}`}>
                   <td className="px-6 py-5 whitespace-nowrap">
                     {getRankDisplay(trader)}
