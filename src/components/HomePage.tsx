@@ -134,7 +134,7 @@ const HomePage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 my-12">
           {[
             {
-              image: 'https://i.imgur.com/7XI37Oe.jpeg',
+              image: 'https://i.imgur.com/U1pMVvy.jpeg',
               title: 'KOL Tracking',
               description: 'Monitor 1000+ Key Opinion Leaders and their trading activity. Follow the smartest traders and replicate their winning strategies.'
             },
