@@ -164,16 +164,6 @@ const HomePage: React.FC = () => {
             </div>
           ))}
         </div>
-
-        <div className="text-center mt-16">
-          <Link
-            to="/app"
-            className="noir-button noir-pulse inline-flex items-center justify-center gap-3 whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-xl group"
-          >
-            <span>Join Now</span>
-            <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
       </div>
 
       <section className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
