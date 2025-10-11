@@ -53,8 +53,8 @@ const App: React.FC = () => {
               <div className="lg:overflow-y-auto">
                 <Sidebar />
               </div>
-              <div className="flex-1 p-3 md:p-2 lg:overflow-y-auto">
-                <div className="flex flex-col gap-0 items-center sm:items-start">
+              <div className="flex-1 lg:overflow-y-auto">
+                <div className="flex flex-col gap-0 items-center sm:items-start pt-3 md:pt-2">
                   <Routes>
                     <Route path="/" element={<KOLLeaderboard />} />
                     <Route path="/kol-feed" element={<KOLFeed />} />
