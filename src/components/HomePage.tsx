@@ -139,14 +139,14 @@ const HomePage: React.FC = () => {
               description: 'Monitor 1000+ Key Opinion Leaders and their trading activity. Follow the smartest traders and replicate their winning strategies.'
             },
             {
-              image: 'https://i.imgur.com/bdbxTcZ.png',
-              title: 'Whale Monitoring',
-              description: 'Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts.'
-            },
-            {
               image: 'https://i.imgur.com/X2IzMU9.jpeg',
               title: 'Pattern Detection',
               description: 'Advanced algorithms identify insider trading patterns and coordinated buying. Stay ahead of pumps and protect against dumps.'
+            },
+            {
+              image: 'https://i.imgur.com/bdbxTcZ.png',
+              title: 'Whale Monitoring',
+              description: 'Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts.'
             }
           ].map((feature, index) => (
             <div key={index} className="group noir-card noir-spotlight rounded-2xl p-10 noir-fade-in revealed">
