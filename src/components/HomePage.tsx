@@ -139,7 +139,7 @@ const HomePage: React.FC = () => {
               description: 'Monitor 1000+ Key Opinion Leaders and their trading activity. Follow the smartest traders and replicate their winning strategies.'
             },
             {
-              image: 'https://i.imgur.com/6idYRZS.jpeg',
+              image: 'https://i.imgur.com/bdbxTcZ.png',
               title: 'Whale Monitoring',
               description: 'Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts.'
             },
@@ -155,7 +155,7 @@ const HomePage: React.FC = () => {
                   <img
                     src={feature.image}
                     alt={feature.title}
-                    className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
                 <h3 className="text-2xl font-bold text-white mb-4">{feature.title}</h3>
