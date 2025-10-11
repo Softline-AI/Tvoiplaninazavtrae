@@ -144,7 +144,7 @@ const HomePage: React.FC = () => {
               description: 'Advanced algorithms identify insider trading patterns and coordinated buying. Stay ahead of pumps and protect against dumps.'
             },
             {
-              image: 'https://i.imgur.com/bdbxTcZ.png',
+              image: 'https://i.imgur.com/cZCdbk1.jpeg',
               title: 'Whale Monitoring',
               description: 'Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts.'
             }
