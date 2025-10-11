@@ -18,10 +18,11 @@ interface TopToken {
 }
 
 const TopTokens: React.FC = () => {
-  const [sortBy, setSortBy] = useState('smartMoney');
+  const [sortBy, setSortBy] = useState<'smartMoney' | 'volume' | 'marketCap' | 'whales' | 'change'>('smartMoney');
   const [timeFilter, setTimeFilter] = useState('24h');
   const [realTokens, setRealTokens] = useState<TopToken[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filterType, setFilterType] = useState<'all' | 'gainers' | 'losers'>('all');
 
   useEffect(() => {
     const fetchTokenData = async () => {
@@ -131,6 +132,37 @@ const TopTokens: React.FC = () => {
 
   const tokens = realTokens.length > 0 ? realTokens : fallbackTokens;
 
+  const filteredTokens = tokens.filter(token => {
+    if (filterType === 'gainers') return token.isPositive;
+    if (filterType === 'losers') return !token.isPositive;
+    return true;
+  });
+
+  const sortedTokens = [...filteredTokens].sort((a, b) => {
+    switch(sortBy) {
+      case 'smartMoney':
+        const smA = parseFloat(a.smartMoneyVolume.replace(/[^0-9.]/g, ''));
+        const smB = parseFloat(b.smartMoneyVolume.replace(/[^0-9.]/g, ''));
+        return smB - smA;
+      case 'volume':
+        const volA = parseFloat(a.volume.replace(/[^0-9.]/g, ''));
+        const volB = parseFloat(b.volume.replace(/[^0-9.]/g, ''));
+        return volB - volA;
+      case 'marketCap':
+        const mcapA = parseFloat(a.marketCap.replace(/[^0-9.]/g, ''));
+        const mcapB = parseFloat(b.marketCap.replace(/[^0-9.]/g, ''));
+        return mcapB - mcapA;
+      case 'whales':
+        return b.whaleHolders - a.whaleHolders;
+      case 'change':
+        const changeA = parseFloat(a.change24h.replace(/[^0-9.-]/g, ''));
+        const changeB = parseFloat(b.change24h.replace(/[^0-9.-]/g, ''));
+        return changeB - changeA;
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
       {/* Header */}
@@ -139,33 +171,114 @@ const TopTokens: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
-          {['1h', '6h', '24h', '7d'].map((period) => (
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
+            {['1h', '6h', '24h', '7d'].map((period) => (
+              <button
+                key={period}
+                onClick={() => setTimeFilter(period)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  timeFilter === period
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {period}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex gap-2">
             <button
-              key={period}
-              onClick={() => setTimeFilter(period)}
+              onClick={() => setFilterType('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                timeFilter === period
+                filterType === 'all'
                   ? 'bg-white text-noir-black'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
               }`}
             >
-              {period}
+              All
             </button>
-          ))}
+            <button
+              onClick={() => setFilterType('gainers')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filterType === 'gainers'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Gainers
+            </button>
+            <button
+              onClick={() => setFilterType('losers')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filterType === 'losers'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Losers
+            </button>
+          </div>
+
+          <div className="h-6 w-px bg-white/10"></div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSortBy('smartMoney')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'smartMoney'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Smart Money
+            </button>
+            <button
+              onClick={() => setSortBy('volume')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'volume'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Volume
+            </button>
+            <button
+              onClick={() => setSortBy('marketCap')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'marketCap'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Market Cap
+            </button>
+            <button
+              onClick={() => setSortBy('whales')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'whales'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Whale Holders
+            </button>
+            <button
+              onClick={() => setSortBy('change')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'change'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Change
+            </button>
+          </div>
         </div>
-        
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="bg-noir-dark border border-white/20 rounded-lg px-4 py-2 text-sm font-medium text-white"
-        >
-          <option value="smartMoney">Smart Money Volume</option>
-          <option value="volume">Total Volume</option>
-          <option value="marketCap">Market Cap</option>
-          <option value="whales">Whale Holders</option>
-        </select>
       </div>
 
       {/* Tokens Table */}
@@ -201,7 +314,7 @@ const TopTokens: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {tokens.map((token) => (
+              {sortedTokens.map((token) => (
                 <tr key={token.id} className="transition-all duration-300 hover:bg-white/5">
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center">

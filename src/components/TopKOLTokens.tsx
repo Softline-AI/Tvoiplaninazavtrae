@@ -281,14 +281,67 @@ const TopKOLTokens: React.FC = () => {
   // Use real data if available, otherwise fallback to mock data
   const displayTokens = realTokens.length > 0 ? realTokens : tokens;
 
-  // Filter tokens based on search query
   const filteredTokens = displayTokens.filter(token => {
     const matchesSearch = searchQuery === '' ||
       token.symbol.toLowerCase().includes(searchQuery.toLowerCase()) ||
       token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       token.contractAddress.toLowerCase().includes(searchQuery.toLowerCase());
 
-    return matchesSearch;
+    if (!matchesSearch) return false;
+
+    if (filterTab === 'buy') {
+      const netVol = parseFloat(token.netVolume.replace(/[^0-9.-]/g, ''));
+      return netVol > 0;
+    }
+    if (filterTab === 'sell') {
+      const netVol = parseFloat(token.netVolume.replace(/[^0-9.-]/g, ''));
+      return netVol < 0;
+    }
+
+    if (socialAccountsOnly && token.kolHolders === 0) return false;
+    if (publicKOLsOnly && token.kolTraders === 0) return false;
+
+    return true;
+  });
+
+  const sortedTokens = [...filteredTokens].sort((a, b) => {
+    let comparison = 0;
+
+    switch(sortBy) {
+      case 'rank':
+        comparison = a.rank - b.rank;
+        break;
+      case 'marketCap':
+        const mcapA = parseFloat(a.marketCap.replace(/[^0-9.]/g, ''));
+        const mcapB = parseFloat(b.marketCap.replace(/[^0-9.]/g, ''));
+        comparison = mcapB - mcapA;
+        break;
+      case 'kolHolders':
+        comparison = b.kolHolders - a.kolHolders;
+        break;
+      case 'totalSwaps':
+        comparison = b.totalSwaps - a.totalSwaps;
+        break;
+      case 'buyVolume':
+        const buyA = parseFloat(a.buyVolume.replace(/[^0-9.]/g, ''));
+        const buyB = parseFloat(b.buyVolume.replace(/[^0-9.]/g, ''));
+        comparison = buyB - buyA;
+        break;
+      case 'sellVolume':
+        const sellA = parseFloat(a.sellVolume.replace(/[^0-9.]/g, ''));
+        const sellB = parseFloat(b.sellVolume.replace(/[^0-9.]/g, ''));
+        comparison = sellB - sellA;
+        break;
+      case 'netVolume':
+        const netA = parseFloat(a.netVolume.replace(/[^0-9.-]/g, ''));
+        const netB = parseFloat(b.netVolume.replace(/[^0-9.-]/g, ''));
+        comparison = netB - netA;
+        break;
+      default:
+        comparison = 0;
+    }
+
+    return sortDirection === 'asc' ? comparison : -comparison;
   });
 
   const clearSearch = () => {
@@ -504,7 +557,7 @@ const TopKOLTokens: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
-              {filteredTokens.map((token, index) => (
+              {sortedTokens.map((token, index) => (
                 <tr key={token.id} className="transition-all duration-200 hover:bg-white/[0.02]">
                   <td className="px-6 py-5 whitespace-nowrap">
                     <span className="text-sm font-semibold text-white/70">#{token.rank}</span>

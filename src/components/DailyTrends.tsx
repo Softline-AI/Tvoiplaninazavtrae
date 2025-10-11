@@ -19,9 +19,10 @@ interface TrendData {
 
 const DailyTrends: React.FC = () => {
   const [timeFilter, setTimeFilter] = useState('24h');
-  const [sortBy, setSortBy] = useState('volume');
+  const [sortBy, setSortBy] = useState<'volume' | 'change' | 'marketCap' | 'transactions'>('volume');
   const [realTrends, setRealTrends] = useState<TrendData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [filterType, setFilterType] = useState<'all' | 'gainers' | 'losers'>('all');
 
   useEffect(() => {
     const fetchTrendData = async () => {
@@ -131,6 +132,33 @@ const DailyTrends: React.FC = () => {
 
   const trends = realTrends.length > 0 ? realTrends : fallbackTrends;
 
+  const filteredTrends = trends.filter(trend => {
+    if (filterType === 'gainers') return trend.isPositive;
+    if (filterType === 'losers') return !trend.isPositive;
+    return true;
+  });
+
+  const sortedTrends = [...filteredTrends].sort((a, b) => {
+    switch(sortBy) {
+      case 'volume':
+        const volA = parseFloat(a.volume.replace(/[^0-9.]/g, ''));
+        const volB = parseFloat(b.volume.replace(/[^0-9.]/g, ''));
+        return volB - volA;
+      case 'change':
+        const changeA = parseFloat(a.change24h.replace(/[^0-9.-]/g, ''));
+        const changeB = parseFloat(b.change24h.replace(/[^0-9.-]/g, ''));
+        return changeB - changeA;
+      case 'marketCap':
+        const mcapA = parseFloat(a.marketCap.replace(/[^0-9.]/g, ''));
+        const mcapB = parseFloat(b.marketCap.replace(/[^0-9.]/g, ''));
+        return mcapB - mcapA;
+      case 'transactions':
+        return b.transactions - a.transactions;
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
       {/* Header */}
@@ -139,21 +167,103 @@ const DailyTrends: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
-          {['1h', '6h', '24h', '7d'].map((period) => (
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
+            {['1h', '6h', '24h', '7d'].map((period) => (
+              <button
+                key={period}
+                onClick={() => setTimeFilter(period)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  timeFilter === period
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {period}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex gap-2">
             <button
-              key={period}
-              onClick={() => setTimeFilter(period)}
+              onClick={() => setFilterType('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                timeFilter === period
+                filterType === 'all'
                   ? 'bg-white text-noir-black'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
               }`}
             >
-              {period}
+              All
             </button>
-          ))}
+            <button
+              onClick={() => setFilterType('gainers')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filterType === 'gainers'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Gainers
+            </button>
+            <button
+              onClick={() => setFilterType('losers')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filterType === 'losers'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Losers
+            </button>
+          </div>
+
+          <div className="h-6 w-px bg-white/10"></div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSortBy('volume')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'volume'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Volume
+            </button>
+            <button
+              onClick={() => setSortBy('change')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'change'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Change
+            </button>
+            <button
+              onClick={() => setSortBy('marketCap')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'marketCap'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Market Cap
+            </button>
+            <button
+              onClick={() => setSortBy('transactions')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'transactions'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Transactions
+            </button>
+          </div>
         </div>
       </div>
 
@@ -190,7 +300,7 @@ const DailyTrends: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-white/10">
-              {trends.map((trend) => (
+              {sortedTrends.map((trend) => (
                 <tr key={trend.id} className="transition-all duration-300 hover:bg-white/5">
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="text-base font-bold text-white">#{trend.rank}</div>

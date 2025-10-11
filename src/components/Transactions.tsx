@@ -18,10 +18,11 @@ interface Transaction {
 }
 
 const Transactions: React.FC = () => {
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState<'all' | 'buy' | 'sell' | 'swap'>('all');
   const [timeRange, setTimeRange] = useState('24h');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<'time' | 'value' | 'amount'>('time');
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -35,6 +36,29 @@ const Transactions: React.FC = () => {
 
     fetchTransactions();
   }, [timeRange, filter]);
+
+  const displayTransactions = transactions.length > 0 ? transactions : mockTransactions;
+
+  const filteredTransactions = displayTransactions.filter(tx => {
+    if (filter === 'all') return true;
+    return tx.type === filter;
+  });
+
+  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+    switch(sortBy) {
+      case 'value':
+        const valA = parseFloat(a.value.replace(/[^0-9.]/g, ''));
+        const valB = parseFloat(b.value.replace(/[^0-9.]/g, ''));
+        return valB - valA;
+      case 'amount':
+        const amtA = parseFloat(a.amount.replace(/[^0-9.]/g, ''));
+        const amtB = parseFloat(b.amount.replace(/[^0-9.]/g, ''));
+        return amtB - amtA;
+      case 'time':
+      default:
+        return 0;
+    }
+  });
 
   const mockTransactions: Transaction[] = [
     {
@@ -116,37 +140,103 @@ const Transactions: React.FC = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
-          {['all', 'buy', 'sell', 'swap'].map((type) => (
-            <button
-              key={type}
-              onClick={() => setFilter(type)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${
-                filter === type
-                  ? 'bg-white text-noir-black'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              {type}
-            </button>
-          ))}
+      <div className="flex flex-col gap-4 mb-6">
+        <div className="flex items-center gap-4">
+          <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
+            {['1h', '6h', '24h', '7d'].map((period) => (
+              <button
+                key={period}
+                onClick={() => setTimeRange(period)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  timeRange === period
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                {period}
+              </button>
+            ))}
+          </div>
         </div>
-        
-        <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
-          {['1h', '6h', '24h', '7d'].map((period) => (
+
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="flex gap-2">
             <button
-              key={period}
-              onClick={() => setTimeRange(period)}
+              onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                timeRange === period
+                filter === 'all'
                   ? 'bg-white text-noir-black'
-                  : 'text-white/70 hover:text-white hover:bg-white/10'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
               }`}
             >
-              {period}
+              All
             </button>
-          ))}
+            <button
+              onClick={() => setFilter('buy')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filter === 'buy'
+                  ? 'bg-green-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Buy
+            </button>
+            <button
+              onClick={() => setFilter('sell')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filter === 'sell'
+                  ? 'bg-red-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Sell
+            </button>
+            <button
+              onClick={() => setFilter('swap')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                filter === 'swap'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Swap
+            </button>
+          </div>
+
+          <div className="h-6 w-px bg-white/10"></div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSortBy('time')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'time'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Time
+            </button>
+            <button
+              onClick={() => setSortBy('value')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'value'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Value
+            </button>
+            <button
+              onClick={() => setSortBy('amount')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                sortBy === 'amount'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              Amount
+            </button>
+          </div>
         </div>
       </div>
 
@@ -189,14 +279,14 @@ const Transactions: React.FC = () => {
                     Loading transactions...
                   </td>
                 </tr>
-              ) : transactions.length === 0 ? (
+              ) : sortedTransactions.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="px-4 py-8 text-center text-white/70">
                     No transactions found. Start Flask server: cd backend && python app.py
                   </td>
                 </tr>
               ) : (
-                transactions.map((tx) => (
+                sortedTransactions.map((tx) => (
                 <tr key={tx.id} className="transition-all duration-300 hover:bg-white/5">
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(tx.type)}`}>
