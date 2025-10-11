@@ -48,13 +48,12 @@ const App: React.FC = () => {
         
         {/* App Routes with Sidebar */}
         <Route path="/app/*" element={
-          <div className="flex flex-col" style={{ minHeight: 'calc(100vh - 64px)' }}>
-            <div className="lg:flex flex-1">
-              <div className="lg:w-64 lg:flex-shrink-0">
-                <Sidebar />
-              </div>
-              <div className="flex-1 overflow-y-auto">
-                <div className="w-full">
+          <div className="flex" style={{ minHeight: 'calc(100vh - 64px)', marginTop: '64px' }}>
+            <div className="lg:w-64 lg:flex-shrink-0">
+              <Sidebar />
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              <div className="w-full">
                   <Routes>
                     <Route path="/" element={<KOLLeaderboard />} />
                     <Route path="/kol-feed" element={<KOLFeed />} />
@@ -87,7 +86,6 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
-          </div>
         } />
         </Routes>
       </div>
