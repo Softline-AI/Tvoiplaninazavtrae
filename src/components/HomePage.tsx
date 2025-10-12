@@ -58,7 +58,7 @@ const HomePage: React.FC = () => {
           video.currentTime = 1;
         }}
       >
-        <source src="https://i.imgur.com/FwZWuvj.mp4" type="video/mp4" />
+        <source src="https://i.imgur.com/6miT6IL.mp4" type="video/mp4" />
       </video>
       <div className="fixed inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/50 to-noir-black z-0"></div>
 
