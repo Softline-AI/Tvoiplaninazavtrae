@@ -223,7 +223,7 @@ const HomePage: React.FC = () => {
             Start free or unlock premium features to dominate the market
           </p>
 
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center justify-center gap-3 mb-2">
             <button
               onClick={() => setBillingPeriod('monthly')}
               className={`px-6 py-2 rounded-lg font-semibold transition-all ${
@@ -239,82 +239,103 @@ const HomePage: React.FC = () => {
               }`}
             >
               Yearly
-              <span className="ml-2 text-xs text-green-400">Save 20%</span>
             </button>
           </div>
+          {billingPeriod === 'yearly' && (
+            <p className="text-sm text-white/60">Save 20% with annual billing</p>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          <div className="bg-noir-black/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in revealed">
-            <h3 className="text-2xl font-bold text-white mb-2">Free</h3>
-            <div className="flex items-baseline gap-2 mb-6">
-              <span className="text-4xl font-bold text-white">$0</span>
-              <span className="text-lg text-white/60">/mo</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
+            <div className="mb-8">
+              <h3 className="text-3xl font-bold text-white mb-3">Free</h3>
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl font-bold text-white">$0</span>
+                <span className="text-xl text-white/50">/mo</span>
+              </div>
             </div>
-            <div className="h-6 mb-4"></div>
-            <button className="w-full bg-white text-noir-black py-3 px-6 rounded-xl font-semibold hover:bg-white/90 transition-all mb-6">
+
+            <button className="w-full bg-white text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-8 shadow-lg">
               Get Started
             </button>
-            <ul className="space-y-2.5 text-left text-white/80 text-sm">
+
+            <ul className="space-y-4 text-left">
               {['Live KOL Feed', 'Smart Money Tracker', 'Wallet Finder', 'Token Insiders'].map((feature, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-white" />
+                <li key={i} className="flex items-center gap-3 text-white/90 text-base">
+                  <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                  </div>
                   <span>{feature}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="bg-noir-black/80 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all noir-fade-in revealed">
-            <h3 className="text-2xl font-bold text-white mb-2">Pro</h3>
-            <div className="flex items-baseline gap-2 mb-6">
-              <span className="text-4xl font-bold text-white">
-                ${billingPeriod === 'yearly' ? '159' : '199'}
-              </span>
-              <span className="text-lg text-white/60">/mo</span>
+          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
+            <div className="mb-8">
+              <h3 className="text-3xl font-bold text-white mb-3">Pro</h3>
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl font-bold text-white">
+                  ${billingPeriod === 'yearly' ? '159' : '199'}
+                </span>
+                <span className="text-xl text-white/50">/mo</span>
+              </div>
+              {billingPeriod === 'yearly' && (
+                <p className="text-sm text-white/60 mt-2">$1,908 billed annually</p>
+              )}
             </div>
-            {billingPeriod === 'yearly' && (
-              <p className="text-sm text-green-400 mb-4">Billed $1,908/year</p>
-            )}
-            <button className="w-full bg-white text-noir-black py-3 px-6 rounded-xl font-semibold hover:bg-white/90 transition-all mb-6">
+
+            <button className="w-full bg-white text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-8 shadow-lg">
               Get Started
             </button>
-            <ul className="space-y-2.5 text-left text-white/80 text-sm">
-              {['Everything in Starter', 'Cabal Finder', 'Fresh Wallet Feeds', 'Custom KOL Feed', 'Insiders Scan'].map((feature, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-white" />
+
+            <ul className="space-y-4 text-left">
+              {['Everything in Free', 'Cabal Finder', 'Fresh Wallet Feeds', 'Custom KOL Feed', 'Insiders Scan'].map((feature, i) => (
+                <li key={i} className="flex items-center gap-3 text-white/90 text-base">
+                  <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                  </div>
                   <span>{feature}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="bg-noir-black/80 backdrop-blur-sm border border-white/20 rounded-2xl p-6 hover:border-white/30 transition-all relative noir-fade-in revealed">
-            <div className="absolute -top-3 right-6">
-              <span className="bg-gradient-to-r from-yellow-400 to-amber-500 text-noir-black px-4 py-1 rounded-full text-sm font-bold">
-                Popular
-              </span>
+          <div className="group bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border-2 border-white/30 rounded-3xl p-8 hover:border-white/50 hover:shadow-2xl hover:shadow-white/10 transition-all duration-500 relative noir-fade-in revealed transform hover:scale-105">
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+              <div className="bg-white text-noir-black px-6 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
+                <Crown className="w-4 h-4" />
+                <span>MOST POPULAR</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <h3 className="text-2xl font-bold text-white">Legend</h3>
-              <Crown className="w-6 h-6 text-yellow-400" />
+
+            <div className="mb-8 mt-4">
+              <div className="flex items-center gap-3 mb-3">
+                <h3 className="text-3xl font-bold text-white">Legend</h3>
+                <Crown className="w-7 h-7 text-white" />
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl font-bold text-white">
+                  ${billingPeriod === 'yearly' ? '319' : '399'}
+                </span>
+                <span className="text-xl text-white/50">/mo</span>
+              </div>
+              {billingPeriod === 'yearly' && (
+                <p className="text-sm text-white/60 mt-2">$3,828 billed annually</p>
+              )}
             </div>
-            <div className="flex items-baseline gap-2 mb-6">
-              <span className="text-4xl font-bold text-white">
-                ${billingPeriod === 'yearly' ? '319' : '399'}
-              </span>
-              <span className="text-lg text-white/60">/mo</span>
-            </div>
-            {billingPeriod === 'yearly' && (
-              <p className="text-sm text-green-400 mb-4">Billed $3,828/year</p>
-            )}
-            <button className="w-full bg-gradient-to-r from-yellow-400 to-amber-500 text-noir-black py-3 px-6 rounded-xl font-semibold hover:opacity-90 transition-all mb-6">
+
+            <button className="w-full bg-white text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-8 shadow-2xl">
               Go Legend
             </button>
-            <ul className="space-y-2.5 text-left text-white/80 text-sm">
+
+            <ul className="space-y-4 text-left">
               {['Everything in Pro', 'Whales Open Orders', 'Priority Alerts', 'Private Community', 'API Access', '1-on-1 Support'].map((feature, i) => (
-                <li key={i} className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-yellow-400" />
+                <li key={i} className="flex items-center gap-3 text-white text-base font-medium">
+                  <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center flex-shrink-0">
+                    <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                  </div>
                   <span>{feature}</span>
                 </li>
               ))}
