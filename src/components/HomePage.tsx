@@ -108,16 +108,6 @@ const HomePage: React.FC = () => {
               </Link>
             </div>
           </div>
-
-          <div className="flex-1">
-            <div className="aspect-video noir-card noir-spotlight rounded-2xl overflow-hidden noir-glow">
-              <img
-                src="https://images.pexels.com/photos/6801648/pexels-photo-6801648.jpeg?auto=compress&cs=tinysrgb&w=1200"
-                alt="SmartChain Analytics Dashboard"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
         </div>
       </section>
 
