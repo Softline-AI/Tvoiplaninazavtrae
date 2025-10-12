@@ -339,7 +339,11 @@ input:focus, textarea:focus, select:focus {
 }
 
 .noir-subtitle {
-  color: #cccccc;
+  background: linear-gradient(to right, #ffffff, #cccccc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: #ffffff;
 }
 
 .noir-sidebar {
