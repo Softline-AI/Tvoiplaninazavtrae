@@ -61,7 +61,6 @@ const HomePage: React.FC = () => {
         onLoadedMetadata={(e) => {
           const video = e.currentTarget;
           video.currentTime = 1;
-          video.playbackRate = 0.95;
         }}
       >
         <source src="https://i.imgur.com/6miT6IL.mp4" type="video/mp4" />
