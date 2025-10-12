@@ -73,7 +73,12 @@ const HomePage: React.FC = () => {
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-2 noir-gradient-text relative z-20 pb-2" style={{ textShadow: '0 2px 20px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 0, 0, 0.5)', lineHeight: '1.15' }}>
               Follow the smart money trail
             </h1>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6 noir-subtitle">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6" style={{
+              background: 'linear-gradient(to right, #ffffff, #cccccc)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }}>
               Act before the market catches on
             </h2>
             <p className="text-lg md:text-xl lg:text-2xl noir-text-secondary font-light mb-10 max-w-xl">
