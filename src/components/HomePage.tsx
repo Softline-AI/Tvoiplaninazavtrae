@@ -221,7 +221,7 @@ const HomePage: React.FC = () => {
             Start free or unlock premium features to dominate the market
           </p>
 
-          <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="flex items-center justify-center gap-3">
             <button
               onClick={() => setBillingPeriod('monthly')}
               className={`px-6 py-2 rounded-lg font-semibold transition-all ${
@@ -238,10 +238,10 @@ const HomePage: React.FC = () => {
             >
               Yearly
             </button>
+            {billingPeriod === 'yearly' && (
+              <p className="text-sm text-white/60">Save 20% with annual billing</p>
+            )}
           </div>
-          {billingPeriod === 'yearly' && (
-            <p className="text-sm text-white/60">Save 20% with annual billing</p>
-          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
