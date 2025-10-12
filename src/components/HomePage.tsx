@@ -53,7 +53,11 @@ const HomePage: React.FC = () => {
         muted
         playsInline
         preload="auto"
-        style={{ objectPosition: 'center' }}
+        style={{
+          objectPosition: 'center',
+          imageRendering: 'high-quality',
+          filter: 'brightness(1.05) contrast(1.05)'
+        }}
         onLoadedMetadata={(e) => {
           const video = e.currentTarget;
           video.currentTime = 0.01;
