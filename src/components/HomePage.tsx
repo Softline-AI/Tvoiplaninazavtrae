@@ -70,7 +70,7 @@ const HomePage: React.FC = () => {
       <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4 relative z-10">
           <div className="flex-1 flex flex-col items-start text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight leading-tight mb-6 noir-gradient-text relative z-20" style={{ textShadow: '0 2px 20px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 0, 0, 0.5)' }}>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 noir-gradient-text relative z-20 pb-2" style={{ textShadow: '0 2px 20px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 0, 0, 0.5)', lineHeight: '1.15' }}>
               Follow the smart money trail
             </h1>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight mb-6 noir-subtitle">
