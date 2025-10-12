@@ -84,16 +84,15 @@ const HomePage: React.FC = () => {
               {['Live whale wallet tracking', '1000+ KOL database', 'Early trend detection', 'Insider move alerts'].map((item, i) => (
                 <li
                   key={i}
-                  className="flex items-center gap-3 text-lg md:text-xl noir-text-secondary transition-all duration-700 noir-slide-in"
+                  className="flex items-center gap-4 text-lg md:text-xl transition-all duration-700 noir-slide-in"
                   style={{ transitionDelay: `${i * 200}ms` }}
                 >
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-700 via-slate-600 to-slate-800 flex items-center justify-center shadow-2xl border border-white/20 backdrop-blur-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-transparent"></div>
-                    <svg className="w-5 h-5 text-white drop-shadow-lg relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
+                  <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <svg className="w-4 h-4 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeLinecap="round" strokeLinejoin="round">
                       <path strokeWidth="3" d="M20 6L9 17l-5-5"></path>
                     </svg>
                   </div>
-                  {item}
+                  <span className="font-medium text-white">{item}</span>
                 </li>
               ))}
             </ul>
