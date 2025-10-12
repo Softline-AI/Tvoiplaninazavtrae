@@ -99,8 +99,7 @@ body {
 }
 
 .nav-dark {
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(10px);
+  background: #000000;
   border-bottom: 1px solid #1a1a1a;
 }
 
@@ -331,8 +330,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 .noir-nav {
-  background: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(10px);
+  background: #000000;
   border-bottom: 1px solid #1a1a1a;
 }
 
