@@ -314,10 +314,11 @@ input:focus, textarea:focus, select:focus {
 }
 
 .noir-gradient-text {
-  background: linear-gradient(to right, #ffffff, #888888);
+  background: linear-gradient(to right, #ffffff, #cccccc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: #ffffff;
 }
 
 .noir-subtitle {
