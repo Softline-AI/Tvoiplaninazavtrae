@@ -103,13 +103,7 @@ const HomePage: React.FC = () => {
                 to="/app/kol-feed"
                 className="noir-button noir-pulse inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-lg md:text-xl"
               >
-                <span>Stop Missing Alpha</span>
-              </Link>
-              <Link
-                to="/app"
-                className="noir-button-secondary inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-lg md:text-xl"
-              >
-                <span>View Demo</span>
+                <span>Get Started</span>
               </Link>
             </div>
           </div>
