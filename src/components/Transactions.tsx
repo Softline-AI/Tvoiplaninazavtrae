@@ -7,14 +7,7 @@ interface Transaction {
   signature: string;
   type: 'buy' | 'sell' | 'swap';
   wallet: string;
-  walletName: string;
-  token: string;
-  tokenSymbol: string;
-  amount: string;
-  value: string;
-  price: string;
   timestamp: string;
-  status: 'success' | 'pending' | 'failed';
 }
 
 const Transactions: React.FC = () => {
@@ -22,7 +15,6 @@ const Transactions: React.FC = () => {
   const [timeRange, setTimeRange] = useState('24h');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<'time' | 'value' | 'amount'>('time');
 
   useEffect(() => {
     const fetchTransactions = async () => {
@@ -37,73 +29,10 @@ const Transactions: React.FC = () => {
     fetchTransactions();
   }, [timeRange, filter]);
 
-  const displayTransactions = transactions.length > 0 ? transactions : mockTransactions;
-
-  const filteredTransactions = displayTransactions.filter(tx => {
+  const filteredTransactions = transactions.filter(tx => {
     if (filter === 'all') return true;
     return tx.type === filter;
   });
-
-  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    switch(sortBy) {
-      case 'value':
-        const valA = parseFloat(a.value.replace(/[^0-9.]/g, ''));
-        const valB = parseFloat(b.value.replace(/[^0-9.]/g, ''));
-        return valB - valA;
-      case 'amount':
-        const amtA = parseFloat(a.amount.replace(/[^0-9.]/g, ''));
-        const amtB = parseFloat(b.amount.replace(/[^0-9.]/g, ''));
-        return amtB - amtA;
-      case 'time':
-      default:
-        return 0;
-    }
-  });
-
-  const mockTransactions: Transaction[] = [
-    {
-      id: '1',
-      signature: '5ThrLJDFpJqaFL36AvAX8ECZmz6n4vZvqMYvpHHkpump',
-      type: 'buy',
-      wallet: 'BCagckXeMChUKrHEd6fKFA1uiWDtcmCXMsqaheLiUPJd',
-      walletName: 'Smart Whale #1',
-      token: 'Solana',
-      tokenSymbol: 'SOL',
-      amount: '1,250 SOL',
-      value: '$177,875',
-      price: '$142.30',
-      timestamp: '2 min ago',
-      status: 'success'
-    },
-    {
-      id: '2',
-      signature: '2fg5QD1eD7rzNNCsvnhmXFm5hqNgwTTG8p7kQ6f3rx6f',
-      type: 'sell',
-      wallet: 'FxN3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR',
-      walletName: 'KOL Trader',
-      token: 'Bonk',
-      tokenSymbol: 'BONK',
-      amount: '50M BONK',
-      value: '$1,700',
-      price: '$0.000034',
-      timestamp: '5 min ago',
-      status: 'success'
-    },
-    {
-      id: '3',
-      signature: '7NAd2EpYGGeFofpyvgehSXhH5vg6Ry6VRMW2Y6jiqCu1',
-      type: 'swap',
-      wallet: 'DfMxre4cKmvogbLrPigxmibVTTQDuzjdXojWzjCXXhzj',
-      walletName: 'Whale Trader',
-      token: 'Jupiter → Raydium',
-      tokenSymbol: 'JUP→RAY',
-      amount: '5,000 JUP',
-      value: '$4,450',
-      price: '$0.89',
-      timestamp: '8 min ago',
-      status: 'success'
-    }
-  ];
 
   const getTypeIcon = (type: string) => {
     switch (type) {
@@ -202,41 +131,6 @@ const Transactions: React.FC = () => {
               Swap
             </button>
           </div>
-
-          <div className="h-6 w-px bg-white/10"></div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => setSortBy('time')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                sortBy === 'time'
-                  ? 'bg-white text-noir-black'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
-            >
-              Time
-            </button>
-            <button
-              onClick={() => setSortBy('value')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                sortBy === 'value'
-                  ? 'bg-white text-noir-black'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
-            >
-              Value
-            </button>
-            <button
-              onClick={() => setSortBy('amount')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                sortBy === 'amount'
-                  ? 'bg-white text-noir-black'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
-            >
-              Amount
-            </button>
-          </div>
         </div>
       </div>
 
@@ -253,18 +147,6 @@ const Transactions: React.FC = () => {
                   Wallet
                 </th>
                 <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                  Token
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                  Amount
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                  Value
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                  Price
-                </th>
-                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                   Time
                 </th>
                 <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
@@ -275,18 +157,18 @@ const Transactions: React.FC = () => {
             <tbody className="divide-y divide-white/10">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-white/70">
+                  <td colSpan={4} className="px-4 py-8 text-center text-white/70">
                     Loading transactions...
                   </td>
                 </tr>
-              ) : sortedTransactions.length === 0 ? (
+              ) : filteredTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-white/70">
-                    No transactions found. Start Flask server: cd backend && python app.py
+                  <td colSpan={4} className="px-4 py-8 text-center text-white/70">
+                    No transactions found
                   </td>
                 </tr>
               ) : (
-                sortedTransactions.map((tx) => (
+                filteredTransactions.map((tx) => (
                 <tr key={tx.id} className="transition-all duration-300 hover:bg-white/5">
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(tx.type)}`}>
@@ -295,34 +177,9 @@ const Transactions: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-bold text-white">{tx.walletName}</div>
-                      <div className="text-xs text-white/70 font-mono">
-                        {tx.wallet.slice(0, 8)}...{tx.wallet.slice(-4)}
-                      </div>
+                    <div className="text-sm font-mono text-white">
+                      {tx.wallet.slice(0, 8)}...{tx.wallet.slice(-4)}
                     </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border border-white/30 mr-2">
-                        <span className="text-white font-bold text-xs">
-                          {tx.tokenSymbol.substring(0, 2)}
-                        </span>
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold text-white">{tx.tokenSymbol}</div>
-                        <div className="text-xs text-white/70">{tx.token}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-bold text-white">{tx.amount}</div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-bold text-white">{tx.value}</div>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <div className="text-sm font-bold text-white">{tx.price}</div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-1 text-sm text-white/70">
@@ -332,7 +189,10 @@ const Transactions: React.FC = () => {
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
-                      <button className="hover:opacity-70 hover:scale-110 transition-all cursor-pointer p-1 text-white/70">
+                      <button
+                        onClick={() => navigator.clipboard.writeText(tx.signature)}
+                        className="hover:opacity-70 hover:scale-110 transition-all cursor-pointer p-1 text-white/70"
+                      >
                         <Copy className="w-4 h-4" />
                       </button>
                       <a
