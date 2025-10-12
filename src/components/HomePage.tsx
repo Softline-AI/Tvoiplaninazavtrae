@@ -52,10 +52,16 @@ const HomePage: React.FC = () => {
         loop
         muted
         playsInline
-        style={{ objectPosition: 'center' }}
+        preload="auto"
+        style={{
+          objectPosition: 'center',
+          filter: 'brightness(1.1) contrast(1.1) saturate(1.2)',
+          imageRendering: 'high-quality'
+        }}
         onLoadedMetadata={(e) => {
           const video = e.currentTarget;
           video.currentTime = 1;
+          video.playbackRate = 0.95;
         }}
       >
         <source src="https://i.imgur.com/6miT6IL.mp4" type="video/mp4" />
