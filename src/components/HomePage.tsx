@@ -47,7 +47,7 @@ const HomePage: React.FC = () => {
   return (
     <main className="noir-bg min-h-screen relative">
       <video
-        className="fixed inset-0 w-full h-full object-cover opacity-50 z-0"
+        className="fixed inset-0 w-full h-full object-cover opacity-50 z-0 transition-opacity duration-300"
         autoPlay
         loop
         muted
@@ -60,8 +60,12 @@ const HomePage: React.FC = () => {
         }}
         onTimeUpdate={(e) => {
           const video = e.currentTarget;
-          if (video.currentTime >= 7) {
-            video.currentTime = 0.01;
+          if (video.currentTime >= 6.8) {
+            video.style.opacity = '0';
+            setTimeout(() => {
+              video.currentTime = 0.01;
+              video.style.opacity = '0.5';
+            }, 300);
           }
         }}
       >
