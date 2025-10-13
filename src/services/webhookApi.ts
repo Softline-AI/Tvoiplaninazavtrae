@@ -23,7 +23,9 @@ export interface WebhookTransaction {
 
 export const webhookService = {
   async getTransactionsByCategory(category: string, limit: number = 50): Promise<WebhookTransaction[]> {
+    const startTime = Date.now();
     try {
+      console.log(`[Webhook] 🔍 Fetching ${limit} transactions for category: ${category}`);
       const { data, error } = await supabase
         .from('webhook_transactions')
         .select('*')
@@ -32,24 +34,29 @@ export const webhookService = {
         .limit(limit);
 
       if (error) {
-        console.error('Error fetching transactions by category:', error);
-        console.log('Falling back to Helius API...');
+        console.error(`[Webhook] ❌ Supabase error for category ${category}:`, error);
+        console.log('[Webhook] 🔄 Falling back to Helius API...');
         return this.getFallbackData(category, limit);
       }
 
       if (!data || data.length === 0) {
-        console.log('No webhook data, using Helius API...');
+        const duration = Date.now() - startTime;
+        console.log(`[Webhook] ⚠️ No webhook data for ${category} after ${duration}ms, using Helius API...`);
         return this.getFallbackData(category, limit);
       }
 
+      const duration = Date.now() - startTime;
+      console.log(`[Webhook] ✅ Fetched ${data.length} transactions for ${category} in ${duration}ms`);
       return data;
     } catch (error) {
-      console.error('Error in getTransactionsByCategory:', error);
+      const duration = Date.now() - startTime;
+      console.error(`[Webhook] ❌ Error in getTransactionsByCategory after ${duration}ms:`, error);
       return this.getFallbackData(category, limit);
     }
   },
 
   async getFallbackData(category: string, limit: number): Promise<WebhookTransaction[]> {
+    console.log(`[Webhook] 🔄 Using Helius fallback for category: ${category}`);
     let heliusData: ParsedTransaction[] = [];
 
     switch (category) {
@@ -70,6 +77,7 @@ export const webhookService = {
         heliusData = await heliusTransactionService.parseTransactions(allTxs);
     }
 
+    console.log(`[Webhook] ✅ Fallback returned ${heliusData.length} transactions for ${category}`);
     return heliusData.map((tx) => ({
       id: tx.signature,
       transaction_signature: tx.signature,

@@ -44,9 +44,14 @@ const CopyTraders: React.FC = () => {
         .filter(([_, txs]) => txs.length >= 5)
         .map(([address, txs]) => {
           const totalTrades = txs.length;
-          const uniqueTokens = new Set(txs.map(tx => tx.token_symbol || tx.token_mint)).size;
           const topTokens = Array.from(new Set(txs.map(tx => tx.token_symbol || 'TOKEN'))).slice(0, 3);
           const totalVolume = txs.reduce((sum, tx) => sum + tx.amount, 0);
+
+          const getRiskLevel = (volume: number): 'low' | 'medium' | 'high' => {
+            if (volume > 50000) return 'high';
+            if (volume > 20000) return 'medium';
+            return 'low';
+          };
 
           return {
             id: address,
@@ -62,7 +67,7 @@ const CopyTraders: React.FC = () => {
             recentPerformance: `+${(Math.random() * 20).toFixed(1)}%`,
             isFollowing: false,
             subscriptionFee: `${(0.05 + Math.random() * 0.15).toFixed(2)} SOL/month`,
-            riskLevel: totalVolume > 50000 ? 'high' : totalVolume > 20000 ? 'medium' : 'low'
+            riskLevel: getRiskLevel(totalVolume)
           };
         })
         .sort((a, b) => b.totalTrades - a.totalTrades)
@@ -76,7 +81,7 @@ const CopyTraders: React.FC = () => {
     fetchTraders();
   }, []);
 
-  const mockTraders: Trader[] = [
+  const _mockTraders: Trader[] = [
     {
       id: '1',
       name: 'SolanaWhaleKing',

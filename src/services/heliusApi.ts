@@ -211,15 +211,16 @@ class HeliusService {
 
   // Get parsed transactions for a wallet using Helius Enhanced API
   async getEnhancedTransactions(walletAddress: string, limit: number = 50): Promise<WalletTransaction[]> {
+    const startTime = Date.now();
+    console.log(`[Helius] 🔄 Fetching ${limit} transactions for wallet: ${walletAddress.slice(0, 8)}...`);
+
     // Skip API calls if not connected
     if (!this.isConnected) {
-      console.warn('⚠️ Helius API not connected, returning mock data');
+      console.warn(`[Helius] ⚠️ API not connected, returning ${limit} mock transactions`);
       return this.generateMockTransactions(walletAddress, limit);
     }
-    
+
     try {
-      console.log(`💰 Fetching enhanced transactions for wallet: ${walletAddress}`);
-      
       const response = await this.fetchWithRetry(this.rpcUrl, {
         method: 'POST',
         body: JSON.stringify({
@@ -236,15 +237,16 @@ class HeliusService {
       });
       
       if (!response.ok) {
-        console.error(`Failed to fetch transactions: ${response.status} ${response.statusText}`);
+        console.error(`[Helius] ❌ Failed to fetch transactions: ${response.status} ${response.statusText}`);
         return this.generateMockTransactions(walletAddress, limit);
       }
 
       const data = await response.json();
-      console.log(`💰 Raw transactions data for ${walletAddress}:`, data?.result?.length || 0, 'transactions');
-      
+      const txCount = data?.result?.length || 0;
+      console.log(`[Helius] 📊 Received ${txCount} raw transactions for ${walletAddress.slice(0, 8)}...`);
+
       if (!data?.result || !Array.isArray(data.result)) {
-        console.warn('No transaction data received');
+        console.warn(`[Helius] ⚠️ No transaction data received for ${walletAddress.slice(0, 8)}...`);
         return this.generateMockTransactions(walletAddress, limit);
       }
 
@@ -276,11 +278,13 @@ class HeliusService {
           console.warn('Error processing transaction:', txError);
         }
       }
-      
-      console.log(`💰 Processed ${transactions.length} transactions for ${walletAddress}`);
+
+      const duration = Date.now() - startTime;
+      console.log(`[Helius] ✅ Processed ${transactions.length} transactions for ${walletAddress.slice(0, 8)}... in ${duration}ms`);
       return transactions;
     } catch (error) {
-      console.error('Error fetching enhanced transactions:', error);
+      const duration = Date.now() - startTime;
+      console.error(`[Helius] ❌ Error fetching enhanced transactions after ${duration}ms:`, error);
       return this.generateMockTransactions(walletAddress, limit);
     }
   }
@@ -342,8 +346,9 @@ class HeliusService {
 
   // Get real-time KOL data
   async getRealTimeKOLData(): Promise<RealTimeKOLTrade[]> {
+    const startTime = Date.now();
     try {
-      console.log('🔄 Fetching real-time KOL data...');
+      console.log(`[Helius] 🔄 Fetching real-time KOL data for ${this.kolWallets.length} wallets...`);
       
       const kolTrades: RealTimeKOLTrade[] = [];
       
@@ -396,19 +401,23 @@ class HeliusService {
       
       // Sort by timestamp (newest first)
       kolTrades.sort((a, b) => b.timestamp - a.timestamp);
-      
-      console.log(`🔄 Generated ${kolTrades.length} real-time KOL trades`);
-      return kolTrades.slice(0, 20); // Return top 20 most recent
+
+      const duration = Date.now() - startTime;
+      const topTrades = kolTrades.slice(0, 20);
+      console.log(`[Helius] ✅ Generated ${topTrades.length} real-time KOL trades in ${duration}ms`);
+      return topTrades;
     } catch (error) {
-      console.error('Error fetching real-time KOL data:', error);
+      const duration = Date.now() - startTime;
+      console.error(`[Helius] ❌ Error fetching real-time KOL data after ${duration}ms:`, error);
       return [];
     }
   }
 
   // Get KOL leaderboard data
   async getKOLLeaderboardData(): Promise<KOLData[]> {
+    const startTime = Date.now();
     try {
-      console.log('📊 Fetching KOL leaderboard data...');
+      console.log(`[Helius] 📊 Fetching KOL leaderboard data for ${this.kolWallets.length} wallets...`);
       
       const kolData: KOLData[] = [];
       
@@ -458,11 +467,13 @@ class HeliusService {
       
       // Sort by total volume
       kolData.sort((a, b) => b.totalVolume - a.totalVolume);
-      
-      console.log(`📊 Generated leaderboard for ${kolData.length} KOLs`);
+
+      const duration = Date.now() - startTime;
+      console.log(`[Helius] ✅ Generated leaderboard for ${kolData.length} KOLs in ${duration}ms`);
       return kolData;
     } catch (error) {
-      console.error('Error fetching KOL leaderboard data:', error);
+      const duration = Date.now() - startTime;
+      console.error(`[Helius] ❌ Error fetching KOL leaderboard data after ${duration}ms:`, error);
       return [];
     }
   }
