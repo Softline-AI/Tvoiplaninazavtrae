@@ -173,6 +173,10 @@ const TopTokens: React.FC = () => {
         className="fixed inset-0 w-full h-full object-cover opacity-30 pointer-events-none z-0"
         style={{ mixBlendMode: 'screen' }}
       >
+        onLoadedMetadata={(e) => {
+          const video = e.currentTarget;
+          video.currentTime = 0.1;
+        }}
         <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
       </video>
       <div className="relative z-10">
