@@ -24,20 +24,32 @@ import MyStalks from './components/MyStalks';
 const App: React.FC = () => {
   return (
     <Router>
-      <div className="fixed inset-0 z-0 overflow-hidden bg-black">
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 0,
+        overflow: 'hidden',
+        backgroundColor: '#000000'
+      }}>
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="pointer-events-none opacity-30 w-full h-full"
           style={{
             position: 'absolute',
             top: 0,
             left: 0,
-            width: '100vw',
-            height: '100vh',
-            objectFit: 'cover'
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.3,
+            pointerEvents: 'none'
           }}
         >
           <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
