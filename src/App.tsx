@@ -30,10 +30,17 @@ const App: React.FC = () => {
           loop
           muted
           playsInline
-          className="absolute top-0 left-0 w-screen h-screen object-cover pointer-events-none opacity-30"
+          className="pointer-events-none opacity-30"
           style={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
             minWidth: '100%',
-            minHeight: '100%'
+            minHeight: '100%',
+            width: 'auto',
+            height: 'auto',
+            objectFit: 'cover'
           }}
         >
           <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
