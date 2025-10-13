@@ -37,8 +37,18 @@ const Sidebar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="sidebar py-4 w-64 h-full px-3 noir-sidebar z-100 overflow-y-auto">
-      <div>
+    <div className="sidebar py-4 w-64 h-full px-3 noir-sidebar z-100 overflow-y-auto relative">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover opacity-30 pointer-events-none"
+        style={{ mixBlendMode: 'screen' }}
+      >
+        <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
+      </video>
+      <div className="relative z-10">
         <div className="transition-all duration-200 space-y-1">
           <Link
             to="/app/learning-center"
@@ -63,7 +73,6 @@ const Sidebar: React.FC = () => {
           </Link>
         </div>
         <div className="h-px bg-white/10 my-3" />
-      </div>
 
       <div>
         <button
@@ -352,6 +361,7 @@ const Sidebar: React.FC = () => {
         <Crown className="w-5 h-5" />
         Unlock Tools
       </Link>
+      </div>
     </div>
   );
 };
