@@ -74,7 +74,18 @@ const KOLFeedLegacy: React.FC = () => {
   };
 
   return (
-    <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5">
+    <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover opacity-30 pointer-events-none z-0"
+        style={{ mixBlendMode: 'screen' }}
+      >
+        <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
+      </video>
+      <div className="relative z-10">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-xl mb-1 font-semibold text-white">KOL Feed Legacy</h1>
@@ -252,6 +263,7 @@ const KOLFeedLegacy: React.FC = () => {
             Showing {legacyTrades.length} transactions from the last {timeFilter}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

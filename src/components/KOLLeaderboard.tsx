@@ -222,7 +222,18 @@ const KOLLeaderboard: React.FC = () => {
   });
 
   return (
-    <div className="w-full mx-auto px-0 max-w-[1220px] md:px-10 py-5">
+    <div className="w-full mx-auto px-0 max-w-[1220px] md:px-10 py-5 relative">
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="fixed inset-0 w-full h-full object-cover opacity-30 pointer-events-none z-0"
+        style={{ mixBlendMode: 'screen' }}
+      >
+        <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
+      </video>
+      <div className="relative z-10">
       <div className="mb-6">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-3">
           <div>
@@ -387,6 +398,7 @@ const KOLLeaderboard: React.FC = () => {
             </div>
           )}
         </div>
+      </div>
       </div>
     </div>
   );
