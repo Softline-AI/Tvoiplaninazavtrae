@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 Starting StalkX Backend Server..."
+echo "🚀 Starting StalkX Backend Server..
 echo ""
 
 cd backend
