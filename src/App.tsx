@@ -55,7 +55,7 @@ const App: React.FC = () => {
             <div className="flex-1 overflow-y-auto">
               <div className="w-full">
                   <Routes>
-                    <Route path="/" element={<KOLLeaderboard />} />
+                    <Route path="/" element={<KOLFeed />} />
                     <Route path="/kol-feed" element={<KOLFeed />} />
                     <Route path="/kol-profile/:walletAddress" element={<KOLProfile />} />
                     <Route path="/kol-leaderboard" element={<KOLLeaderboard />} />

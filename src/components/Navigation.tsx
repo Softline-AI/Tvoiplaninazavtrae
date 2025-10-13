@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, ChevronDown, TrendingUp, BarChart3, Star, Activity, Coins, TrendingDown, ArrowLeftRight, Wallet, Search, LineChart } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Navigation: React.FC = () => {
+  const location = useLocation();
+  const isAppRoute = location.pathname.startsWith('/app');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
@@ -71,94 +73,98 @@ const Navigation: React.FC = () => {
               SMARTCHAIN
             </Link>
 
-            <div className="hidden md:flex items-center gap-6">
-              <div className="relative" ref={productsRef}>
-                <button
-                  onClick={() => {
-                    setIsProductsOpen(!isProductsOpen);
-                    setIsToolsOpen(false);
-                  }}
-                  className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors font-medium"
-                >
-                  Products
-                  <ChevronDown className={`w-4 h-4 transition-transform ${isProductsOpen ? 'rotate-180' : ''}`} />
-                </button>
+            {!isAppRoute && (
+              <div className="hidden md:flex items-center gap-6">
+                <div className="relative" ref={productsRef}>
+                  <button
+                    onClick={() => {
+                      setIsProductsOpen(!isProductsOpen);
+                      setIsToolsOpen(false);
+                    }}
+                    className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors font-medium"
+                  >
+                    Products
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isProductsOpen ? 'rotate-180' : ''}`} />
+                  </button>
 
-                {isProductsOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-[800px] noir-card border border-white/10 rounded-lg shadow-xl p-6">
-                    <div className="grid grid-cols-3 gap-6">
-                      {Object.entries(products).map(([category, items]) => (
-                        <div key={category} className="space-y-3">
-                          <h3 className="font-semibold text-sm text-white mb-3">{category}</h3>
-                          <div className="space-y-2">
-                            {items.map((product) => (
-                              <Link
-                                key={product.path}
-                                to={product.path}
-                                onClick={() => setIsProductsOpen(false)}
-                                className="flex items-start gap-2 p-2 rounded-lg hover:bg-white/5 transition-colors group"
-                              >
-                                <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/5 rounded-md group-hover:bg-white/10 transition-colors mt-0.5">
-                                  <div className="text-white">
-                                    {productIcons[product.name]}
+                  {isProductsOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-[800px] noir-card border border-white/10 rounded-lg shadow-xl p-6">
+                      <div className="grid grid-cols-3 gap-6">
+                        {Object.entries(products).map(([category, items]) => (
+                          <div key={category} className="space-y-3">
+                            <h3 className="font-semibold text-sm text-white mb-3">{category}</h3>
+                            <div className="space-y-2">
+                              {items.map((product) => (
+                                <Link
+                                  key={product.path}
+                                  to={product.path}
+                                  onClick={() => setIsProductsOpen(false)}
+                                  className="flex items-start gap-2 p-2 rounded-lg hover:bg-white/5 transition-colors group"
+                                >
+                                  <div className="flex-shrink-0 w-6 h-6 flex items-center justify-center bg-white/5 rounded-md group-hover:bg-white/10 transition-colors mt-0.5">
+                                    <div className="text-white">
+                                      {productIcons[product.name]}
+                                    </div>
                                   </div>
-                                </div>
-                                <div className="flex-1 overflow-hidden">
-                                  <div className="font-medium text-white text-sm leading-tight">{product.name}</div>
-                                  <div className="text-xs text-gray-400 leading-tight mt-0.5">{product.description}</div>
-                                </div>
-                              </Link>
-                            ))}
+                                  <div className="flex-1 overflow-hidden">
+                                    <div className="font-medium text-white text-sm leading-tight">{product.name}</div>
+                                    <div className="text-xs text-gray-400 leading-tight mt-0.5">{product.description}</div>
+                                  </div>
+                                </Link>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="relative" ref={toolsRef}>
+                  <button
+                    onClick={() => {
+                      setIsToolsOpen(!isToolsOpen);
+                      setIsProductsOpen(false);
+                    }}
+                    className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors font-medium"
+                  >
+                    Tools
+                    <ChevronDown className={`w-4 h-4 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isToolsOpen && (
+                    <div className="absolute top-full left-0 mt-2 w-64 noir-card border border-white/10 rounded-lg shadow-xl py-2">
+                      {tools.map((tool) => (
+                        <Link
+                          key={tool.path}
+                          to={tool.path}
+                          onClick={() => setIsToolsOpen(false)}
+                          className="block px-4 py-3 hover:bg-white/5 transition-colors"
+                        >
+                          <div className="font-medium text-white text-sm">{tool.name}</div>
+                          <div className="text-xs text-gray-400 mt-0.5">{tool.description}</div>
+                        </Link>
                       ))}
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
+            )}
+          </div>
 
-              <div className="relative" ref={toolsRef}>
-                <button
-                  onClick={() => {
-                    setIsToolsOpen(!isToolsOpen);
-                    setIsProductsOpen(false);
-                  }}
-                  className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors font-medium"
-                >
-                  Tools
-                  <ChevronDown className={`w-4 h-4 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
-                </button>
-
-                {isToolsOpen && (
-                  <div className="absolute top-full left-0 mt-2 w-64 noir-card border border-white/10 rounded-lg shadow-xl py-2">
-                    {tools.map((tool) => (
-                      <Link
-                        key={tool.path}
-                        to={tool.path}
-                        onClick={() => setIsToolsOpen(false)}
-                        className="block px-4 py-3 hover:bg-white/5 transition-colors"
-                      >
-                        <div className="font-medium text-white text-sm">{tool.name}</div>
-                        <div className="text-xs text-gray-400 mt-0.5">{tool.description}</div>
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
+          {!isAppRoute && (
+            <div className="hidden md:flex items-center gap-8">
+              <a href="/#features" className="text-sm text-gray hover:text-white transition-colors">
+                Features
+              </a>
+              <a href="/#plans" className="text-sm text-gray hover:text-white transition-colors">
+                Pricing
+              </a>
+              <Link to="/app/kol-feed" className="btn-white">
+                Open App
+              </Link>
             </div>
-          </div>
-
-          <div className="hidden md:flex items-center gap-8">
-            <a href="/#features" className="text-sm text-gray hover:text-white transition-colors">
-              Features
-            </a>
-            <a href="/#plans" className="text-sm text-gray hover:text-white transition-colors">
-              Pricing
-            </a>
-            <Link to="/app" className="btn-white">
-              Open App
-            </Link>
-          </div>
+          )}
 
           <button
             className="md:hidden text-white p-2"
@@ -223,7 +229,7 @@ const Navigation: React.FC = () => {
             </div>
 
             <Link
-              to="/app"
+              to="/app/kol-feed"
               className="btn-white inline-block w-full text-center"
               onClick={() => setIsMobileMenuOpen(false)}
             >
