@@ -47,16 +47,19 @@ const HomePage: React.FC = () => {
   return (
     <main className="noir-bg min-h-screen relative">
       <video
-        className="fixed inset-0 w-full h-full object-cover opacity-50 z-0"
+        className="fixed inset-0 w-full h-full opacity-50 z-0"
         autoPlay
         loop
         muted
         playsInline
         preload="auto"
         style={{
+          objectFit: 'cover',
           objectPosition: 'center',
           imageRendering: 'high-quality',
-          filter: 'brightness(1.05) contrast(1.05)'
+          filter: 'brightness(1.05) contrast(1.05)',
+          width: '100%',
+          height: '100%'
         }}
         onLoadedMetadata={(e) => {
           const video = e.currentTarget;
