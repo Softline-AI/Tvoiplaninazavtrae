@@ -37,138 +37,99 @@ const Sidebar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="sidebar py-2 w-60 h-full px-2 noir-sidebar z-100">
+    <div className="sidebar py-4 w-64 h-full px-3 noir-sidebar z-100 overflow-y-auto">
       <div>
-        <div className="transition-all duration-200">
-          <div className="flex w-full gap-1 mb-1">
-            <Link
-              to="/app/learning-center"
-              className="flex-1 flex items-center justify-between h-8 px-2 rounded-lg transition-colors text-white hover:bg-white/10"
-            >
-              <div className="flex items-center gap-3">
-                <div className="text-white">
-                  <Play className="w-5 h-5" />
-                </div>
-                <span className="text-sm text-white">Learning Center</span>
-              </div>
-            </Link>
-          </div>
-          <div className="flex w-full gap-1 mb-1">
-            <Link
-              to="/app/my-stalks"
-              className="flex-1 flex items-center justify-between h-8 px-2 rounded-lg transition-colors text-white opacity-50 hover:bg-white/10"
-            >
-              <div className="flex items-center gap-3">
-                <div className="text-white">
-                  <Target className="w-5 h-5" />
-                </div>
-                <span className="text-sm text-white">My Stalks</span>
-              </div>
-              <div className="font-semibold px-1 py-0 rounded w-9 text-center flex items-center justify-center text-xs h-4 border text-purple-700 border-purple-200 bg-purple-50">
-                PRO
-              </div>
-            </Link>
-          </div>
+        <div className="transition-all duration-200 space-y-1">
+          <Link
+            to="/app/learning-center"
+            className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white hover:bg-white/10 group"
+          >
+            <div className="flex items-center gap-3">
+              <Play className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-sm font-medium">Learning Center</span>
+            </div>
+          </Link>
+          <Link
+            to="/app/my-stalks"
+            className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
+          >
+            <div className="flex items-center gap-3">
+              <Target className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-sm font-medium">My Stalks</span>
+            </div>
+            <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-white/20 bg-white/5">
+              PRO
+            </div>
+          </Link>
         </div>
-        <hr className="border-blue-500/30 my-1" />
+        <div className="h-px bg-white/10 my-3" />
       </div>
 
       <div>
         <button
           onClick={() => toggleSection('kol')}
-          className="w-full px-2 flex items-center justify-between text-white rounded-lg hover:bg-white/10 h-auto pt-2 mb-1"
+          className="w-full px-3 flex items-center justify-between text-white/60 rounded-lg hover:bg-white/5 h-9 mb-2 group transition-all"
         >
-          <span className="text-xs">KOL SCREENER</span>
-          <div className="flex items-center justify-center h-6 w-6 min-w-6">
-            <div className={`transition-transform ${openSections.kol ? 'rotate-180' : ''}`}>
-              <ChevronDown className="w-3.5 h-3.5 text-white" />
-            </div>
-          </div>
+          <span className="text-[11px] font-bold tracking-wider">KOL SCREENER</span>
+          <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${openSections.kol ? 'rotate-180' : ''}`} />
         </button>
         {openSections.kol && (
-          <div className="transition-all duration-200">
-            <div className="flex w-full gap-1 mb-1">
-              <Link
-                to="/app/kol-feed"
-                className={`flex-1 flex items-center justify-between h-8 px-2 rounded-lg transition-colors ${
-                  isActive('/app/kol-feed')
-                    ? 'text-noir-black bg-white'
-                    : 'text-white hover:bg-white/10'
-                }`}
+          <div className="space-y-1 mb-3">
+            <Link
+              to="/app/kol-feed"
+              className={`flex items-center gap-3 h-10 px-3 rounded-lg transition-all group ${
+                isActive('/app/kol-feed')
+                  ? 'bg-white text-black shadow-lg'
+                  : 'text-white hover:bg-white/10'
+              }`}
+            >
+              <TrendingUp className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-sm font-medium">KOL Feed</span>
+            </Link>
+            <Link
+              to="/app/kol-leaderboard"
+              className={`flex items-center gap-3 h-10 px-3 rounded-lg transition-all group ${
+                isActive('/app/kol-leaderboard')
+                  ? 'bg-white text-black shadow-lg'
+                  : 'text-white hover:bg-white/10'
+              }`}
+            >
+              <BarChart3 className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-sm font-medium">KOL Leaderboard</span>
+            </Link>
+            <Link
+              to="/app/top-kol-tokens"
+              className="flex items-center gap-3 h-10 px-3 rounded-lg transition-all text-white hover:bg-white/10 group"
+            >
+              <Star className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <span className="text-sm font-medium">Top KOL Tokens</span>
+            </Link>
+            <Link
+              to="/app/kol-feed-legacy"
+              className="flex items-center gap-3 h-10 px-3 rounded-lg transition-all text-white hover:bg-white/10 group"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                className="transition-transform group-hover:scale-110"
               >
-                <div className="flex items-center gap-3">
-                  <div className={isActive('/app/kol-feed') ? 'text-noir-black' : 'text-white'}>
-                    <TrendingUp className="w-5 h-5" />
-                  </div>
-                  <span className={`text-sm ${isActive('/app/kol-feed') ? 'text-noir-black' : 'text-white'}`}>
-                    KOL Feed
-                  </span>
-                </div>
-              </Link>
-            </div>
-            <div className="flex w-full gap-1 mb-1">
-              <Link
-                to="/app/kol-leaderboard"
-                className={`flex-1 flex items-center justify-between h-8 px-2 rounded-lg transition-colors ${
-                  isActive('/app/kol-leaderboard')
-                    ? 'text-noir-black bg-white'
-                    : 'text-white hover:bg-white/10'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={isActive('/app/kol-leaderboard') ? 'text-noir-black' : 'text-white'}>
-                    <BarChart3 className="w-5 h-5" />
-                  </div>
-                  <span className={`text-sm ${isActive('/app/kol-leaderboard') ? 'text-noir-black' : 'text-white'}`}>
-                    KOL Leaderboard
-                  </span>
-                </div>
-              </Link>
-            </div>
-            <div className="flex w-full gap-1 mb-1">
-              <Link
-                to="/app/top-kol-tokens"
-                className="flex-1 flex items-center justify-between h-8 px-2 rounded-lg transition-colors text-white hover:bg-white/10"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-white">
-                    <Star className="w-5 h-5" />
-                  </div>
-                  <span className="text-sm text-white">Top KOL Tokens</span>
-                </div>
-              </Link>
-            </div>
-            <div className="flex w-full gap-1 mb-1">
-              <Link
-                to="/app/kol-feed-legacy"
-                className="flex-1 flex items-center justify-between h-8 px-2 rounded-lg transition-colors text-white hover:bg-white/10"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="text-white">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                    >
-                      <path
-                        d="M5 18h14M5 14h14l1-9-4 3-4-5-4 5-4-3 1 9Z"
-                        stroke="white"
-                        fill="none"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-sm text-white">KOL Feed Legacy</span>
-                </div>
-              </Link>
-            </div>
+                <path
+                  d="M5 18h14M5 14h14l1-9-4 3-4-5-4 5-4-3 1 9Z"
+                  stroke="currentColor"
+                  fill="none"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="text-sm font-medium">KOL Feed Legacy</span>
+            </Link>
           </div>
         )}
-        <hr className="border-white/20 my-1" />
+        <div className="h-px bg-white/10 my-3" />
       </div>
 
       <div>
@@ -226,7 +187,7 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
         )}
-        <hr className="border-white/20 my-1" />
+        <div className="h-px bg-white/10 my-3" />
       </div>
 
       <div>
@@ -309,7 +270,7 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
         )}
-        <hr className="border-white/20 my-1" />
+        <div className="h-px bg-white/10 my-3" />
       </div>
 
       <div>
@@ -376,7 +337,7 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
         )}
-        <hr className="border-white/20 my-1" />
+        <div className="h-px bg-white/10 my-3" />
       </div>
 
       <div>
@@ -459,16 +420,16 @@ const Sidebar: React.FC = () => {
             </div>
           </div>
         )}
-        <hr className="border-white/20 my-1" />
+        <div className="h-px bg-white/10 my-3" />
       </div>
 
-      <button className="w-full flex items-center soft-button text-medium h-10 mb-1 px-2 rounded-lg"></button>
-      <button className="w-full flex items-center noir-button text-medium h-10 mb-1 px-2 rounded-lg">
-        <Link to="/app/upgrade" className="w-full flex items-center">
-          <Crown className="w-7 h-7 mr-2" />
-          Unlock Tools
-        </Link>
-      </button>
+      <Link
+        to="/app/upgrade"
+        className="w-full flex items-center justify-center gap-2 bg-white text-black h-12 px-4 rounded-xl font-bold text-sm hover:bg-white/90 transition-all shadow-lg hover:shadow-xl hover:scale-105 mt-6"
+      >
+        <Crown className="w-5 h-5" />
+        Unlock Tools
+      </Link>
     </div>
   );
 };
