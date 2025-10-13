@@ -73,8 +73,9 @@ const Navigation: React.FC = () => {
               SMARTCHAIN
             </Link>
 
-            {!isAppRoute && (
-              <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-6">
+              {!isAppRoute && (
+                <>
                 <div className="relative" ref={productsRef}>
                   <button
                     onClick={() => {
@@ -148,26 +149,29 @@ const Navigation: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </div>
-            )}
+                </>
+              )}
+
+              {isAppRoute && (
+                <>
+                  <a href="/#features" className="text-white hover:text-gray-300 transition-colors font-medium">
+                    Features
+                  </a>
+                  <a href="/#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
+                    Pricing
+                  </a>
+                </>
+              )}
+            </div>
           </div>
 
-          <div className="hidden md:flex items-center gap-8">
-            {isAppRoute ? (
-              <>
-                <a href="/#features" className="text-sm text-gray hover:text-white transition-colors">
-                  Features
-                </a>
-                <a href="/#plans" className="text-sm text-gray hover:text-white transition-colors">
-                  Pricing
-                </a>
-              </>
-            ) : (
+          {!isAppRoute && (
+            <div className="hidden md:flex items-center gap-8">
               <Link to="/app/kol-feed" className="btn-white">
                 Open App
               </Link>
-            )}
-          </div>
+            </div>
+          )}
 
           <button
             className="md:hidden text-white p-2"
