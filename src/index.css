@@ -479,44 +479,21 @@ input:focus, textarea:focus, select:focus {
   transform: translateX(2px);
 }
 
-.sidebar .group:hover svg {
-  filter: drop-shadow(0 0 8px currentColor);
-}
-
-/* Active link pulse effect */
-@keyframes activePulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0);
-  }
-}
-
-.sidebar a[class*="bg-white"] {
-  animation: activePulse 2s infinite;
-}
-
-/* Badge glow effects */
-.sidebar [class*="border-white"] {
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1), inset 0 0 4px rgba(255, 255, 255, 0.05);
-  transition: all 0.2s ease;
-}
-
+/* Badge effects */
+.sidebar [class*="border-white"],
 .sidebar [class*="border-amber"] {
-  box-shadow: 0 0 12px rgba(251, 191, 36, 0.2), inset 0 0 4px rgba(251, 191, 36, 0.1);
   transition: all 0.2s ease;
 }
 
 .sidebar a:hover [class*="border-white"],
 .sidebar a:hover [class*="border-amber"] {
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.3), inset 0 0 8px rgba(255, 255, 255, 0.1);
   transform: scale(1.05);
+  opacity: 1;
 }
 
-/* Divider glow */
+/* Divider */
 .sidebar .h-px {
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+  opacity: 0.5;
 }
 
 /* Scrollbar styling for sidebar */
