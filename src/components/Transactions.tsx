@@ -67,13 +67,13 @@ const Transactions: React.FC = () => {
         loop
         muted
         playsInline
-        className="fixed inset-0 w-full h-full object-cover opacity-30 pointer-events-none z-0"
+        className="fixed inset-0 w-full h-full object-contain opacity-30 pointer-events-none z-0"
         style={{ mixBlendMode: 'screen' }}
-      >
-        onLoadedMetadata={(e) => {
+      onLoadedMetadata={(e) => {
           const video = e.currentTarget;
           video.currentTime = 0.1;
         }}
+      >
         <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
       </video>
       <div className="relative z-10">
