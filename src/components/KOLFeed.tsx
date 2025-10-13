@@ -226,7 +226,7 @@ const KOLFeed: React.FC = () => {
   };
 
   return (
-    <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
+    <div className="w-full px-6 py-5 relative">
       <video
         autoPlay
         loop
