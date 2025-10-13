@@ -30,16 +30,13 @@ const App: React.FC = () => {
           loop
           muted
           playsInline
-          className="pointer-events-none opacity-30"
+          className="pointer-events-none opacity-30 w-full h-full"
           style={{
             position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            minWidth: '100%',
-            minHeight: '100%',
-            width: 'auto',
-            height: 'auto',
+            top: 0,
+            left: 0,
+            width: '100vw',
+            height: '100vh',
             objectFit: 'cover'
           }}
         >
