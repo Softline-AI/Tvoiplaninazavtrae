@@ -32,7 +32,7 @@ const App: React.FC = () => {
           playsInline
           className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-30"
         >
-          <source src="/background.mp4" type="video/mp4" />
+          <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
         </video>
         <div className="animated-3d-background"></div>
       </div>
