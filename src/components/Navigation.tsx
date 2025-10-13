@@ -163,17 +163,9 @@ const Navigation: React.FC = () => {
                 </a>
               </>
             ) : (
-              <>
-                <a href="/#features" className="text-sm text-gray hover:text-white transition-colors">
-                  Features
-                </a>
-                <a href="/#plans" className="text-sm text-gray hover:text-white transition-colors">
-                  Pricing
-                </a>
-                <Link to="/app/kol-feed" className="btn-white">
-                  Open App
-                </Link>
-              </>
+              <Link to="/app/kol-feed" className="btn-white">
+                Open App
+              </Link>
             )}
           </div>
 
