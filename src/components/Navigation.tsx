@@ -5,6 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 const Navigation: React.FC = () => {
   const location = useLocation();
   const isAppRoute = location.pathname.startsWith('/app');
+  const isKOLProfile = location.pathname.includes('/kol/');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [isToolsOpen, setIsToolsOpen] = useState(false);
@@ -152,13 +153,24 @@ const Navigation: React.FC = () => {
                 </>
               )}
 
-              {isAppRoute && (
+              {isAppRoute && !isKOLProfile && (
                 <>
                   <a href="/#features" className="text-white hover:text-gray-300 transition-colors font-medium">
                     Features
                   </a>
                   <a href="/#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
                     Pricing
+                  </a>
+                </>
+              )}
+
+              {isKOLProfile && (
+                <>
+                  <a href="/#support" className="text-white hover:text-gray-300 transition-colors font-medium">
+                    Support
+                  </a>
+                  <a href="/#docs" className="text-white hover:text-gray-300 transition-colors font-medium">
+                    Docs
                   </a>
                 </>
               )}
