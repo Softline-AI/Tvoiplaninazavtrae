@@ -349,7 +349,10 @@ input:focus, textarea:focus, select:focus {
   background-clip: text;
   color: #ffffff;
   display: inline-block;
-  padding-bottom: 0.1em;
+  padding-bottom: 0.3em;
+  line-height: 1.3;
+  position: relative;
+  z-index: 10;
 }
 
 .noir-subtitle {
