@@ -53,7 +53,6 @@ const KOLProfile: React.FC = () => {
     if (!walletAddress) return;
 
     const loadKOLData = async () => {
-      setLoading(true);
       try {
         const profile = await walletService.getKOLProfile(walletAddress);
 
@@ -74,41 +73,51 @@ const KOLProfile: React.FC = () => {
             avatar: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1'
           });
         }
+        setLoading(false);
 
-        const balance = await walletService.getWalletBalance(walletAddress);
-        setWalletBalance(balance.totalUSD);
-        setSolBalance(balance.sol);
+        walletService.getWalletBalance(walletAddress).then(balance => {
+          setWalletBalance(balance.totalUSD);
+          setSolBalance(balance.sol);
 
-        const holdings: TokenHolding[] = balance.tokens.map(token => ({
-          name: token.name,
-          symbol: token.symbol,
-          address: token.mint,
-          value: token.valueUSD,
-          amount: token.amount,
-          mcap: token.mcap,
-          verified: token.verified,
-          image: token.image
-        }));
-        setTokenHoldings(holdings);
+          const holdings: TokenHolding[] = balance.tokens.map(token => ({
+            name: token.name,
+            symbol: token.symbol,
+            address: token.mint,
+            value: token.valueUSD,
+            amount: token.amount,
+            mcap: token.mcap,
+            verified: token.verified,
+            image: token.image
+          }));
+          setTokenHoldings(holdings);
+        }).catch(err => {
+          console.error('Error loading balance:', err);
+          setWalletBalance(86320);
+          setSolBalance(413.41);
+          setTokenHoldings(mockHoldings);
+        });
 
-        const transactions = await heliusService.getEnhancedTransactions(walletAddress, 20);
-        const tradesData: Trade[] = transactions.slice(0, 10).map((tx) => ({
-          id: tx.signature,
-          type: tx.type,
-          timeAgo: formatTimeAgo(Date.now() - tx.timestamp),
-          token: tx.token.symbol,
-          tokenAddress: tx.token.mint,
-          bought: tx.type === 'buy' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
-          sold: tx.type === 'sell' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
-          pnl: Math.random() > 0.5 ? `+$${(Math.random() * 500).toFixed(2)}` : `-$${(Math.random() * 200).toFixed(2)}`,
-          pnlPercentage: Math.random() > 0.5 ? `+${(Math.random() * 100).toFixed(2)}%` : `-${(Math.random() * 50).toFixed(2)}%`,
-          holdings: Math.random() > 0.5 ? 'sold all' : `$${(Math.random() * 1000).toFixed(2)}`
-        }));
-        setTrades(tradesData);
+        heliusService.getEnhancedTransactions(walletAddress, 20).then(transactions => {
+          const tradesData: Trade[] = transactions.slice(0, 10).map((tx) => ({
+            id: tx.signature,
+            type: tx.type,
+            timeAgo: formatTimeAgo(Date.now() - tx.timestamp),
+            token: tx.token.symbol,
+            tokenAddress: tx.token.mint,
+            bought: tx.type === 'buy' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
+            sold: tx.type === 'sell' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
+            pnl: Math.random() > 0.5 ? `+$${(Math.random() * 500).toFixed(2)}` : `-$${(Math.random() * 200).toFixed(2)}`,
+            pnlPercentage: Math.random() > 0.5 ? `+${(Math.random() * 100).toFixed(2)}%` : `-${(Math.random() * 50).toFixed(2)}%`,
+            holdings: Math.random() > 0.5 ? 'sold all' : `$${(Math.random() * 1000).toFixed(2)}`
+          }));
+          setTrades(tradesData);
+        }).catch(err => {
+          console.error('Error loading trades:', err);
+          setTrades(mockTrades);
+        });
       } catch (error) {
         console.error('Error loading KOL data:', error);
         loadMockData();
-      } finally {
         setLoading(false);
       }
     };
@@ -278,59 +287,71 @@ const KOLProfile: React.FC = () => {
 
       <div className="pt-16 px-6">
         <div className="max-w-7xl mx-auto py-8">
-          <div className="flex items-start gap-6 mb-8">
-            <img
-              src={kolData.avatar}
-              alt={kolData.name}
-              className="w-24 h-24 rounded-full object-cover border-2 border-white/10"
-            />
-
-            <div className="flex-1">
-              <div className="flex items-center gap-4 mb-3">
-                <h1 className="text-3xl font-bold text-white">{kolData.name}</h1>
-                <div className="bg-white/10 px-3 py-1 rounded-full">
-                  <span className="text-sm text-white font-medium">{kolData.followers} followers</span>
+          <div className="noir-card p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <img
+                  src={kolData.avatar}
+                  alt={kolData.name}
+                  className="w-16 h-16 rounded-full object-cover border-2 border-white/10"
+                />
+                <div>
+                  <h1 className="text-2xl font-bold text-white mb-1">{kolData.name}</h1>
+                  <div className="flex items-center gap-3">
+                    {kolData.twitter && (
+                      <a
+                        href={`https://x.com/${kolData.twitter}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-sm"
+                      >
+                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                        @{kolData.twitter}
+                      </a>
+                    )}
+                    <span className="text-gray-600">•</span>
+                    <span className="text-gray-400 text-sm">{kolData.followers} followers</span>
+                  </div>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4 mb-4">
-                <a
-                  href={`https://x.com/${kolData.twitter}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
-                >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                  <span className="text-sm">@{kolData.twitter}</span>
-                </a>
-
+              <div className="flex items-center gap-3">
                 <a
                   href={`https://solscan.io/account/${kolData.walletAddress}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                  title="View on Solscan"
                 >
-                  <ExternalLink className="w-4 h-4" />
-                  <span className="text-sm font-mono">{kolData.walletAddress.slice(0, 4)}...{kolData.walletAddress.slice(-4)}</span>
+                  <ExternalLink className="w-4 h-4 text-gray-400" />
                 </a>
-
                 <button
                   onClick={() => copyToClipboard(kolData.walletAddress)}
-                  className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                  className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
+                  title={copied ? 'Copied!' : 'Copy wallet address'}
                 >
-                  <Copy className="w-4 h-4" />
-                  <span className="text-sm">{copied ? 'Copied!' : 'Copy'}</span>
+                  <Copy className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
+            </div>
 
-              <div className="flex items-center gap-2">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                </svg>
-                <span className="text-2xl font-bold text-white">${(walletBalance / 1000).toFixed(2)}K</span>
-                <span className="text-gray-400 text-sm">({solBalance.toFixed(2)} SOL)</span>
+            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/10">
+              <div>
+                <div className="text-gray-400 text-xs uppercase mb-1">Wallet Balance</div>
+                <div className="text-white text-xl font-bold">${(walletBalance / 1000).toFixed(2)}K</div>
+                <div className="text-gray-500 text-sm">{solBalance.toFixed(2)} SOL</div>
+              </div>
+              <div>
+                <div className="text-gray-400 text-xs uppercase mb-1">Holdings</div>
+                <div className="text-white text-xl font-bold">{tokenHoldings.length}</div>
+                <div className="text-gray-500 text-sm">Tokens</div>
+              </div>
+              <div>
+                <div className="text-gray-400 text-xs uppercase mb-1">Trades</div>
+                <div className="text-white text-xl font-bold">{trades.length}</div>
+                <div className="text-gray-500 text-sm">Last 24h</div>
               </div>
             </div>
           </div>
