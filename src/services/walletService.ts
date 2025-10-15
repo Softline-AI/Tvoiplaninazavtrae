@@ -81,7 +81,13 @@ class WalletService {
 
   async getTokenHoldings(walletAddress: string): Promise<TokenHolding[]> {
     try {
-      const HELIUS_API_KEY = 'cc0ea229-5dc8-4e7d-9707-7c2692eeefbb';
+      const HELIUS_API_KEY = import.meta.env.VITE_HELIUS_API_KEY_1 || import.meta.env.VITE_HELIUS_API_KEY_2 || import.meta.env.VITE_HELIUS_API_KEY_3;
+
+      if (!HELIUS_API_KEY) {
+        console.warn('⚠️ No Helius API key available, using mock data');
+        return this.getMockTokenHoldings();
+      }
+
       const url = `https://api.helius.xyz/v0/addresses/${walletAddress}/balances?api-key=${HELIUS_API_KEY}`;
 
       const response = await fetch(url);

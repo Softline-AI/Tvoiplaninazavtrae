@@ -1,6 +1,10 @@
-// Helius API service for fetching real blockchain data
-const HELIUS_API_KEY = 'cc0ea229-5dc8-4e7d-9707-7c2692eeefbb';
 const HELIUS_BASE_URL = 'https://api.helius.xyz/v0';
+
+const HELIUS_API_KEYS = [
+  import.meta.env.VITE_HELIUS_API_KEY_1,
+  import.meta.env.VITE_HELIUS_API_KEY_2,
+  import.meta.env.VITE_HELIUS_API_KEY_3,
+].filter(Boolean);
 
 export interface TokenInfo {
   mint: string;
@@ -61,12 +65,15 @@ export interface RealTimeKOLTrade {
 }
 
 class HeliusService {
-  private apiKey: string;
-  private rpcUrl: string;
+  private apiKeys: string[];
+  private currentKeyIndex: number = 0;
   private isConnected: boolean = false;
   private requestQueue: Promise<any>[] = [];
   private lastRequestTime: number = 0;
-  private minRequestInterval: number = 200; // 200ms between requests
+  private minRequestInterval: number = 200;
+  private keyUsageCount: Map<number, number> = new Map();
+  private keyErrorCount: Map<number, number> = new Map();
+  private readonly MAX_ERRORS_PER_KEY = 3;
 
   // Known KOL wallets with metadata
   private kolWallets = [
@@ -81,18 +88,60 @@ class HeliusService {
   ];
 
   constructor() {
-    this.apiKey = HELIUS_API_KEY;
-    
-    // Check if API key is configured
-    if (this.apiKey === 'your-helius-api-key-here' || !this.apiKey) {
-      console.warn('⚠️ Helius API key not configured. Using mock data only.');
+    this.apiKeys = HELIUS_API_KEYS;
+
+    if (this.apiKeys.length === 0) {
+      console.warn('⚠️ No Helius API keys configured. Using mock data only.');
       this.isConnected = false;
       return;
     }
-    
-    this.rpcUrl = `https://rpc.helius.xyz/?api-key=${this.apiKey}`;
-    // Don't test connection automatically to avoid errors
-    // this.testConnection();
+
+    console.log(`✅ Helius API initialized with ${this.apiKeys.length} keys`);
+    this.isConnected = true;
+
+    this.apiKeys.forEach((_, index) => {
+      this.keyUsageCount.set(index, 0);
+      this.keyErrorCount.set(index, 0);
+    });
+  }
+
+  private getCurrentApiKey(): string {
+    return this.apiKeys[this.currentKeyIndex];
+  }
+
+  private getRpcUrl(): string {
+    return `https://rpc.helius.xyz/?api-key=${this.getCurrentApiKey()}`;
+  }
+
+  private rotateApiKey(): void {
+    const previousIndex = this.currentKeyIndex;
+    this.currentKeyIndex = (this.currentKeyIndex + 1) % this.apiKeys.length;
+    const usage = this.keyUsageCount.get(previousIndex) || 0;
+    console.log(`🔄 Rotating API key: [${previousIndex}] -> [${this.currentKeyIndex}] (Used ${usage} times)`);
+  }
+
+  private markKeyError(keyIndex: number): void {
+    const errors = (this.keyErrorCount.get(keyIndex) || 0) + 1;
+    this.keyErrorCount.set(keyIndex, errors);
+
+    if (errors >= this.MAX_ERRORS_PER_KEY) {
+      console.error(`❌ Key [${keyIndex}] has ${errors} errors, rotating...`);
+      this.rotateApiKey();
+      this.keyErrorCount.set(keyIndex, 0);
+    }
+  }
+
+  private markKeySuccess(keyIndex: number): void {
+    this.keyErrorCount.set(keyIndex, 0);
+  }
+
+  private incrementKeyUsage(): void {
+    const current = this.keyUsageCount.get(this.currentKeyIndex) || 0;
+    this.keyUsageCount.set(this.currentKeyIndex, current + 1);
+
+    if ((current + 1) % 50 === 0) {
+      this.rotateApiKey();
+    }
   }
 
   // Helper function to add delay between requests
@@ -105,13 +154,17 @@ class HeliusService {
     this.lastRequestTime = Date.now();
   }
 
-  // Helper function to fetch with retry and exponential backoff
   private async fetchWithRetry(url: string, options: RequestInit = {}, maxRetries: number = 3): Promise<Response> {
     await this.rateLimitDelay();
-    
+
+    const startKeyIndex = this.currentKeyIndex;
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      const currentKeyIndex = this.currentKeyIndex;
+
       try {
-        console.log(`🔄 Making request to: ${url}`);
+        this.incrementKeyUsage();
+
         const response = await fetch(url, {
           ...options,
           headers: {
@@ -119,52 +172,64 @@ class HeliusService {
             ...options.headers,
           }
         });
-        
-        // If rate limited (429), wait longer before retry
+
         if (response.status === 429) {
+          console.warn(`⏳ Rate limited on key [${currentKeyIndex}], rotating and retrying...`);
+          this.markKeyError(currentKeyIndex);
+          this.rotateApiKey();
+
           if (attempt < maxRetries) {
-            const waitTime = Math.pow(2, attempt) * 1000 + Math.random() * 1000;
-            console.warn(`⏳ Rate limited, waiting ${waitTime}ms before retry ${attempt + 1}/${maxRetries}`);
+            const waitTime = Math.pow(2, attempt) * 1000;
             await new Promise(resolve => setTimeout(resolve, waitTime));
             continue;
           }
         }
-        
-        if (!response.ok) {
-          console.error(`❌ HTTP Error: ${response.status} ${response.statusText}`);
-          const errorText = await response.text();
-          console.error('Error response:', errorText);
+
+        if (!response.ok && response.status >= 500) {
+          console.warn(`⚠️ Server error ${response.status} on key [${currentKeyIndex}]`);
+          this.markKeyError(currentKeyIndex);
+
+          if (attempt < maxRetries) {
+            this.rotateApiKey();
+            const waitTime = Math.pow(2, attempt) * 500;
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            continue;
+          }
         }
-        
+
+        if (response.ok || response.status < 500) {
+          this.markKeySuccess(currentKeyIndex);
+        }
+
         return response;
       } catch (error) {
-        console.error(`❌ Request failed (attempt ${attempt + 1}):`, error);
+        console.error(`❌ Request failed on key [${currentKeyIndex}] (attempt ${attempt + 1}):`, error);
+        this.markKeyError(currentKeyIndex);
+
         if (attempt === maxRetries) {
           throw error;
         }
-        
+
+        this.rotateApiKey();
         const waitTime = Math.pow(2, attempt) * 1000;
-        console.warn(`⏳ Retrying in ${waitTime}ms...`);
         await new Promise(resolve => setTimeout(resolve, waitTime));
       }
     }
-    
+
     throw new Error('Max retries exceeded');
   }
 
-  // Test API connection
   async testConnection(): Promise<boolean> {
     try {
-      // Skip connection test if API key not configured
-      if (this.apiKey === 'your-helius-api-key-here' || !this.apiKey) {
-        console.warn('⚠️ Skipping Helius API test - API key not configured');
+      if (this.apiKeys.length === 0) {
+        console.warn('⚠️ Skipping Helius API test - no API keys configured');
         this.isConnected = false;
         return false;
       }
-      
+
       console.log('🔌 Testing Helius API connection...');
-      
-      const response = await this.fetchWithRetry(this.rpcUrl, {
+
+      const response = await this.fetchWithRetry(this.getRpcUrl(), {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -172,7 +237,7 @@ class HeliusService {
           method: 'getSlot'
         })
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.result !== undefined) {
@@ -181,17 +246,11 @@ class HeliusService {
           return true;
         } else if (data.error) {
           console.error('❌ Helius API error:', data.error.message);
-          if (data.error.code === -32525) {
-            console.error('💡 This usually means invalid API key. Please check your Helius API key.');
-          }
           this.isConnected = false;
           return false;
         }
       } else {
         console.error('❌ Helius API connection failed:', response.status, response.statusText);
-        if (response.status === 525) {
-          console.error('💡 SSL handshake failed. This usually indicates an invalid API key.');
-        }
         this.isConnected = false;
         return false;
       }
@@ -200,7 +259,7 @@ class HeliusService {
       this.isConnected = false;
       return false;
     }
-    
+
     return false;
   }
 
@@ -221,7 +280,7 @@ class HeliusService {
     }
 
     try {
-      const response = await this.fetchWithRetry(this.rpcUrl, {
+      const response = await this.fetchWithRetry(this.getRpcUrl(), {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -305,7 +364,7 @@ class HeliusService {
     }
 
     try {
-      const response = await this.fetchWithRetry(this.rpcUrl, {
+      const response = await this.fetchWithRetry(this.getRpcUrl(), {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -646,7 +705,7 @@ class HeliusService {
   // Get wallet balance
   async getWalletBalance(walletAddress: string): Promise<number> {
     try {
-      const response = await this.fetchWithRetry(this.rpcUrl, {
+      const response = await this.fetchWithRetry(this.getRpcUrl(), {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
@@ -670,7 +729,7 @@ class HeliusService {
   // Get account info
   async getAccountInfo(address: string): Promise<any> {
     try {
-      const response = await this.fetchWithRetry(this.rpcUrl, {
+      const response = await this.fetchWithRetry(this.getRpcUrl(), {
         method: 'POST',
         body: JSON.stringify({
           jsonrpc: '2.0',
