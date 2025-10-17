@@ -1,25 +1,26 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
-import KOLFeed from './components/KOLFeed';
-import KOLProfile from './components/KOLProfile';
-import KOLLeaderboard from './components/KOLLeaderboard';
-import TopKOLTokens from './components/TopKOLTokens';
-import DailyTrends from './components/DailyTrends';
-import TopTokens from './components/TopTokens';
-import TrendsAnalytics from './components/TrendsAnalytics';
-import Transactions from './components/Transactions';
-import WalletFinder from './components/WalletFinder';
-import CabalFinder from './components/CabalFinder';
-import CopyTraders from './components/CopyTraders';
-import InsiderScan from './components/InsiderScan';
-import FreshWalletFeed from './components/FreshWalletFeed';
-import LiveDCAFeed from './components/LiveDCAFeed';
-import LegendCommunity from './components/LegendCommunity';
-import KOLFeedLegacy from './components/KOLFeedLegacy';
-import MyStalks from './components/MyStalks';
+
+const KOLFeed = lazy(() => import('./components/KOLFeed'));
+const KOLProfile = lazy(() => import('./components/KOLProfile'));
+const KOLLeaderboard = lazy(() => import('./components/KOLLeaderboard'));
+const TopKOLTokens = lazy(() => import('./components/TopKOLTokens'));
+const DailyTrends = lazy(() => import('./components/DailyTrends'));
+const TopTokens = lazy(() => import('./components/TopTokens'));
+const TrendsAnalytics = lazy(() => import('./components/TrendsAnalytics'));
+const Transactions = lazy(() => import('./components/Transactions'));
+const WalletFinder = lazy(() => import('./components/WalletFinder'));
+const CabalFinder = lazy(() => import('./components/CabalFinder'));
+const CopyTraders = lazy(() => import('./components/CopyTraders'));
+const InsiderScan = lazy(() => import('./components/InsiderScan'));
+const FreshWalletFeed = lazy(() => import('./components/FreshWalletFeed'));
+const LiveDCAFeed = lazy(() => import('./components/LiveDCAFeed'));
+const LegendCommunity = lazy(() => import('./components/LegendCommunity'));
+const KOLFeedLegacy = lazy(() => import('./components/KOLFeedLegacy'));
+const MyStalks = lazy(() => import('./components/MyStalks'));
 
 const App: React.FC = () => {
   return (
@@ -41,6 +42,8 @@ const App: React.FC = () => {
           loop
           muted
           playsInline
+          preload="metadata"
+          loading="lazy"
           style={{
             position: 'absolute',
             top: 0,
@@ -49,7 +52,8 @@ const App: React.FC = () => {
             height: '100%',
             objectFit: 'cover',
             opacity: 0.3,
-            pointerEvents: 'none'
+            pointerEvents: 'none',
+            willChange: 'transform'
           }}
         >
           <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
@@ -69,11 +73,16 @@ const App: React.FC = () => {
         {/* App Routes with Sidebar */}
         <Route path="/app/*" element={
           <div className="flex w-full" style={{ minHeight: 'calc(100vh - 64px)', marginTop: '64px' }}>
-            <div className="w-64 flex-shrink-0">
+            <div className="hidden md:block md:w-64 flex-shrink-0">
               <Sidebar />
             </div>
             <div className="flex-1 overflow-y-auto">
               <div className="w-full">
+                <Suspense fallback={
+                  <div className="flex items-center justify-center h-screen">
+                    <div className="text-white text-xl">Loading...</div>
+                  </div>
+                }>
                   <Routes>
                     <Route path="/" element={<KOLFeed />} />
                     <Route path="/kol-feed" element={<KOLFeed />} />
@@ -103,6 +112,7 @@ const App: React.FC = () => {
                     <Route path="/legend-community" element={<LegendCommunity />} />
                     <Route path="/upgrade" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Upgrade Your Plan</h2><p className="text-gray-300">Choose PRO or LEGEND to unlock advanced features</p></div>} />
                   </Routes>
+                </Suspense>
                 </div>
               </div>
             </div>

@@ -52,9 +52,11 @@ const HomePage: React.FC = () => {
         loop
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
+        loading="lazy"
         style={{
-          filter: 'brightness(1.05) contrast(1.05)'
+          filter: 'brightness(1.05) contrast(1.05)',
+          willChange: 'transform'
         }}
         onLoadedMetadata={(e) => {
           const video = e.currentTarget;
@@ -65,20 +67,20 @@ const HomePage: React.FC = () => {
       </video>
       <div className="fixed inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/50 to-noir-black z-0"></div>
 
-      <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4 relative z-10">
+      <section className="w-full pt-16 sm:pt-20 lg:pt-32 pb-16 sm:pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
+        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-16 max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex-1 flex flex-col items-start text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-2 noir-text-secondary relative z-20 pb-2" style={{ lineHeight: '1.15' }}>
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-2 noir-text-secondary relative z-20 pb-2" style={{ lineHeight: '1.15' }}>
               Follow the smart money trail
             </h1>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-6 noir-text-secondary" style={{ lineHeight: '1.15' }}>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-4 sm:mb-6 noir-text-secondary" style={{ lineHeight: '1.15' }}>
               Act before the market catches on
             </h2>
-            <p className="text-lg md:text-xl lg:text-2xl noir-text-secondary font-light mb-10 max-w-xl">
+            <p className="text-base sm:text-lg md:text-xl lg:text-2xl noir-text-secondary font-light mb-8 sm:mb-10 max-w-xl">
               Real-time blockchain intelligence. Follow the biggest wallets, catch trends early, and make profitable moves before the market reacts.
             </p>
 
-            <ul className="grid grid-cols-1 gap-2.5 mb-12 w-full max-w-lg">
+            <ul className="grid grid-cols-1 gap-2 sm:gap-2.5 mb-8 sm:mb-12 w-full max-w-lg">
               {['Live whale wallet tracking', '1000+ KOL database', 'Early trend detection', 'Insider move alerts'].map((item, i) => (
                 <li
                   key={i}
@@ -86,7 +88,7 @@ const HomePage: React.FC = () => {
                   style={{ transitionDelay: `${i * 200}ms` }}
                 >
                   <div className="w-1 h-1 rounded-full bg-white/60 flex-shrink-0"></div>
-                  <span className="font-light text-base noir-text-secondary tracking-wide">{item}</span>
+                  <span className="font-light text-sm sm:text-base noir-text-secondary tracking-wide">{item}</span>
                 </li>
               ))}
             </ul>
@@ -94,7 +96,7 @@ const HomePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 w-full">
               <Link
                 to="/app/kol-feed"
-                className="noir-button noir-pulse inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-16 rounded-lg px-12 text-lg md:text-xl"
+                className="noir-button noir-pulse inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-12 sm:h-14 md:h-16 rounded-lg px-8 sm:px-10 md:px-12 text-base sm:text-lg md:text-xl w-full sm:w-auto"
               >
                 <span>Get Started</span>
               </Link>
@@ -103,17 +105,17 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <div className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32 relative z-10">
         <div className="flex flex-col items-center mb-16 lg:mb-20 max-w-4xl mx-auto noir-fade-in revealed">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-6 noir-text-secondary">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-4 sm:mb-6 noir-text-secondary">
             Your Edge in the Fastest-Moving Market
           </h2>
-          <p className="text-xl md:text-2xl text-center noir-text-secondary max-w-3xl">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-center noir-text-secondary max-w-3xl">
             While others rely on Twitter rumors and gut feelings, you'll trade with institutional-grade intelligence.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 my-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 my-8 sm:my-12">
           {[
             {
               image: 'https://i.imgur.com/U1pMVvy.jpeg',
@@ -131,34 +133,35 @@ const HomePage: React.FC = () => {
               description: 'Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts.'
             }
           ].map((feature, index) => (
-            <div key={index} className="group noir-card noir-spotlight rounded-2xl p-10 noir-fade-in revealed">
+            <div key={index} className="group noir-card noir-spotlight rounded-2xl p-6 sm:p-8 md:p-10 noir-fade-in revealed">
               <div className="flex flex-col items-center text-center h-full">
                 <div className="w-full aspect-video bg-noir-gray rounded-xl overflow-hidden mb-6 transition-all duration-300">
                   <img
                     src={feature.image}
                     alt={feature.title}
+                    loading="lazy"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
-                <h3 className="text-2xl font-bold noir-text-secondary mb-4">{feature.title}</h3>
-                <p className="noir-text-secondary text-lg leading-relaxed">{feature.description}</p>
+                <h3 className="text-xl sm:text-2xl font-bold noir-text-secondary mb-3 sm:mb-4">{feature.title}</h3>
+                <p className="noir-text-secondary text-base sm:text-lg leading-relaxed">{feature.description}</p>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <section className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
+      <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32 relative z-10">
         <div className="text-center mb-16 lg:mb-20 noir-fade-in revealed">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-text-secondary mb-8">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold noir-text-secondary mb-6 sm:mb-8">
             Traders Using SmartChain
           </h2>
-          <p className="text-xl md:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
             Join thousands of professional traders who trust SmartChain to track smart money movements and discover the next big opportunities.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
           {kols.map((kol, index) => (
             <div
               key={index}
@@ -166,7 +169,7 @@ const HomePage: React.FC = () => {
               style={{ transitionDelay: `${index * 150}ms` }}
             >
               <a href={kol.twitter} target="_blank" rel="noopener noreferrer" className="group block">
-                <div className="noir-card noir-shimmer rounded-2xl p-8">
+                <div className="noir-card noir-shimmer rounded-2xl p-4 sm:p-6 md:p-8">
                   <div className="flex flex-col items-center text-center">
                     <div className="relative mb-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-white to-gray-200 rounded-full flex items-center justify-center overflow-hidden border-2 border-white">
@@ -210,8 +213,8 @@ const HomePage: React.FC = () => {
 
       <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
         <div className="text-center mb-16 noir-fade-in revealed">
-          <h2 className="text-5xl md:text-6xl font-bold noir-text-secondary mb-4">Choose Your Plan</h2>
-          <p className="text-xl noir-text-secondary max-w-2xl mx-auto mb-8">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold noir-text-secondary mb-4">Choose Your Plan</h2>
+          <p className="text-base sm:text-lg md:text-xl noir-text-secondary max-w-2xl mx-auto mb-6 sm:mb-8">
             Start free or unlock premium features to dominate the market
           </p>
 
@@ -238,17 +241,17 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
+          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
             <div className="mb-8">
-              <h3 className="text-3xl font-bold noir-text-secondary mb-3">Free</h3>
+              <h3 className="text-2xl sm:text-3xl font-bold noir-text-secondary mb-3">Free</h3>
               <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-bold noir-text-secondary">$0</span>
+                <span className="text-4xl sm:text-5xl md:text-6xl font-bold noir-text-secondary">$0</span>
                 <span className="text-xl noir-text-secondary">/mo</span>
               </div>
             </div>
 
-            <button className="w-full bg-white text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-8 shadow-lg">
+            <button className="w-full bg-white text-noir-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-6 sm:mb-8 shadow-lg">
               Get Started
             </button>
 
@@ -264,11 +267,11 @@ const HomePage: React.FC = () => {
             </ul>
           </div>
 
-          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
+          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
             <div className="mb-8">
-              <h3 className="text-3xl font-bold noir-text-secondary mb-3">Pro</h3>
+              <h3 className="text-2xl sm:text-3xl font-bold noir-text-secondary mb-3">Pro</h3>
               <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-bold noir-text-secondary">
+                <span className="text-4xl sm:text-5xl md:text-6xl font-bold noir-text-secondary">
                   ${billingPeriod === 'yearly' ? '159' : '199'}
                 </span>
                 <span className="text-xl noir-text-secondary">/mo</span>
@@ -278,7 +281,7 @@ const HomePage: React.FC = () => {
               )}
             </div>
 
-            <button className="w-full bg-white text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-8 shadow-lg">
+            <button className="w-full bg-white text-noir-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-6 sm:mb-8 shadow-lg">
               Get Started
             </button>
 
@@ -294,7 +297,7 @@ const HomePage: React.FC = () => {
             </ul>
           </div>
 
-          <div className="group bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border-2 border-white/30 rounded-3xl p-8 hover:border-white/50 hover:shadow-2xl hover:shadow-white/10 transition-all duration-500 relative noir-fade-in revealed transform hover:scale-105">
+          <div className="group bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border-2 border-white/30 rounded-3xl p-6 sm:p-8 hover:border-white/50 hover:shadow-2xl hover:shadow-white/10 transition-all duration-500 relative noir-fade-in revealed transform hover:scale-105">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
               <div className="bg-white text-noir-black px-6 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
                 <Crown className="w-4 h-4" />
@@ -308,7 +311,7 @@ const HomePage: React.FC = () => {
                 <Crown className="w-7 h-7 noir-text-secondary" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-bold noir-text-secondary">
+                <span className="text-4xl sm:text-5xl md:text-6xl font-bold noir-text-secondary">
                   ${billingPeriod === 'yearly' ? '319' : '399'}
                 </span>
                 <span className="text-xl noir-text-secondary">/mo</span>
@@ -336,7 +339,7 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
-      <section className="w-full max-w-3xl mx-auto px-4 py-20 relative z-10">
+      <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-20 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold noir-text-secondary mb-4">Frequently Asked Questions</h2>
           <p className="text-xl noir-text-secondary">Everything you need to know about SmartChain</p>

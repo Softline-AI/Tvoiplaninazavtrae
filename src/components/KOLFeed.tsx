@@ -364,6 +364,7 @@ const KOLFeed: React.FC = () => {
                           alt={trade.kolName}
                           className="w-10 h-10 rounded-full object-cover border border-white/20"
                           src={trade.kolAvatar}
+                          loading="lazy"
                         />
                         <div className="flex flex-col">
                           <span className="text-sm font-semibold text-white">{trade.kolName}</span>

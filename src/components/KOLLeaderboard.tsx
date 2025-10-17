@@ -343,6 +343,7 @@ const KOLLeaderboard: React.FC = () => {
                         alt={trader.name}
                         className="w-10 h-10 rounded-full object-cover border border-white/20"
                         src={trader.avatar}
+                        loading="lazy"
                       />
                       <div className="flex flex-col">
                         <span className="text-sm font-semibold text-white">{trader.name}</span>

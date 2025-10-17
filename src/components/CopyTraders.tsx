@@ -223,6 +223,7 @@ const CopyTraders: React.FC = () => {
                     src={trader.avatar}
                     alt={trader.name}
                     className="w-12 h-12 rounded-full border-2 border-white/30"
+                    loading="lazy"
                   />
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-noir-dark"></div>
                 </div>
