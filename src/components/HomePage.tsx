@@ -80,15 +80,15 @@ const HomePage: React.FC = () => {
               Real-time blockchain intelligence. Follow the biggest wallets, catch trends early, and make profitable moves before the market reacts.
             </p>
 
-            <ul className="grid grid-cols-1 gap-2 sm:gap-2.5 mb-8 sm:mb-12 w-full max-w-lg">
+            <ul className="grid grid-cols-1 gap-3 sm:gap-3.5 mb-8 sm:mb-12 w-full max-w-lg">
               {['Live whale wallet tracking', '1000+ KOL database', 'Early trend detection', 'Insider move alerts'].map((item, i) => (
                 <li
                   key={i}
                   className="flex items-center gap-3 transition-all duration-700 noir-slide-in"
                   style={{ transitionDelay: `${i * 200}ms` }}
                 >
-                  <div className="w-1 h-1 rounded-full bg-white/60 flex-shrink-0"></div>
-                  <span className="font-light text-sm sm:text-base noir-text-secondary tracking-wide">{item}</span>
+                  <div className="w-2 h-2 rounded-full bg-white flex-shrink-0 shadow-lg shadow-white/50"></div>
+                  <span className="font-medium text-base sm:text-lg noir-text-secondary tracking-wide">{item}</span>
                 </li>
               ))}
             </ul>
