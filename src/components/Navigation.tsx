@@ -161,6 +161,9 @@ const Navigation: React.FC = () => {
                   <a href="/#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
                     Pricing
                   </a>
+                  <a href="/futures" className="text-white hover:text-gray-300 transition-colors font-medium">
+                    Futures
+                  </a>
                 </>
               )}
 
@@ -178,7 +181,13 @@ const Navigation: React.FC = () => {
           </div>
 
           {!isAppRoute && (
-            <div className="hidden md:flex items-center gap-8">
+            <div className="hidden md:flex items-center gap-4">
+              <a href="/#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
+                Pricing
+              </a>
+              <a href="/futures" className="text-white hover:text-gray-300 transition-colors font-medium">
+                Futures
+              </a>
               <Link to="/app/kol-feed" className="btn-white">
                 Open App
               </Link>
@@ -244,6 +253,13 @@ const Navigation: React.FC = () => {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Pricing
+              </a>
+              <a
+                href="/futures"
+                className="block text-sm text-gray hover:text-white transition-colors py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Futures
               </a>
             </div>
 

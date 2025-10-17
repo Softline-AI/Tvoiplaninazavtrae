@@ -389,9 +389,6 @@ const TopKOLTokens: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2 mb-4">
-          <p className="text-sm text-blue-400 font-medium">The ultimate on-chain alpha</p>
-        </div>
 
         {/* Filter Controls */}
         <div className="relative w-full p-3 flex flex-col md:flex-row items-stretch md:items-center gap-4 bg-white/5 border border-white/10 rounded-xl mb-4">

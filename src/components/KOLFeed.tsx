@@ -253,9 +253,6 @@ const KOLFeed: React.FC = () => {
             <span className="text-xs text-white/50 uppercase tracking-wider">Live</span>
           </div>
         </div>
-        <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg px-4 py-2 mb-4">
-          <p className="text-sm text-blue-400 font-medium">The ultimate on-chain alpha</p>
-        </div>
 
         <div className="flex flex-wrap gap-3 items-center">
           <div className="flex gap-2">
