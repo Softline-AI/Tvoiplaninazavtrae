@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
+import Futures from './components/Futures';
 
 const KOLFeed = lazy(() => import('./components/KOLFeed'));
 const KOLProfile = lazy(() => import('./components/KOLProfile'));
@@ -67,6 +68,13 @@ const App: React.FC = () => {
           <Route path="/" element={
             <div className="min-h-screen">
               <HomePage />
+            </div>
+          } />
+
+          {/* Futures Page Route */}
+          <Route path="/futures" element={
+            <div className="min-h-screen">
+              <Futures />
             </div>
           } />
         
