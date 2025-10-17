@@ -47,14 +47,14 @@ const HomePage: React.FC = () => {
   return (
     <main className="noir-bg min-h-screen relative">
       <video
-        className="fixed top-0 left-0 w-screen h-screen object-cover opacity-50 z-0"
+        className="fixed top-0 left-0 w-screen h-screen object-cover opacity-30 z-0"
         autoPlay
         loop
         muted
         playsInline
         preload="auto"
         style={{
-          filter: 'brightness(1.05) contrast(1.05)'
+          filter: 'brightness(0.8) contrast(1.1)'
         }}
         onLoadedMetadata={(e) => {
           const video = e.currentTarget;
@@ -63,7 +63,7 @@ const HomePage: React.FC = () => {
       >
         <source src="https://i.imgur.com/E490BLn.mp4" type="video/mp4" />
       </video>
-      <div className="fixed inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/50 to-noir-black z-0"></div>
+      <div className="fixed inset-0 bg-noir-black/60 z-0"></div>
 
       <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4 relative z-10">
