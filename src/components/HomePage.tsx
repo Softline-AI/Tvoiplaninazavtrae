@@ -68,10 +68,10 @@ const HomePage: React.FC = () => {
       <section className="w-full pt-20 lg:pt-32 pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-16 max-w-7xl mx-auto px-4 relative z-10">
           <div className="flex-1 flex flex-col items-start text-left">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-2 text-gray-400 relative z-20 pb-2" style={{ lineHeight: '1.15' }}>
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-2 noir-text-secondary relative z-20 pb-2" style={{ lineHeight: '1.15' }}>
               Follow the smart money trail
             </h1>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-6 text-gray-400" style={{ lineHeight: '1.15' }}>
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-6 noir-text-secondary" style={{ lineHeight: '1.15' }}>
               Act before the market catches on
             </h2>
             <p className="text-lg md:text-xl lg:text-2xl noir-text-secondary font-light mb-10 max-w-xl">
@@ -86,7 +86,7 @@ const HomePage: React.FC = () => {
                   style={{ transitionDelay: `${i * 200}ms` }}
                 >
                   <div className="w-1 h-1 rounded-full bg-white/60 flex-shrink-0"></div>
-                  <span className="font-light text-base text-white/70 tracking-wide">{item}</span>
+                  <span className="font-light text-base noir-text-secondary tracking-wide">{item}</span>
                 </li>
               ))}
             </ul>
@@ -105,7 +105,7 @@ const HomePage: React.FC = () => {
 
       <div className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
         <div className="flex flex-col items-center mb-16 lg:mb-20 max-w-4xl mx-auto noir-fade-in revealed">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-6 noir-gradient-text">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-6 noir-text-secondary">
             Your Edge in the Fastest-Moving Market
           </h2>
           <p className="text-xl md:text-2xl text-center noir-text-secondary max-w-3xl">
@@ -140,7 +140,7 @@ const HomePage: React.FC = () => {
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-4">{feature.title}</h3>
+                <h3 className="text-2xl font-bold noir-text-secondary mb-4">{feature.title}</h3>
                 <p className="noir-text-secondary text-lg leading-relaxed">{feature.description}</p>
               </div>
             </div>
@@ -150,7 +150,7 @@ const HomePage: React.FC = () => {
 
       <section className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
         <div className="text-center mb-16 lg:mb-20 noir-fade-in revealed">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-gradient-text mb-8">
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold noir-text-secondary mb-8">
             Traders Using SmartChain
           </h2>
           <p className="text-xl md:text-2xl noir-text-secondary max-w-4xl mx-auto leading-relaxed">
@@ -179,7 +179,7 @@ const HomePage: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-2 mb-2">
-                      <span className="font-bold text-white text-lg truncate group-hover:text-gray-200 transition-colors">
+                      <span className="font-bold noir-text-secondary text-lg truncate group-hover:text-gray-400 transition-colors">
                         {kol.handle}
                       </span>
                       <CheckCircle className="w-5 h-5 text-blue-500 flex-shrink-0" />
@@ -210,7 +210,7 @@ const HomePage: React.FC = () => {
 
       <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
         <div className="text-center mb-16 noir-fade-in revealed">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-4">Choose Your Plan</h2>
+          <h2 className="text-5xl md:text-6xl font-bold noir-text-secondary mb-4">Choose Your Plan</h2>
           <p className="text-xl noir-text-secondary max-w-2xl mx-auto mb-8">
             Start free or unlock premium features to dominate the market
           </p>
@@ -219,7 +219,7 @@ const HomePage: React.FC = () => {
             <button
               onClick={() => setBillingPeriod('monthly')}
               className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-                billingPeriod === 'monthly' ? 'bg-white text-noir-black' : 'text-white/60 hover:text-white'
+                billingPeriod === 'monthly' ? 'bg-white text-noir-black' : 'noir-text-secondary hover:text-gray-300'
               }`}
             >
               Monthly
@@ -227,13 +227,13 @@ const HomePage: React.FC = () => {
             <button
               onClick={() => setBillingPeriod('yearly')}
               className={`px-6 py-2 rounded-lg font-semibold transition-all ${
-                billingPeriod === 'yearly' ? 'bg-white text-noir-black' : 'text-white/60 hover:text-white'
+                billingPeriod === 'yearly' ? 'bg-white text-noir-black' : 'noir-text-secondary hover:text-gray-300'
               }`}
             >
               Yearly
             </button>
             {billingPeriod === 'yearly' && (
-              <p className="text-sm text-white/60">Save 20% with annual billing</p>
+              <p className="text-sm noir-text-secondary">Save 20% with annual billing</p>
             )}
           </div>
         </div>
@@ -241,10 +241,10 @@ const HomePage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
             <div className="mb-8">
-              <h3 className="text-3xl font-bold text-white mb-3">Free</h3>
+              <h3 className="text-3xl font-bold noir-text-secondary mb-3">Free</h3>
               <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-bold text-white">$0</span>
-                <span className="text-xl text-white/50">/mo</span>
+                <span className="text-6xl font-bold noir-text-secondary">$0</span>
+                <span className="text-xl noir-text-secondary">/mo</span>
               </div>
             </div>
 
@@ -254,7 +254,7 @@ const HomePage: React.FC = () => {
 
             <ul className="space-y-4 text-left">
               {['Live KOL Feed', 'Smart Money Tracker', 'Wallet Finder', 'Token Insiders'].map((feature, i) => (
-                <li key={i} className="flex items-center gap-3 text-white/90 text-base">
+                <li key={i} className="flex items-center gap-3 noir-text-secondary text-base">
                   <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                     <Check className="w-3 h-3 text-white" strokeWidth={3} />
                   </div>
@@ -266,15 +266,15 @@ const HomePage: React.FC = () => {
 
           <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
             <div className="mb-8">
-              <h3 className="text-3xl font-bold text-white mb-3">Pro</h3>
+              <h3 className="text-3xl font-bold noir-text-secondary mb-3">Pro</h3>
               <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-bold text-white">
+                <span className="text-6xl font-bold noir-text-secondary">
                   ${billingPeriod === 'yearly' ? '159' : '199'}
                 </span>
-                <span className="text-xl text-white/50">/mo</span>
+                <span className="text-xl noir-text-secondary">/mo</span>
               </div>
               {billingPeriod === 'yearly' && (
-                <p className="text-sm text-white/60 mt-2">$1,908 billed annually</p>
+                <p className="text-sm noir-text-secondary mt-2">$1,908 billed annually</p>
               )}
             </div>
 
@@ -284,7 +284,7 @@ const HomePage: React.FC = () => {
 
             <ul className="space-y-4 text-left">
               {['Everything in Free', 'Cabal Finder', 'Fresh Wallet Feeds', 'Custom KOL Feed', 'Insiders Scan'].map((feature, i) => (
-                <li key={i} className="flex items-center gap-3 text-white/90 text-base">
+                <li key={i} className="flex items-center gap-3 noir-text-secondary text-base">
                   <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                     <Check className="w-3 h-3 text-white" strokeWidth={3} />
                   </div>
@@ -304,17 +304,17 @@ const HomePage: React.FC = () => {
 
             <div className="mb-8 mt-4">
               <div className="flex items-center gap-3 mb-3">
-                <h3 className="text-3xl font-bold text-white">Legend</h3>
-                <Crown className="w-7 h-7 text-white" />
+                <h3 className="text-3xl font-bold noir-text-secondary">Legend</h3>
+                <Crown className="w-7 h-7 noir-text-secondary" />
               </div>
               <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-bold text-white">
+                <span className="text-6xl font-bold noir-text-secondary">
                   ${billingPeriod === 'yearly' ? '319' : '399'}
                 </span>
-                <span className="text-xl text-white/50">/mo</span>
+                <span className="text-xl noir-text-secondary">/mo</span>
               </div>
               {billingPeriod === 'yearly' && (
-                <p className="text-sm text-white/60 mt-2">$3,828 billed annually</p>
+                <p className="text-sm noir-text-secondary mt-2">$3,828 billed annually</p>
               )}
             </div>
 
@@ -324,7 +324,7 @@ const HomePage: React.FC = () => {
 
             <ul className="space-y-4 text-left">
               {['Everything in Pro', 'Whales Open Orders', 'Priority Alerts', 'Private Community', 'API Access', '1-on-1 Support'].map((feature, i) => (
-                <li key={i} className="flex items-center gap-3 text-white text-base font-medium">
+                <li key={i} className="flex items-center gap-3 noir-text-secondary text-base font-medium">
                   <div className="w-5 h-5 rounded-full bg-white/30 flex items-center justify-center flex-shrink-0">
                     <Check className="w-3 h-3 text-white" strokeWidth={3} />
                   </div>
@@ -338,7 +338,7 @@ const HomePage: React.FC = () => {
 
       <section className="w-full max-w-3xl mx-auto px-4 py-20 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Frequently Asked Questions</h2>
+          <h2 className="text-4xl md:text-5xl font-bold noir-text-secondary mb-4">Frequently Asked Questions</h2>
           <p className="text-xl noir-text-secondary">Everything you need to know about SmartChain</p>
         </div>
 
@@ -352,10 +352,10 @@ const HomePage: React.FC = () => {
                   aria-expanded={openFaq === index}
                 >
                   <div className="flex-1">
-                    <span className="text-white text-lg font-medium">{faq.question}</span>
+                    <span className="noir-text-secondary text-lg font-medium">{faq.question}</span>
                   </div>
                   <ChevronDown
-                    className={`w-5 h-5 text-white/60 transition-transform duration-300 flex-shrink-0 ${
+                    className={`w-5 h-5 noir-text-secondary transition-transform duration-300 flex-shrink-0 ${
                       openFaq === index ? 'rotate-180' : ''
                     }`}
                   />
