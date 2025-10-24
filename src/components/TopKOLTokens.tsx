@@ -349,7 +349,7 @@ const TopKOLTokens: React.FC = () => {
   };
 
   return (
-    <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
+    <>
       <video
         autoPlay
         loop
@@ -364,6 +364,7 @@ const TopKOLTokens: React.FC = () => {
       >
         <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
       </video>
+    <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
       <div className="relative z-10">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
@@ -627,6 +628,7 @@ const TopKOLTokens: React.FC = () => {
       </div>
       </div>
     </div>
+    </>
   );
 };
 

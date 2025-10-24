@@ -226,7 +226,7 @@ const KOLFeed: React.FC = () => {
   };
 
   return (
-    <div className="w-full px-6 py-5 relative">
+    <>
       <video
         autoPlay
         loop
@@ -241,6 +241,7 @@ const KOLFeed: React.FC = () => {
       >
         <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
       </video>
+    <div className="w-full px-6 py-5 relative">
       <div className="relative z-10">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
@@ -440,6 +441,7 @@ const KOLFeed: React.FC = () => {
       </div>
       </div>
     </div>
+    </>
   );
 };
 
