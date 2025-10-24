@@ -74,21 +74,6 @@ const KOLFeedLegacy: React.FC = () => {
   };
 
   return (
-    <>
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed top-0 right-0 bottom-0 h-full object-cover opacity-30 pointer-events-none z-0"
-        style={{ mixBlendMode: 'screen', left: '0', width: '100%' }}
-      onLoadedMetadata={(e) => {
-          const video = e.currentTarget;
-          video.currentTime = 0.1;
-        }}
-      >
-        <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
-      </video>
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
       <div className="relative z-10">
       {/* Header */}
@@ -271,7 +256,6 @@ const KOLFeedLegacy: React.FC = () => {
       </div>
       </div>
     </div>
-    </>
   );
 };
 

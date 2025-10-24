@@ -222,21 +222,6 @@ const KOLLeaderboard: React.FC = () => {
   });
 
   return (
-    <>
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed top-0 right-0 bottom-0 h-full object-cover opacity-30 pointer-events-none z-0"
-        style={{ mixBlendMode: 'screen', left: '0', width: '100%' }}
-      onLoadedMetadata={(e) => {
-          const video = e.currentTarget;
-          video.currentTime = 0.1;
-        }}
-      >
-        <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
-      </video>
     <div className="w-full mx-auto px-0 max-w-[1220px] md:px-10 py-5 relative">
       <div className="relative z-10">
       <div className="mb-6">
@@ -407,7 +392,6 @@ const KOLLeaderboard: React.FC = () => {
       </div>
       </div>
     </div>
-    </>
   );
 };
 

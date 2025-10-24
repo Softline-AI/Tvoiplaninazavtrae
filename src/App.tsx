@@ -92,6 +92,21 @@ const App: React.FC = () => {
             } />
 
             <Route path="/app/*" element={
+              <>
+                <video
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="fixed top-0 right-0 bottom-0 h-full object-cover opacity-30 pointer-events-none z-0"
+                  style={{ mixBlendMode: 'screen', left: '0', width: '100%' }}
+                  onLoadedMetadata={(e) => {
+                    const video = e.currentTarget;
+                    video.currentTime = 0.1;
+                  }}
+                >
+                  <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
+                </video>
               <div className="flex w-full" style={{ minHeight: 'calc(100vh - 64px)', marginTop: '64px' }}>
                 <div className="hidden md:block md:w-64 flex-shrink-0">
                   <Sidebar />
@@ -134,6 +149,7 @@ const App: React.FC = () => {
                   </div>
                 </div>
               </div>
+              </>
             } />
           </Routes>
         </div>
