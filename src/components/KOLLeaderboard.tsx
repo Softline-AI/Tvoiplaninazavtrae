@@ -228,7 +228,7 @@ const KOLLeaderboard: React.FC = () => {
         loop
         muted
         playsInline
-        className="fixed inset-0 w-full h-full object-contain opacity-30 pointer-events-none z-0"
+        className="fixed inset-0 w-full h-full object-cover opacity-30 pointer-events-none z-0"
         style={{ mixBlendMode: 'screen' }}
       onLoadedMetadata={(e) => {
           const video = e.currentTarget;
