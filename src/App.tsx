@@ -94,19 +94,29 @@ const App: React.FC = () => {
             <Route path="/app/*" element={
               <>
                 <video
+                  className="fixed top-0 left-0 w-screen h-screen object-cover opacity-50 z-0 pointer-events-none"
                   autoPlay
                   loop
                   muted
                   playsInline
-                  className="fixed top-0 left-0 w-full h-full object-contain opacity-30 pointer-events-none z-0"
-                  style={{ mixBlendMode: 'screen' }}
-                  onLoadedMetadata={(e) => {
+                  preload="none"
+                  poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect fill='%23000000' width='1' height='1'/%3E%3C/svg%3E"
+                  style={{
+                    filter: 'brightness(1.05) contrast(1.05)',
+                    transform: 'translateZ(0) scale(1.01)',
+                    backfaceVisibility: 'hidden',
+                    perspective: 1000,
+                    imageRendering: 'auto'
+                  }}
+                  onLoadedData={(e) => {
                     const video = e.currentTarget;
-                    video.currentTime = 0.1;
+                    video.style.opacity = '0.5';
+                    video.currentTime = 0.01;
                   }}
                 >
-                  <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
+                  <source src="https://i.imgur.com/E490BLn.mp4" type="video/mp4" />
                 </video>
+                <div className="fixed inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black z-0 pointer-events-none" style={{ transform: 'translateZ(0)', willChange: 'auto' }}></div>
               <div className="flex w-full" style={{ minHeight: 'calc(100vh - 64px)', marginTop: '64px' }}>
                 <div className="hidden md:block md:w-64 flex-shrink-0">
                   <Sidebar />
