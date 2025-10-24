@@ -29,6 +29,7 @@ const KOLFeed: React.FC = () => {
   const [isLoadingReal, setIsLoadingReal] = useState(true);
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
   const [sortBy, setSortBy] = useState<'time' | 'pnl' | 'volume'>('time');
+  const [visibleCount, setVisibleCount] = useState(50);
 
   useEffect(() => {
     const fetchRealKOLTrades = async () => {
@@ -338,7 +339,7 @@ const KOLFeed: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/5">
-                {sortedTrades.map((trade) => (
+                {sortedTrades.slice(0, visibleCount).map((trade) => (
                   <tr key={trade.id} className="transition-all duration-200 hover:bg-white/[0.02] group">
                     <td className="px-6 py-5 whitespace-nowrap">
                       <div className="flex flex-col gap-1">
@@ -431,6 +432,16 @@ const KOLFeed: React.FC = () => {
               </tbody>
             </table>
           </div>
+          {visibleCount < sortedTrades.length && (
+            <div className="p-4 text-center">
+              <button
+                onClick={() => setVisibleCount(prev => prev + 50)}
+                className="px-6 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
+              >
+                Load More ({sortedTrades.length - visibleCount} remaining)
+              </button>
+            </div>
+          )}
         </div>
       </div>
       </div>
