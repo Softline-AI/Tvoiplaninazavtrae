@@ -63,7 +63,7 @@ const BackgroundWrapper: React.FC<{ children: React.ReactNode }> = ({ children }
             video.style.opacity = '0.3';
           }}
         >
-          <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
+          <source src="https://i.imgur.com/E490BLn.mp4" type="video/mp4" />
         </video>
         <div className="animated-3d-background" style={{ contain: 'strict' }}></div>
       </div>

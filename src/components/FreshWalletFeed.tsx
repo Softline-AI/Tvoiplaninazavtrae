@@ -107,7 +107,7 @@ const FreshWalletFeed: React.FC = () => {
           video.currentTime = 0.1;
         }}
       >
-        <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
+        <source src="https://i.imgur.com/E490BLn.mp4" type="video/mp4" />
       </video>
       <div className="relative z-10">
       {/* Header */}
