@@ -66,7 +66,7 @@ const Navigation: React.FC = () => {
   ];
 
   return (
-    <nav className="fixed top-0 inset-x-0 z-50 nav-dark">
+    <nav className="fixed top-0 inset-x-0 z-50 nav-dark" style={{ willChange: 'transform', transform: 'translateZ(0)' }}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
@@ -90,7 +90,7 @@ const Navigation: React.FC = () => {
                   </button>
 
                   {isProductsOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-[800px] noir-card border border-white/10 rounded-lg shadow-xl p-6">
+                    <div className="absolute top-full left-0 mt-2 w-[800px] noir-card border border-white/10 rounded-lg shadow-xl p-6" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
                       <div className="grid grid-cols-3 gap-6">
                         {Object.entries(products).map(([category, items]) => (
                           <div key={category} className="space-y-3">
@@ -135,7 +135,7 @@ const Navigation: React.FC = () => {
                   </button>
 
                   {isToolsOpen && (
-                    <div className="absolute top-full left-0 mt-2 w-64 noir-card border border-white/10 rounded-lg shadow-xl py-2">
+                    <div className="absolute top-full left-0 mt-2 w-64 noir-card border border-white/10 rounded-lg shadow-xl py-2" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
                       {tools.map((tool) => (
                         <Link
                           key={tool.path}

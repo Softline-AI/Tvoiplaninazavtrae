@@ -86,11 +86,11 @@ const App: React.FC = () => {
         
         {/* App Routes with Sidebar */}
         <Route path="/app/*" element={
-          <div className="flex w-full" style={{ minHeight: 'calc(100vh - 64px)', marginTop: '64px' }}>
-            <div className="hidden md:block md:w-64 flex-shrink-0">
+          <div className="flex w-full" style={{ minHeight: 'calc(100vh - 64px)', marginTop: '64px', transform: 'translateZ(0)', willChange: 'scroll-position' }}>
+            <div className="hidden md:block md:w-64 flex-shrink-0" style={{ transform: 'translateZ(0)' }}>
               <Sidebar />
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto" style={{ transform: 'translateZ(0)', willChange: 'scroll-position', contain: 'layout style paint' }}>
               <div className="w-full">
                 <Suspense fallback={
                   <div className="flex items-center justify-center h-screen">

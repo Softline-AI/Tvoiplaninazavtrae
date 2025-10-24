@@ -70,13 +70,17 @@ body {
   background: #0a0a0a;
   border: 1px solid #1a1a1a;
   border-radius: 12px;
-  transition: all 0.3s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: layout style paint;
 }
 
 .card-dark:hover {
   border-color: #333333;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
-  transform: translateY(-2px);
+  transform: translateY(-2px) translateZ(0);
 }
 
 .btn-white {
@@ -88,12 +92,15 @@ body {
   font-size: 14px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: none;
   letter-spacing: -0.02em;
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
+  will-change: transform;
+  transform: translateZ(0);
+  backfaceVisibility: hidden;
 }
 
 .btn-white::before {
@@ -126,13 +133,16 @@ body {
   font-size: 15px;
   border: 1px solid #1a1a1a;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  will-change: transform;
+  transform: translateZ(0);
+  backfaceVisibility: hidden;
 }
 
 .btn-dark:hover {
   background: #1a1a1a;
   border-color: #333333;
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
 }
 
 .nav-dark {
@@ -151,21 +161,26 @@ body {
   font-size: 14px;
   font-weight: 500;
   color: #888888;
-  transition: all 0.2s ease;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 12px;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .sidebar-item:hover {
   background: #0a0a0a;
   color: #ffffff;
+  transform: translateX(2px) translateZ(0);
 }
 
 .sidebar-item.active {
   background: #ffffff;
   color: #000000;
+  transform: translateZ(0);
 }
 
 .badge-white {
@@ -320,14 +335,17 @@ input:focus, textarea:focus, select:focus {
   font-size: 15px;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   text-transform: none;
   letter-spacing: -0.01em;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .noir-button:hover {
   background: #f0f0f0;
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
   box-shadow: 0 4px 16px rgba(255, 255, 255, 0.2);
 }
 
@@ -340,13 +358,16 @@ input:focus, textarea:focus, select:focus {
   font-size: 15px;
   border: 1px solid #1a1a1a;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .noir-button-secondary:hover {
   background: #1a1a1a;
   border-color: #333333;
-  transform: translateY(-1px);
+  transform: translateY(-1px) translateZ(0);
 }
 
 .noir-text-secondary {
@@ -554,6 +575,19 @@ input:focus, textarea:focus, select:focus {
 
 .sidebar::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.2);
+}
+
+/* Optimize scrolling performance */
+.overflow-y-auto {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* Optimize transitions for better FPS */
+* {
+  transition-property: transform, opacity, color, background-color, border-color, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @media (max-width: 768px) {
