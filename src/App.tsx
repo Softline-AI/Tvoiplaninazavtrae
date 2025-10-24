@@ -36,29 +36,8 @@ const App: React.FC = () => {
         height: '100vh',
         zIndex: 0,
         overflow: 'hidden',
-        backgroundColor: '#000000'
-      }}>
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="none"
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            opacity: 0.3,
-            pointerEvents: 'none'
-          }}
-        >
-          <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
-        </video>
-        <div className="animated-3d-background"></div>
-      </div>
+        background: 'linear-gradient(180deg, #000000 0%, #0a0a0a 50%, #000000 100%)'
+      }} />
       <div className="relative z-10" style={{ background: 'transparent' }}>
         <Navigation />
         <Routes>
