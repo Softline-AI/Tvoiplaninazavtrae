@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   BarChart3,
@@ -354,4 +354,4 @@ const Sidebar: React.FC = () => {
   );
 };
 
-export default memo(Sidebar);
+export default Sidebar;
