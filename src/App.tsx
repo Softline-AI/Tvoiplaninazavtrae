@@ -43,8 +43,7 @@ const App: React.FC = () => {
           loop
           muted
           playsInline
-          preload="metadata"
-          loading="lazy"
+          preload="none"
           style={{
             position: 'absolute',
             top: 0,
@@ -53,8 +52,7 @@ const App: React.FC = () => {
             height: '100%',
             objectFit: 'cover',
             opacity: 0.3,
-            pointerEvents: 'none',
-            willChange: 'transform'
+            pointerEvents: 'none'
           }}
         >
           <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />

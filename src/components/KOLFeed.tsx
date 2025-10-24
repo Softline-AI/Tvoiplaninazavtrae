@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copy, ExternalLink, TrendingUp, TrendingDown, Clock, DollarSign } from 'lucide-react';
 import { heliusService, type RealTimeKOLTrade } from '../services/heliusApi';
@@ -186,36 +186,45 @@ const KOLFeed: React.FC = () => {
     }
   ];
 
-  const displayTrades = realTrades.length > 0 ? realTrades : mockTrades;
+  const displayTrades = useMemo(() =>
+    realTrades.length > 0 ? realTrades : mockTrades,
+    [realTrades]
+  );
 
-  const filteredTrades = displayTrades.filter(trade => {
-    if (filter !== 'all' && trade.lastTx !== filter) return false;
-    return true;
-  });
+  const filteredTrades = useMemo(() =>
+    displayTrades.filter(trade => {
+      if (filter !== 'all' && trade.lastTx !== filter) return false;
+      return true;
+    }),
+    [displayTrades, filter]
+  );
 
-  const sortedTrades = [...filteredTrades].sort((a, b) => {
-    if (sortBy === 'pnl') {
-      const pnlA = parseFloat(a.pnl.replace(/[^0-9.-]/g, ''));
-      const pnlB = parseFloat(b.pnl.replace(/[^0-9.-]/g, ''));
-      return pnlB - pnlA;
-    }
-    if (sortBy === 'volume') {
-      const boughtA = parseFloat(a.bought.replace(/[^0-9.-]/g, ''));
-      const boughtB = parseFloat(b.bought.replace(/[^0-9.-]/g, ''));
-      const soldA = parseFloat(a.sold.replace(/[^0-9.-]/g, ''));
-      const soldB = parseFloat(b.sold.replace(/[^0-9.-]/g, ''));
-      const volumeA = boughtA + soldA;
-      const volumeB = boughtB + soldB;
-      return volumeB - volumeA;
-    }
-    return 0;
-  });
+  const sortedTrades = useMemo(() =>
+    [...filteredTrades].sort((a, b) => {
+      if (sortBy === 'pnl') {
+        const pnlA = parseFloat(a.pnl.replace(/[^0-9.-]/g, ''));
+        const pnlB = parseFloat(b.pnl.replace(/[^0-9.-]/g, ''));
+        return pnlB - pnlA;
+      }
+      if (sortBy === 'volume') {
+        const boughtA = parseFloat(a.bought.replace(/[^0-9.-]/g, ''));
+        const boughtB = parseFloat(b.bought.replace(/[^0-9.-]/g, ''));
+        const soldA = parseFloat(a.sold.replace(/[^0-9.-]/g, ''));
+        const soldB = parseFloat(b.sold.replace(/[^0-9.-]/g, ''));
+        const volumeA = boughtA + soldA;
+        const volumeB = boughtB + soldB;
+        return volumeB - volumeA;
+      }
+      return 0;
+    }),
+    [filteredTrades, sortBy]
+  );
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = useCallback((text: string) => {
     navigator.clipboard.writeText(text);
-  };
+  }, []);
 
-  const stats = {
+  const stats = useMemo(() => ({
     totalTrades: displayTrades.length,
     buyTrades: displayTrades.filter(t => t.lastTx === 'buy').length,
     sellTrades: displayTrades.filter(t => t.lastTx === 'sell').length,
@@ -223,24 +232,10 @@ const KOLFeed: React.FC = () => {
       const pnl = parseFloat(t.pnl.replace(/[^0-9.-]/g, ''));
       return acc + (isNaN(pnl) ? 0 : pnl);
     }, 0) / displayTrades.length
-  };
+  }), [displayTrades]);
 
   return (
     <div className="w-full px-6 py-5 relative">
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="fixed inset-0 w-full h-full object-contain opacity-30 pointer-events-none z-0"
-        style={{ mixBlendMode: 'screen' }}
-      onLoadedMetadata={(e) => {
-          const video = e.currentTarget;
-          video.currentTime = 0.1;
-        }}
-      >
-        <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
-      </video>
       <div className="relative z-10">
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">

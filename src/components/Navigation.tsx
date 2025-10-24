@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, memo } from 'react';
 import { Menu, X, ChevronDown, TrendingUp, BarChart3, Star, Activity, Coins, TrendingDown, ArrowLeftRight, Wallet, Search, LineChart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
@@ -268,4 +268,4 @@ const Navigation: React.FC = () => {
   );
 };
 
-export default Navigation;
+export default memo(Navigation);
