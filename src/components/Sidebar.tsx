@@ -90,10 +90,10 @@ const Sidebar: React.FC = () => {
                   : 'text-white hover:bg-white/10'
               }`}
               style={isActive('/app/kol-feed') ? {
-                background: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                boxShadow: '0 4px 16px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                background: 'rgba(255, 255, 255, 0.08)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                boxShadow: '0 2px 8px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
               } : {}}
             >
               <TrendingUp className="w-5 h-5 transition-transform group-hover:scale-110" />
@@ -107,10 +107,10 @@ const Sidebar: React.FC = () => {
                   : 'text-white hover:bg-white/10'
               }`}
               style={isActive('/app/kol-leaderboard') ? {
-                background: 'rgba(255, 255, 255, 0.15)',
-                backdropFilter: 'blur(20px)',
-                WebkitBackdropFilter: 'blur(20px)',
-                boxShadow: '0 4px 16px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+                background: 'rgba(255, 255, 255, 0.08)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                boxShadow: '0 2px 8px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
               } : {}}
             >
               <BarChart3 className="w-5 h-5 transition-transform group-hover:scale-110" />
