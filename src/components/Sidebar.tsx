@@ -37,7 +37,7 @@ const Sidebar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="sidebar py-4 w-full h-full px-3 noir-glass z-100 overflow-y-auto hidden md:block" style={{ willChange: 'scroll-position', transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
+    <div className="sidebar py-4 w-full h-full px-3 z-100 overflow-y-auto hidden md:block" style={{ willChange: 'scroll-position', transform: 'translateZ(0)', backfaceVisibility: 'hidden', backgroundColor: '#000000' }}>
         <div className="transition-all duration-200 space-y-1">
           <Link
             to="/app/learning-center"

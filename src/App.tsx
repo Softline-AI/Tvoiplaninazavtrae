@@ -24,67 +24,49 @@ const KOLFeedLegacy = lazy(() => import('./components/KOLFeedLegacy'));
 const MyStalks = lazy(() => import('./components/MyStalks'));
 
 const BackgroundWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const location = useLocation();
-  const isAppRoute = location.pathname.startsWith('/app');
-
   return (
     <>
-      {!isAppRoute && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: 0,
-          overflow: 'hidden',
-          backgroundColor: '#000000'
-        }}>
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="none"
-            poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect fill='%23000000' width='1' height='1'/%3E%3C/svg%3E"
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              opacity: 0.3,
-              pointerEvents: 'none',
-              transform: 'translateZ(0)',
-              backfaceVisibility: 'hidden',
-              contain: 'strict'
-            }}
-            onLoadedData={(e) => {
-              const video = e.currentTarget;
-              video.style.opacity = '0.3';
-            }}
-          >
-            <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
-          </video>
-          <div className="animated-3d-background" style={{ contain: 'strict' }}></div>
-        </div>
-      )}
-      {isAppRoute && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: 0,
-          backgroundColor: '#000000'
-        }}></div>
-      )}
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        zIndex: 0,
+        overflow: 'hidden',
+        backgroundColor: '#000000'
+      }}>
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="none"
+          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect fill='%23000000' width='1' height='1'/%3E%3C/svg%3E"
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            opacity: 0.3,
+            pointerEvents: 'none',
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+            contain: 'strict'
+          }}
+          onLoadedData={(e) => {
+            const video = e.currentTarget;
+            video.style.opacity = '0.3';
+          }}
+        >
+          <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
+        </video>
+        <div className="animated-3d-background" style={{ contain: 'strict' }}></div>
+      </div>
       {children}
     </>
   );
