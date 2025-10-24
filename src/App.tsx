@@ -43,8 +43,8 @@ const App: React.FC = () => {
           loop
           muted
           playsInline
-          preload="metadata"
-          loading="lazy"
+          preload="none"
+          poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect fill='%23000000' width='1' height='1'/%3E%3C/svg%3E"
           style={{
             position: 'absolute',
             top: 0,
@@ -54,12 +54,18 @@ const App: React.FC = () => {
             objectFit: 'cover',
             opacity: 0.3,
             pointerEvents: 'none',
-            willChange: 'transform'
+            transform: 'translateZ(0)',
+            backfaceVisibility: 'hidden',
+            contain: 'strict'
+          }}
+          onLoadedData={(e) => {
+            const video = e.currentTarget;
+            video.style.opacity = '0.3';
           }}
         >
           <source src="https://i.imgur.com/sg6HXew.mp4" type="video/mp4" />
         </video>
-        <div className="animated-3d-background"></div>
+        <div className="animated-3d-background" style={{ contain: 'strict' }}></div>
       </div>
       <div className="relative z-10" style={{ background: 'transparent' }}>
         <Navigation />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, ArrowRight, CheckCircle, Crown, ChevronDown, Users } from 'lucide-react';
 
@@ -45,27 +45,31 @@ const HomePage: React.FC = () => {
   ];
 
   return (
-    <main className="noir-bg min-h-screen relative">
+    <main className="noir-bg min-h-screen relative" style={{ willChange: 'scroll-position' }}>
       <video
         className="fixed top-0 left-0 w-screen h-screen object-cover opacity-50 z-0"
         autoPlay
         loop
         muted
         playsInline
-        preload="metadata"
-        loading="lazy"
+        preload="none"
+        poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect fill='%23000000' width='1' height='1'/%3E%3C/svg%3E"
         style={{
           filter: 'brightness(1.05) contrast(1.05)',
-          willChange: 'transform'
+          transform: 'translateZ(0) scale(1.01)',
+          backfaceVisibility: 'hidden',
+          perspective: 1000,
+          imageRendering: 'auto'
         }}
-        onLoadedMetadata={(e) => {
+        onLoadedData={(e) => {
           const video = e.currentTarget;
+          video.style.opacity = '0.5';
           video.currentTime = 0.01;
         }}
       >
         <source src="https://i.imgur.com/E490BLn.mp4" type="video/mp4" />
       </video>
-      <div className="fixed inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/50 to-noir-black z-0"></div>
+      <div className="fixed inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/50 to-noir-black z-0" style={{ transform: 'translateZ(0)', willChange: 'auto' }}></div>
 
       <section className="w-full pt-16 sm:pt-20 lg:pt-32 pb-16 sm:pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-16 max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
@@ -84,8 +88,8 @@ const HomePage: React.FC = () => {
               {['Live whale wallet tracking', '1000+ KOL database', 'Early trend detection', 'Insider move alerts'].map((item, i) => (
                 <li
                   key={i}
-                  className="flex items-center gap-3 transition-all duration-700 noir-slide-in"
-                  style={{ transitionDelay: `${i * 200}ms` }}
+                  className="flex items-center gap-3"
+                  style={{ transform: 'translateZ(0)' }}
                 >
                   <div className="w-2 h-2 rounded-full bg-white flex-shrink-0 shadow-lg shadow-white/50"></div>
                   <span className="font-medium text-base sm:text-lg noir-text-secondary tracking-wide">{item}</span>
@@ -135,12 +139,19 @@ const HomePage: React.FC = () => {
           ].map((feature, index) => (
             <div key={index} className="group noir-card noir-spotlight rounded-2xl p-6 sm:p-8 md:p-10 noir-fade-in revealed">
               <div className="flex flex-col items-center text-center h-full">
-                <div className="w-full aspect-video bg-noir-gray rounded-xl overflow-hidden mb-6 transition-all duration-300">
+                <div className="w-full aspect-video bg-noir-gray rounded-xl overflow-hidden mb-6">
                   <img
                     src={feature.image}
                     alt={feature.title}
                     loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    style={{
+                      contentVisibility: 'auto',
+                      transform: 'translateZ(0)',
+                      willChange: 'transform',
+                      backfaceVisibility: 'hidden'
+                    }}
                   />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold noir-text-secondary mb-3 sm:mb-4">{feature.title}</h3>
@@ -165,8 +176,8 @@ const HomePage: React.FC = () => {
           {kols.map((kol, index) => (
             <div
               key={index}
-              className="transition-all duration-700 noir-fade-in revealed"
-              style={{ transitionDelay: `${index * 150}ms` }}
+              className="noir-fade-in revealed"
+              style={{ transform: 'translateZ(0)' }}
             >
               <a href={kol.twitter} target="_blank" rel="noopener noreferrer" className="group block">
                 <div className="noir-card noir-shimmer rounded-2xl p-4 sm:p-6 md:p-8">
