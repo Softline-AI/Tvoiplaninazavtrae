@@ -232,8 +232,8 @@ const KOLFeed: React.FC = () => {
         loop
         muted
         playsInline
-        className="fixed inset-0 w-full h-full object-cover opacity-30 pointer-events-none z-0"
-        style={{ mixBlendMode: 'screen' }}
+        className="fixed top-0 right-0 bottom-0 h-full object-cover opacity-30 pointer-events-none z-0"
+        style={{ mixBlendMode: 'screen', left: '0', width: '100%' }}
       onLoadedMetadata={(e) => {
           const video = e.currentTarget;
           video.currentTime = 0.1;
