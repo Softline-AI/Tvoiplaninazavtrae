@@ -30,13 +30,13 @@ html, body, #root {
 }
 
 html {
-  scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: none;
 }
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: transparent;
+  background: #000000;
   color: #ffffff;
   line-height: 1.5;
   font-size: 15px;
@@ -45,6 +45,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   overflow-y: scroll;
   overflow-x: hidden;
+  overscroll-behavior-y: none;
 }
 
 #root {
@@ -581,13 +582,35 @@ input:focus, textarea:focus, select:focus {
 .overflow-y-auto {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: none;
+  scroll-behavior: auto;
+}
+
+/* Force GPU acceleration for all scrollable containers */
+.overflow-y-auto > * {
+  transform: translateZ(0);
+  will-change: auto;
+}
+
+/* Optimize rendering during scroll */
+@supports (content-visibility: auto) {
+  .overflow-y-auto > * {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 500px;
+  }
 }
 
 /* Optimize transitions for better FPS */
 * {
-  transition-property: transform, opacity, color, background-color, border-color, box-shadow;
+  transition-duration: 0.15s;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Disable animations during scroll for better performance */
+@media (prefers-reduced-motion: no-preference) {
+  html:not(:hover) * {
+    animation-play-state: paused !important;
+  }
 }
 
 @media (max-width: 768px) {
