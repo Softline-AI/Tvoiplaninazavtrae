@@ -155,14 +155,11 @@ const Navigation: React.FC = () => {
 
               {isAppRoute && !isKOLProfile && (
                 <>
-                  <a href="/#features" className="text-white hover:text-gray-300 transition-colors font-medium">
-                    Features
+                  <a href="/futures" className="text-white hover:text-gray-300 transition-colors font-medium">
+                    Futures
                   </a>
                   <a href="/#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
                     Pricing
-                  </a>
-                  <a href="/futures" className="text-white hover:text-gray-300 transition-colors font-medium">
-                    Futures
                   </a>
                 </>
               )}
