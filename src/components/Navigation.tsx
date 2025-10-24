@@ -182,12 +182,6 @@ const Navigation: React.FC = () => {
 
           {!isAppRoute && (
             <div className="hidden md:flex items-center gap-4">
-              <a href="/#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
-                Pricing
-              </a>
-              <a href="/futures" className="text-white hover:text-gray-300 transition-colors font-medium">
-                Futures
-              </a>
               <Link to="/app/kol-feed" className="btn-white">
                 Open App
               </Link>
