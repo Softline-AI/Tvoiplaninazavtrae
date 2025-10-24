@@ -37,7 +37,16 @@ const Sidebar: React.FC = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <div className="sidebar py-4 w-full h-full px-3 z-100 overflow-y-auto hidden md:block" style={{ willChange: 'scroll-position', transform: 'translateZ(0)', backfaceVisibility: 'hidden', backgroundColor: '#000000' }}>
+    <div className="sidebar py-4 w-full h-full px-3 z-100 overflow-y-auto hidden md:block" style={{
+      willChange: 'scroll-position',
+      transform: 'translateZ(0)',
+      backfaceVisibility: 'hidden',
+      background: 'rgba(255, 255, 255, 0.05)',
+      backdropFilter: 'blur(40px) saturate(180%)',
+      WebkitBackdropFilter: 'blur(40px) saturate(180%)',
+      borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+      boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.37)'
+    }}>
         <div className="transition-all duration-200 space-y-1">
           <Link
             to="/app/learning-center"
@@ -77,9 +86,15 @@ const Sidebar: React.FC = () => {
               to="/app/kol-feed"
               className={`flex items-center gap-3 h-10 px-3 rounded-lg transition-all group ${
                 isActive('/app/kol-feed')
-                  ? 'bg-white text-black shadow-lg'
+                  ? 'text-white shadow-lg'
                   : 'text-white hover:bg-white/10'
               }`}
+              style={isActive('/app/kol-feed') ? {
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                boxShadow: '0 4px 16px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+              } : {}}
             >
               <TrendingUp className="w-5 h-5 transition-transform group-hover:scale-110" />
               <span className="text-sm font-medium">KOL Feed</span>
@@ -88,9 +103,15 @@ const Sidebar: React.FC = () => {
               to="/app/kol-leaderboard"
               className={`flex items-center gap-3 h-10 px-3 rounded-lg transition-all group ${
                 isActive('/app/kol-leaderboard')
-                  ? 'bg-white text-black shadow-lg'
+                  ? 'text-white shadow-lg'
                   : 'text-white hover:bg-white/10'
               }`}
+              style={isActive('/app/kol-leaderboard') ? {
+                background: 'rgba(255, 255, 255, 0.15)',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                boxShadow: '0 4px 16px rgba(255, 255, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3)'
+              } : {}}
             >
               <BarChart3 className="w-5 h-5 transition-transform group-hover:scale-110" />
               <span className="text-sm font-medium">KOL Leaderboard</span>
