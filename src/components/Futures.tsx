@@ -189,6 +189,7 @@ const Futures: React.FC = () => {
               </Link>
               <a
                 href="/#plans"
+                onClick={(e) => { e.preventDefault(); window.location.href = '/#plans'; }}
                 className="bg-white/10 hover:bg-white/20 text-white inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-base sm:text-lg font-semibold transition-all h-12 sm:h-14 px-8 sm:px-10 border border-white/20 w-full sm:w-auto"
               >
                 View Pricing

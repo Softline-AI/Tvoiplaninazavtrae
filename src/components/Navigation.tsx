@@ -158,7 +158,7 @@ const Navigation: React.FC = () => {
                   <a href="/futures" className="text-white hover:text-gray-300 transition-colors font-medium">
                     Futures
                   </a>
-                  <a href="/#plans" className="text-white hover:text-gray-300 transition-colors font-medium">
+                  <a href="/#plans" onClick={(e) => { e.preventDefault(); window.location.href = '/#plans'; }} className="text-white hover:text-gray-300 transition-colors font-medium">
                     Pricing
                   </a>
                 </>
@@ -241,7 +241,7 @@ const Navigation: React.FC = () => {
               <a
                 href="/#plans"
                 className="block text-sm text-gray hover:text-white transition-colors py-2"
-                onClick={() => setIsMobileMenuOpen(false)}
+                onClick={(e) => { e.preventDefault(); setIsMobileMenuOpen(false); window.location.href = '/#plans'; }}
               >
                 Pricing
               </a>
