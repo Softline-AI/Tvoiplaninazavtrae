@@ -23,6 +23,7 @@ const LiveDCAFeed = lazy(() => import('./components/LiveDCAFeed'));
 const LegendCommunity = lazy(() => import('./components/LegendCommunity'));
 const KOLFeedLegacy = lazy(() => import('./components/KOLFeedLegacy'));
 const MyStalks = lazy(() => import('./components/MyStalks'));
+const LearningCenter = lazy(() => import('./components/LearningCenter'));
 
 const BackgroundWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -102,7 +103,7 @@ const AnimatedRoutes: React.FC = () => {
           <Route path="/transaction-stream" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Transaction Stream</h2><p className="text-gray-300">Live transaction monitoring...</p></div>} />
           <Route path="/realtime-analytics" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Real-time Analytics</h2><p className="text-gray-300">Advanced analytics dashboard...</p></div>} />
 
-          <Route path="/learning-center" element={<div className="p-8 text-center text-white">Learning Center - Coming Soon</div>} />
+          <Route path="/learning-center" element={<LearningCenter />} />
           <Route path="/my-stalks" element={<MyStalks />} />
           <Route path="/insider-scan" element={<InsiderScan />} />
           <Route path="/fresh-wallet-feed" element={<FreshWalletFeed />} />
