@@ -1,5 +1,6 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import Navigation from './components/Navigation';
 import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
@@ -72,6 +73,48 @@ const BackgroundWrapper: React.FC<{ children: React.ReactNode }> = ({ children }
   );
 };
 
+const AnimatedRoutes: React.FC = () => {
+  const location = useLocation();
+
+  return (
+    <TransitionGroup component={null}>
+      <CSSTransition
+        key={location.pathname}
+        timeout={300}
+        classNames="page"
+      >
+        <Routes location={location}>
+          <Route path="/" element={<KOLFeed />} />
+          <Route path="/kol-feed" element={<KOLFeed />} />
+          <Route path="/kol-profile/:walletAddress" element={<KOLProfile />} />
+          <Route path="/kol-leaderboard" element={<KOLLeaderboard />} />
+          <Route path="/top-kol-tokens" element={<TopKOLTokens />} />
+          <Route path="/daily-trends" element={<DailyTrends />} />
+          <Route path="/top-tokens" element={<TopTokens />} />
+          <Route path="/trends-analytics" element={<TrendsAnalytics />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/wallet-finder" element={<WalletFinder />} />
+          <Route path="/cabal-finder" element={<CabalFinder />} />
+          <Route path="/copy-traders" element={<CopyTraders />} />
+          <Route path="/kol-feed-legacy" element={<KOLFeedLegacy />} />
+
+          <Route path="/live-market-feed" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Live Market Feed</h2><p className="text-gray-300">Real-time market data streaming...</p></div>} />
+          <Route path="/transaction-stream" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Transaction Stream</h2><p className="text-gray-300">Live transaction monitoring...</p></div>} />
+          <Route path="/realtime-analytics" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Real-time Analytics</h2><p className="text-gray-300">Advanced analytics dashboard...</p></div>} />
+
+          <Route path="/learning-center" element={<div className="p-8 text-center text-white">Learning Center - Coming Soon</div>} />
+          <Route path="/my-stalks" element={<MyStalks />} />
+          <Route path="/insider-scan" element={<InsiderScan />} />
+          <Route path="/fresh-wallet-feed" element={<FreshWalletFeed />} />
+          <Route path="/live-dca-feed" element={<LiveDCAFeed />} />
+          <Route path="/legend-community" element={<LegendCommunity />} />
+          <Route path="/upgrade" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Upgrade Your Plan</h2><p className="text-gray-300">Choose PRO or LEGEND to unlock advanced features</p></div>} />
+        </Routes>
+      </CSSTransition>
+    </TransitionGroup>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <Router>
@@ -128,33 +171,7 @@ const App: React.FC = () => {
                         <div className="text-white text-xl">Loading...</div>
                       </div>
                     }>
-                      <Routes>
-                        <Route path="/" element={<KOLFeed />} />
-                        <Route path="/kol-feed" element={<KOLFeed />} />
-                        <Route path="/kol-profile/:walletAddress" element={<KOLProfile />} />
-                        <Route path="/kol-leaderboard" element={<KOLLeaderboard />} />
-                        <Route path="/top-kol-tokens" element={<TopKOLTokens />} />
-                        <Route path="/daily-trends" element={<DailyTrends />} />
-                        <Route path="/top-tokens" element={<TopTokens />} />
-                        <Route path="/trends-analytics" element={<TrendsAnalytics />} />
-                        <Route path="/transactions" element={<Transactions />} />
-                        <Route path="/wallet-finder" element={<WalletFinder />} />
-                        <Route path="/cabal-finder" element={<CabalFinder />} />
-                        <Route path="/copy-traders" element={<CopyTraders />} />
-                        <Route path="/kol-feed-legacy" element={<KOLFeedLegacy />} />
-
-                        <Route path="/live-market-feed" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Live Market Feed</h2><p className="text-gray-300">Real-time market data streaming...</p></div>} />
-                        <Route path="/transaction-stream" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Transaction Stream</h2><p className="text-gray-300">Live transaction monitoring...</p></div>} />
-                        <Route path="/realtime-analytics" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Real-time Analytics</h2><p className="text-gray-300">Advanced analytics dashboard...</p></div>} />
-
-                        <Route path="/learning-center" element={<div className="p-8 text-center text-white">Learning Center - Coming Soon</div>} />
-                        <Route path="/my-stalks" element={<MyStalks />} />
-                        <Route path="/insider-scan" element={<InsiderScan />} />
-                        <Route path="/fresh-wallet-feed" element={<FreshWalletFeed />} />
-                        <Route path="/live-dca-feed" element={<LiveDCAFeed />} />
-                        <Route path="/legend-community" element={<LegendCommunity />} />
-                        <Route path="/upgrade" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Upgrade Your Plan</h2><p className="text-gray-300">Choose PRO or LEGEND to unlock advanced features</p></div>} />
-                      </Routes>
+                      <AnimatedRoutes />
                     </Suspense>
                   </div>
                 </div>
