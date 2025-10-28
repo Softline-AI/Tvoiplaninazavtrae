@@ -34,37 +34,25 @@ const KOLFeed: React.FC = () => {
     const fetchRealKOLTrades = async () => {
       setIsLoadingReal(true);
       try {
-        const realData = await heliusService.getRealTimeKOLData();
-        const uniqueTokens = [...new Set(realData.map(trade => trade.tokenContract))];
-        const prices = await birdeyeService.getMultipleTokenPrices(uniqueTokens);
-
-        const enrichedData = realData.map(trade => {
-          const priceData = prices[trade.tokenContract];
-          if (priceData) {
-            const tokenPrice = priceData.value;
-            const bought = parseFloat(trade.bought.replace(/[^0-9.]/g, ''));
-            const sold = parseFloat(trade.sold.replace(/[^0-9.]/g, ''));
-            const holding = parseFloat(trade.holding.replace(/[^0-9.]/g, '')) || 0;
-
-            const boughtValue = bought;
-            const soldValue = sold;
-            const holdingValue = holding * tokenPrice;
-            const totalValue = soldValue + holdingValue;
-            const pnl = totalValue - boughtValue;
-            const pnlPercentage = boughtValue > 0 ? (pnl / boughtValue) * 100 : 0;
-
-            return {
-              ...trade,
-              pnl: pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`,
-              pnlPercentage: pnl >= 0 ? `+${pnlPercentage.toFixed(2)}%` : `${pnlPercentage.toFixed(2)}%`,
-            };
-          }
-          return trade;
+        const params = new URLSearchParams({
+          timeRange: '24h',
+          type: filter,
+          sortBy: sortBy,
+          limit: '50'
         });
 
-        setRealTrades(enrichedData);
+        const response = await fetch(`http://localhost:5000/api/kol-feed?${params}`);
+        const data = await response.json();
+
+        if (data.success && data.data) {
+          setRealTrades(data.data);
+        } else {
+          console.error('Failed to fetch KOL feed:', data.error);
+          setRealTrades([]);
+        }
       } catch (error) {
         console.error('Error fetching KOL data:', error);
+        setRealTrades([]);
       } finally {
         setIsLoadingReal(false);
       }
@@ -73,32 +61,9 @@ const KOLFeed: React.FC = () => {
     fetchRealKOLTrades();
     const interval = setInterval(fetchRealKOLTrades, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [filter, sortBy]);
 
   const displayTrades = realTrades;
-
-  const filteredTrades = displayTrades.filter(trade => {
-    if (filter !== 'all' && trade.lastTx !== filter) return false;
-    return true;
-  });
-
-  const sortedTrades = [...filteredTrades].sort((a, b) => {
-    if (sortBy === 'pnl') {
-      const pnlA = parseFloat(a.pnl.replace(/[^0-9.-]/g, ''));
-      const pnlB = parseFloat(b.pnl.replace(/[^0-9.-]/g, ''));
-      return pnlB - pnlA;
-    }
-    if (sortBy === 'volume') {
-      const boughtA = parseFloat(a.bought.replace(/[^0-9.-]/g, ''));
-      const boughtB = parseFloat(b.bought.replace(/[^0-9.-]/g, ''));
-      const soldA = parseFloat(a.sold.replace(/[^0-9.-]/g, ''));
-      const soldB = parseFloat(b.sold.replace(/[^0-9.-]/g, ''));
-      const volumeA = boughtA + soldA;
-      const volumeB = boughtB + soldB;
-      return volumeB - volumeA;
-    }
-    return 0;
-  });
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -256,7 +221,7 @@ const KOLFeed: React.FC = () => {
                       </td>
                     </tr>
                   ))
-                ) : sortedTrades.length === 0 ? (
+                ) : displayTrades.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-12 text-center">
                       <div className="flex flex-col items-center gap-3">
@@ -266,7 +231,7 @@ const KOLFeed: React.FC = () => {
                     </td>
                   </tr>
                 ) : (
-                  sortedTrades.map((trade) => (
+                  displayTrades.map((trade) => (
                   <tr key={trade.id} className="transition-all duration-200 hover:bg-white/[0.02] group">
                     <td className="px-6 py-5 whitespace-nowrap">
                       <div className="flex flex-col gap-1">

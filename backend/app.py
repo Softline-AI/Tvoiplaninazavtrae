@@ -5,7 +5,7 @@ import requests
 import redis
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from dotenv import load_dotenv
 from logging.handlers import RotatingFileHandler
 
@@ -115,7 +115,11 @@ def get_transactions():
 def get_kol_feed():
     try:
         time_range = request.args.get('timeRange', '24h')
-        cache_key = f"kol_feed_{time_range}"
+        tx_type = request.args.get('type', 'all')
+        sort_by = request.args.get('sortBy', 'time')
+        limit = int(request.args.get('limit', 50))
+
+        cache_key = f"kol_feed_{time_range}_{tx_type}_{sort_by}_{limit}"
 
         if REDIS_AVAILABLE:
             cached_data = cache.get(cache_key)
@@ -128,32 +132,99 @@ def get_kol_feed():
             'Content-Type': 'application/json'
         }
 
-        url = f"{SUPABASE_URL}/rest/v1/kol_profiles"
-        params = {'select': '*', 'order': 'total_pnl.desc'}
+        now_utc = datetime.now(timezone.utc)
+        time_filter_map = {
+            '1h': now_utc - timedelta(hours=1),
+            '24h': now_utc - timedelta(hours=24),
+            '7d': now_utc - timedelta(days=7),
+            '30d': now_utc - timedelta(days=30)
+        }
+        time_filter = time_filter_map.get(time_range, now_utc - timedelta(hours=24))
 
-        response = requests.get(url, headers=headers, params=params, timeout=10)
-        response.raise_for_status()
+        kol_profiles_url = f"{SUPABASE_URL}/rest/v1/kol_profiles"
+        kol_response = requests.get(kol_profiles_url, headers=headers, params={'select': '*'}, timeout=10)
+        kol_response.raise_for_status()
+        kol_profiles = {p['wallet_address']: p for p in kol_response.json()}
 
-        kol_profiles = response.json()
+        tx_url = f"{SUPABASE_URL}/rest/v1/webhook_transactions"
+        tx_params = {
+            'select': '*',
+            'block_time': f'gte.{time_filter.isoformat()}',
+            'order': 'block_time.desc',
+            'limit': str(limit * 2)
+        }
+
+        tx_response = requests.get(tx_url, headers=headers, params=tx_params, timeout=10)
+        tx_response.raise_for_status()
+        transactions = tx_response.json()
+
+        kol_trades = []
+        for tx in transactions:
+            wallet = tx.get('from_address')
+            if wallet in kol_profiles:
+                profile = kol_profiles[wallet]
+
+                tx_category = 'buy' if tx.get('transaction_type') in ['SWAP', 'BUY'] else 'sell'
+
+                if tx_type != 'all' and tx_category != tx_type:
+                    continue
+
+                time_diff = now_utc - datetime.fromisoformat(tx['block_time'].replace('Z', '+00:00'))
+                if time_diff.total_seconds() < 60:
+                    time_ago = f"{int(time_diff.total_seconds())}s"
+                elif time_diff.total_seconds() < 3600:
+                    time_ago = f"{int(time_diff.total_seconds() / 60)}m"
+                else:
+                    time_ago = f"{int(time_diff.total_seconds() / 3600)}h"
+
+                trade = {
+                    'id': tx['id'],
+                    'lastTx': tx_category,
+                    'timeAgo': time_ago,
+                    'kolName': profile['name'],
+                    'kolAvatar': profile.get('avatar_url', 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'),
+                    'walletAddress': wallet,
+                    'twitterHandle': profile.get('twitter_handle', wallet[:8]),
+                    'token': tx.get('token_symbol', 'Unknown'),
+                    'tokenContract': tx.get('token_mint', ''),
+                    'bought': f"${float(tx.get('amount', 0)):,.2f}",
+                    'sold': '$0.00' if tx_category == 'buy' else f"${float(tx.get('amount', 0)):,.2f}",
+                    'holding': f"${float(tx.get('amount', 0)):,.2f}" if tx_category == 'buy' else 'sold all',
+                    'pnl': f"+${abs(float(profile.get('total_pnl', 0))):,.2f}" if profile.get('total_pnl', 0) >= 0 else f"-${abs(float(profile.get('total_pnl', 0))):,.2f}",
+                    'pnlPercentage': f"+{profile.get('win_rate', 0):.2f}%" if profile.get('win_rate', 0) >= 0 else f"{profile.get('win_rate', 0):.2f}%",
+                    'timestamp': tx['block_time']
+                }
+                kol_trades.append(trade)
+
+        if sort_by == 'pnl':
+            kol_trades.sort(key=lambda x: float(x['pnl'].replace('$', '').replace(',', '').replace('+', '')), reverse=True)
+        elif sort_by == 'volume':
+            kol_trades.sort(key=lambda x: float(x['bought'].replace('$', '').replace(',', '')) + float(x['sold'].replace('$', '').replace(',', '')), reverse=True)
+
+        kol_trades = kol_trades[:limit]
 
         result = {
             "success": True,
-            "data": kol_profiles,
-            "timeRange": time_range
+            "data": kol_trades,
+            "timeRange": time_range,
+            "type": tx_type,
+            "sortBy": sort_by
         }
 
         if REDIS_AVAILABLE:
-            cache.setex(cache_key, 600, json.dumps(result))
+            cache.setex(cache_key, 180, json.dumps(result))
 
         return jsonify(result)
 
     except requests.exceptions.RequestException as e:
+        app.logger.error(f"KOL feed request error: {str(e)}")
         return jsonify({
             "success": False,
             "error": f"Failed to fetch KOL feed: {str(e)}",
             "data": []
         }), 500
     except Exception as e:
+        app.logger.error(f"KOL feed error: {str(e)}")
         return jsonify({
             "success": False,
             "error": f"Internal server error: {str(e)}",
