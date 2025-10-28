@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Copy, ExternalLink, TrendingUp, TrendingDown, Clock, DollarSign, RefreshCw } from 'lucide-react';
+import { Copy, ExternalLink, TrendingUp, TrendingDown, Clock, DollarSign } from 'lucide-react';
 import { heliusService, type RealTimeKOLTrade } from '../services/heliusApi';
 import { birdeyeService } from '../services/birdeyeApi';
 
@@ -30,8 +30,6 @@ const KOLFeed: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
   const [sortBy, setSortBy] = useState<'time' | 'pnl' | 'volume'>('time');
   const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
-  const [lastUpdate, setLastUpdate] = useState<string>('');
-  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchRealKOLTrades = async () => {
     setIsLoadingReal(true);
@@ -48,7 +46,6 @@ const KOLFeed: React.FC = () => {
 
       if (data.success && data.data) {
         setRealTrades(data.data);
-        setLastUpdate(new Date().toLocaleTimeString());
       } else {
         console.error('Failed to fetch KOL feed:', data.error);
         setRealTrades([]);
@@ -58,13 +55,7 @@ const KOLFeed: React.FC = () => {
       setRealTrades([]);
     } finally {
       setIsLoadingReal(false);
-      setIsRefreshing(false);
     }
-  };
-
-  const handleManualRefresh = () => {
-    setIsRefreshing(true);
-    fetchRealKOLTrades();
   };
 
   useEffect(() => {
@@ -96,28 +87,7 @@ const KOLFeed: React.FC = () => {
         <div className="flex items-center justify-between mb-3">
           <div>
             <h1 className="text-2xl font-bold text-white tracking-tight">KOL Feed</h1>
-            <p className="text-sm text-white/60 mt-1">Transaction stream from 500+ influential traders - Updates hourly</p>
-            {lastUpdate && (
-              <p className="text-xs text-white/40 mt-1">Last updated: {lastUpdate}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={handleManualRefresh}
-              disabled={isRefreshing}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                isRefreshing
-                  ? 'bg-white/10 text-white/50 cursor-not-allowed'
-                  : 'bg-white/5 text-white hover:bg-white hover:text-noir-black border border-white/10'
-              }`}
-            >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
-              {isRefreshing ? 'Refreshing...' : 'Refresh Now'}
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="h-2 w-2 rounded-full bg-blue-500"></div>
-              <span className="text-xs text-white/50 uppercase tracking-wider">Cached 1hr</span>
-            </div>
+            <p className="text-sm text-white/60 mt-1">Transaction stream from 500+ influential traders</p>
           </div>
         </div>
 
