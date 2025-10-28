@@ -45,7 +45,7 @@ def get_transactions():
         }
 
         url = f"{SUPABASE_URL}/rest/v1/webhook_transactions"
-        params = {'order': 'timestamp.desc', 'limit': '50'}
+        params = {'order': 'block_time.desc', 'limit': '50'}
 
         response = requests.get(url, headers=headers, params=params, timeout=10)
         response.raise_for_status()
@@ -53,7 +53,7 @@ def get_transactions():
         transactions = response.json()
 
         if tx_type != 'all':
-            transactions = [tx for tx in transactions if tx.get('type') == tx_type]
+            transactions = [tx for tx in transactions if tx.get('transaction_type') == tx_type]
 
         result = {
             "success": True,
@@ -150,7 +150,7 @@ def get_insider_scan():
         url = f"{SUPABASE_URL}/rest/v1/webhook_transactions"
         params = {
             'select': '*',
-            'order': 'timestamp.desc',
+            'order': 'block_time.desc',
             'limit': '100'
         }
 
