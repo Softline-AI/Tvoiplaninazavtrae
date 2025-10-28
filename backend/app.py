@@ -4,13 +4,25 @@ import os
 import requests
 import redis
 import json
+import logging
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from logging.handlers import RotatingFileHandler
 
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
+
+if not app.debug:
+    file_handler = RotatingFileHandler('/tmp/flask_app.log', maxBytes=10240000, backupCount=10)
+    file_handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    file_handler.setLevel(logging.INFO)
+    app.logger.addHandler(file_handler)
+    app.logger.setLevel(logging.INFO)
+    app.logger.info('Flask application startup')
 
 HELIUS_API_KEY_1 = os.getenv('VITE_HELIUS_API_KEY_1')
 HELIUS_API_KEY_2 = os.getenv('VITE_HELIUS_API_KEY_2')
@@ -35,9 +47,14 @@ try:
     cache = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
     cache.ping()
     REDIS_AVAILABLE = True
-except:
+    print("✓ Redis connected successfully")
+    app.logger.info('Redis cache connected')
+except Exception as e:
     REDIS_AVAILABLE = False
-    print("Redis not available, caching disabled")
+    print(f"✗ Redis not available: {str(e)}")
+    print("  Caching disabled - application will work without cache")
+    if not app.debug:
+        app.logger.warning(f'Redis connection failed: {str(e)}')
 
 @app.route('/api/transactions', methods=['GET'])
 def get_transactions():
