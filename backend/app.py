@@ -1,6 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import os
+import requests
+import redis
+import json
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -8,174 +12,307 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+HELIUS_API_KEY = os.getenv('VITE_HELIUS_API_KEY_1')
+BIRDEYE_API_KEY = os.getenv('VITE_BIRDEYE_API_KEY')
+SUPABASE_URL = os.getenv('VITE_SUPABASE_URL')
+SUPABASE_KEY = os.getenv('VITE_SUPABASE_ANON_KEY')
+
+try:
+    cache = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
+    cache.ping()
+    REDIS_AVAILABLE = True
+except:
+    REDIS_AVAILABLE = False
+    print("Redis not available, caching disabled")
+
 @app.route('/api/transactions', methods=['GET'])
 def get_transactions():
-    time_range = request.args.get('timeRange', '24h')
-    tx_type = request.args.get('type', 'all')
+    try:
+        time_range = request.args.get('timeRange', '24h')
+        tx_type = request.args.get('type', 'all')
 
-    transactions = [
-        {
-            "id": "1",
-            "signature": "5ThrLJDFpJqaFL36AvAX8ECZmz6n4vZvqMYvpHHkpump",
-            "type": "buy",
-            "wallet": "BCagckXeMChUKrHEd6fKFA1uiWDtcmCXMsqaheLiUPJd",
-            "walletName": "Smart Whale #1",
-            "token": "Solana",
-            "tokenSymbol": "SOL",
-            "amount": "1,250 SOL",
-            "value": "$177,875",
-            "price": "$142.30",
-            "timestamp": "2 min ago",
-            "status": "success"
-        },
-        {
-            "id": "2",
-            "signature": "2fg5QD1eD7rzNNCsvnhmXFm5hqNgwTTG8p7kQ6f3rx6f",
-            "type": "sell",
-            "wallet": "FxN3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR",
-            "walletName": "KOL Trader",
-            "token": "Bonk",
-            "tokenSymbol": "BONK",
-            "amount": "50M BONK",
-            "value": "$1,700",
-            "price": "$0.000034",
-            "timestamp": "5 min ago",
-            "status": "success"
-        },
-        {
-            "id": "3",
-            "signature": "7NAd2EpYGGeFofpyvgehSXhH5vg6Ry6VRMW2Y6jiqCu1",
-            "type": "swap",
-            "wallet": "DfMxre4cKmvogbLrPigxmibVTTQDuzjdXojWzjCXXhzj",
-            "walletName": "Whale Trader",
-            "token": "Jupiter → Raydium",
-            "tokenSymbol": "JUP→RAY",
-            "amount": "5,000 JUP",
-            "value": "$4,450",
-            "price": "$0.89",
-            "timestamp": "8 min ago",
-            "status": "success"
-        },
-        {
-            "id": "4",
-            "signature": "8KBc3VZ5CnwpihT7yoeQ156JSdmavm9K5fdLxjkPnBmS",
-            "type": "buy",
-            "wallet": "GhP4YA5DqQs6vnN3rpeT267KTenbwq0L6geMzlRsXyNu",
-            "walletName": "DeFi Whale",
-            "token": "Orca",
-            "tokenSymbol": "ORCA",
-            "amount": "10,000 ORCA",
-            "value": "$35,600",
-            "price": "$3.56",
-            "timestamp": "12 min ago",
-            "status": "success"
+        cache_key = f"transactions_{time_range}_{tx_type}"
+
+        if REDIS_AVAILABLE:
+            cached_data = cache.get(cache_key)
+            if cached_data:
+                return jsonify(json.loads(cached_data))
+
+        headers = {
+            'Authorization': f'Bearer {SUPABASE_KEY}',
+            'apikey': SUPABASE_KEY,
+            'Content-Type': 'application/json'
         }
-    ]
 
-    if tx_type != 'all':
-        transactions = [tx for tx in transactions if tx['type'] == tx_type]
+        url = f"{SUPABASE_URL}/rest/v1/webhook_transactions"
+        params = {'order': 'timestamp.desc', 'limit': '50'}
 
-    return jsonify({
-        "success": True,
-        "data": transactions,
-        "timeRange": time_range,
-        "type": tx_type
-    })
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+
+        transactions = response.json()
+
+        if tx_type != 'all':
+            transactions = [tx for tx in transactions if tx.get('type') == tx_type]
+
+        result = {
+            "success": True,
+            "data": transactions,
+            "timeRange": time_range,
+            "type": tx_type
+        }
+
+        if REDIS_AVAILABLE:
+            cache.setex(cache_key, 300, json.dumps(result))
+
+        return jsonify(result)
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "success": False,
+            "error": f"Failed to fetch transactions: {str(e)}",
+            "data": []
+        }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}",
+            "data": []
+        }), 500
 
 @app.route('/api/kol-feed', methods=['GET'])
 def get_kol_feed():
-    time_range = request.args.get('timeRange', '24h')
+    try:
+        time_range = request.args.get('timeRange', '24h')
+        cache_key = f"kol_feed_{time_range}"
 
-    kol_activities = [
-        {
-            "id": "1",
-            "wallet": "BCagckXeMChUKrHEd6fKFA1uiWDtcmCXMsqaheLiUPJd",
-            "walletName": "CryptoWhale",
-            "action": "bought",
-            "token": "SOL",
-            "tokenName": "Solana",
-            "amount": "1,250",
-            "value": "$177,875",
-            "price": "$142.30",
-            "timestamp": "2 min ago",
-            "pnl": "+$12,450",
-            "pnlPercent": "+7.5%",
-            "isProfit": True
-        },
-        {
-            "id": "2",
-            "wallet": "FxN3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR",
-            "walletName": "SmartMoney",
-            "action": "sold",
-            "token": "BONK",
-            "tokenName": "Bonk",
-            "amount": "50M",
-            "value": "$1,700",
-            "price": "$0.000034",
-            "timestamp": "5 min ago",
-            "pnl": "-$340",
-            "pnlPercent": "-2.1%",
-            "isProfit": False
+        if REDIS_AVAILABLE:
+            cached_data = cache.get(cache_key)
+            if cached_data:
+                return jsonify(json.loads(cached_data))
+
+        headers = {
+            'Authorization': f'Bearer {SUPABASE_KEY}',
+            'apikey': SUPABASE_KEY,
+            'Content-Type': 'application/json'
         }
-    ]
 
-    return jsonify({
-        "success": True,
-        "data": kol_activities,
-        "timeRange": time_range
-    })
+        url = f"{SUPABASE_URL}/rest/v1/kol_profiles"
+        params = {'select': '*', 'order': 'total_pnl.desc'}
+
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+
+        kol_profiles = response.json()
+
+        result = {
+            "success": True,
+            "data": kol_profiles,
+            "timeRange": time_range
+        }
+
+        if REDIS_AVAILABLE:
+            cache.setex(cache_key, 600, json.dumps(result))
+
+        return jsonify(result)
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "success": False,
+            "error": f"Failed to fetch KOL feed: {str(e)}",
+            "data": []
+        }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}",
+            "data": []
+        }), 500
 
 @app.route('/api/insider-scan', methods=['GET'])
 def get_insider_scan():
-    time_range = request.args.get('timeRange', '1h')
-    alert_level = request.args.get('alertLevel', 'all')
+    try:
+        time_range = request.args.get('timeRange', '1h')
+        alert_level = request.args.get('alertLevel', 'all')
+        cache_key = f"insider_scan_{time_range}_{alert_level}"
 
-    activities = [
-        {
-            "id": "1",
-            "type": "large_buy",
-            "wallet": "BCagckXeMChUKrHEd6fKFA1uiWDtcmCXMsqaheLiUPJd",
-            "walletName": "Insider Whale #1",
-            "token": "Unknown Token",
-            "tokenSymbol": "ALPHA",
-            "amount": "50M ALPHA",
-            "value": "$2.5M",
-            "timestamp": "2 min ago",
-            "confidence": "high",
-            "description": "Large accumulation before announcement",
-            "contractAddress": "5ThrLJDFpJqaFL36AvAX8ECZmz6n4vZvqMYvpHHkpump"
-        },
-        {
-            "id": "2",
-            "type": "whale_move",
-            "wallet": "2fg5QD1eD7rzNNCsvnhmXFm5hqNgwTTG8p7kQ6f3rx6f",
-            "walletName": "Smart Money #2",
-            "token": "Jupiter",
-            "tokenSymbol": "JUP",
-            "amount": "100K JUP",
-            "value": "$89K",
-            "timestamp": "8 min ago",
-            "confidence": "high",
-            "description": "Unusual activity from dormant wallet",
-            "contractAddress": "JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN"
+        if REDIS_AVAILABLE:
+            cached_data = cache.get(cache_key)
+            if cached_data:
+                return jsonify(json.loads(cached_data))
+
+        headers = {
+            'Authorization': f'Bearer {SUPABASE_KEY}',
+            'apikey': SUPABASE_KEY,
+            'Content-Type': 'application/json'
         }
-    ]
 
-    if alert_level != 'all':
-        activities = [a for a in activities if a['confidence'] == alert_level]
+        url = f"{SUPABASE_URL}/rest/v1/webhook_transactions"
+        params = {
+            'select': '*',
+            'order': 'timestamp.desc',
+            'limit': '100'
+        }
 
-    return jsonify({
-        "success": True,
-        "data": activities,
-        "timeRange": time_range,
-        "alertLevel": alert_level
-    })
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+
+        transactions = response.json()
+
+        activities = []
+        for tx in transactions:
+            if tx.get('amount_usd', 0) > 100000:
+                activity = {
+                    "id": tx.get('signature', ''),
+                    "type": "large_buy" if tx.get('type') == 'SWAP' else "whale_move",
+                    "wallet": tx.get('wallet_address', ''),
+                    "walletName": tx.get('wallet_address', '')[:8] + '...',
+                    "token": tx.get('token_symbol', 'Unknown'),
+                    "tokenSymbol": tx.get('token_symbol', 'UNK'),
+                    "amount": f"{tx.get('amount', 0)} {tx.get('token_symbol', '')}",
+                    "value": f"${tx.get('amount_usd', 0):,.0f}",
+                    "timestamp": tx.get('timestamp', ''),
+                    "confidence": "high" if tx.get('amount_usd', 0) > 500000 else "medium",
+                    "description": "Large transaction detected",
+                    "contractAddress": tx.get('token_address', '')
+                }
+                activities.append(activity)
+
+        if alert_level != 'all':
+            activities = [a for a in activities if a['confidence'] == alert_level]
+
+        result = {
+            "success": True,
+            "data": activities[:50],
+            "timeRange": time_range,
+            "alertLevel": alert_level
+        }
+
+        if REDIS_AVAILABLE:
+            cache.setex(cache_key, 180, json.dumps(result))
+
+        return jsonify(result)
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "success": False,
+            "error": f"Failed to fetch insider scan data: {str(e)}",
+            "data": []
+        }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}",
+            "data": []
+        }), 500
+
+@app.route('/api/wallet/<wallet_address>/transactions', methods=['GET'])
+def get_wallet_transactions(wallet_address):
+    try:
+        cache_key = f"wallet_tx_{wallet_address}"
+
+        if REDIS_AVAILABLE:
+            cached_data = cache.get(cache_key)
+            if cached_data:
+                return jsonify(json.loads(cached_data))
+
+        url = f"https://api.helius.xyz/v0/addresses/{wallet_address}/transactions"
+        params = {
+            'api-key': HELIUS_API_KEY,
+            'limit': 50
+        }
+
+        response = requests.get(url, params=params, timeout=15)
+        response.raise_for_status()
+
+        transactions = response.json()
+
+        result = {
+            "success": True,
+            "wallet": wallet_address,
+            "data": transactions
+        }
+
+        if REDIS_AVAILABLE:
+            cache.setex(cache_key, 300, json.dumps(result))
+
+        return jsonify(result)
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "success": False,
+            "error": f"Failed to fetch wallet transactions: {str(e)}",
+            "data": []
+        }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}",
+            "data": []
+        }), 500
+
+@app.route('/api/token/<token_address>/price', methods=['GET'])
+def get_token_price(token_address):
+    try:
+        cache_key = f"token_price_{token_address}"
+
+        if REDIS_AVAILABLE:
+            cached_data = cache.get(cache_key)
+            if cached_data:
+                return jsonify(json.loads(cached_data))
+
+        headers = {
+            'X-API-KEY': BIRDEYE_API_KEY
+        }
+
+        url = f"https://public-api.birdeye.so/defi/price"
+        params = {
+            'address': token_address,
+            'check_liquidity': 'true'
+        }
+
+        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response.raise_for_status()
+
+        price_data = response.json()
+
+        result = {
+            "success": True,
+            "token": token_address,
+            "data": price_data
+        }
+
+        if REDIS_AVAILABLE:
+            cache.setex(cache_key, 60, json.dumps(result))
+
+        return jsonify(result)
+
+    except requests.exceptions.RequestException as e:
+        return jsonify({
+            "success": False,
+            "error": f"Failed to fetch token price: {str(e)}",
+            "data": {}
+        }), 500
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}",
+            "data": {}
+        }), 500
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({
         "status": "ok",
-        "message": "Flask API is running"
+        "message": "Flask API is running",
+        "redis": "connected" if REDIS_AVAILABLE else "unavailable",
+        "endpoints": {
+            "transactions": "/api/transactions",
+            "kol_feed": "/api/kol-feed",
+            "insider_scan": "/api/insider-scan",
+            "wallet_transactions": "/api/wallet/<address>/transactions",
+            "token_price": "/api/token/<address>/price"
+        }
     })
 
 if __name__ == '__main__':
