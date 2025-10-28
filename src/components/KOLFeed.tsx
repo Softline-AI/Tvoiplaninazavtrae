@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Copy, ExternalLink, TrendingUp, TrendingDown, Clock, DollarSign } from 'lucide-react';
 import { heliusService, type RealTimeKOLTrade } from '../services/heliusApi';
 import { birdeyeService } from '../services/birdeyeApi';
+import { kolFeedService, type KOLFeedItem } from '../services/kolFeedService';
 
 interface KOLTrade {
   id: string;
@@ -34,20 +35,17 @@ const KOLFeed: React.FC = () => {
   const fetchRealKOLTrades = async () => {
     setIsLoadingReal(true);
     try {
-      const params = new URLSearchParams({
+      const result = await kolFeedService.getKOLFeed({
         timeRange: timeRange,
         type: filter,
         sortBy: sortBy,
-        limit: '50'
+        limit: 50
       });
 
-      const response = await fetch(`http://localhost:5000/api/kol-feed?${params}`);
-      const data = await response.json();
-
-      if (data.success && data.data) {
-        setRealTrades(data.data);
+      if (result.success && result.data) {
+        setRealTrades(result.data as any);
       } else {
-        console.error('Failed to fetch KOL feed:', data.error);
+        console.error('Failed to fetch KOL feed:', result.error);
         setRealTrades([]);
       }
     } catch (error) {
