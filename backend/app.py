@@ -12,10 +12,24 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-HELIUS_API_KEY = os.getenv('VITE_HELIUS_API_KEY_1')
+HELIUS_API_KEY_1 = os.getenv('VITE_HELIUS_API_KEY_1')
+HELIUS_API_KEY_2 = os.getenv('VITE_HELIUS_API_KEY_2')
+HELIUS_API_KEY_3 = os.getenv('VITE_HELIUS_API_KEY_3')
 BIRDEYE_API_KEY = os.getenv('VITE_BIRDEYE_API_KEY')
+ABLY_API_KEY = os.getenv('VITE_ABLY_API_KEY')
 SUPABASE_URL = os.getenv('VITE_SUPABASE_URL')
 SUPABASE_KEY = os.getenv('VITE_SUPABASE_ANON_KEY')
+
+HELIUS_API_KEY = HELIUS_API_KEY_1
+
+print(f"API Keys loaded:")
+print(f"  Helius API Key 1: {'✓' if HELIUS_API_KEY_1 else '✗'}")
+print(f"  Helius API Key 2: {'✓' if HELIUS_API_KEY_2 else '✗'}")
+print(f"  Helius API Key 3: {'✓' if HELIUS_API_KEY_3 else '✗'}")
+print(f"  Birdeye API Key: {'✓' if BIRDEYE_API_KEY else '✗'}")
+print(f"  Ably API Key: {'✓' if ABLY_API_KEY else '✗'}")
+print(f"  Supabase URL: {'✓' if SUPABASE_URL else '✗'}")
+print(f"  Supabase Key: {'✓' if SUPABASE_KEY else '✗'}")
 
 try:
     cache = redis.Redis(host='localhost', port=6379, db=0, decode_responses=True)
