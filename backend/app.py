@@ -208,11 +208,13 @@ def get_kol_feed():
             "data": kol_trades,
             "timeRange": time_range,
             "type": tx_type,
-            "sortBy": sort_by
+            "sortBy": sort_by,
+            "cached_at": now_utc.isoformat(),
+            "cache_expires_in": 3600
         }
 
         if REDIS_AVAILABLE:
-            cache.setex(cache_key, 180, json.dumps(result))
+            cache.setex(cache_key, 3600, json.dumps(result))
 
         return jsonify(result)
 
