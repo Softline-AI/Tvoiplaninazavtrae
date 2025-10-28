@@ -29,13 +29,14 @@ const KOLFeed: React.FC = () => {
   const [isLoadingReal, setIsLoadingReal] = useState(true);
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
   const [sortBy, setSortBy] = useState<'time' | 'pnl' | 'volume'>('time');
+  const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
 
   useEffect(() => {
     const fetchRealKOLTrades = async () => {
       setIsLoadingReal(true);
       try {
         const params = new URLSearchParams({
-          timeRange: '24h',
+          timeRange: timeRange,
           type: filter,
           sortBy: sortBy,
           limit: '50'
@@ -61,7 +62,7 @@ const KOLFeed: React.FC = () => {
     fetchRealKOLTrades();
     const interval = setInterval(fetchRealKOLTrades, 30000);
     return () => clearInterval(interval);
-  }, [filter, sortBy]);
+  }, [filter, sortBy, timeRange]);
 
   const displayTrades = realTrades;
 
@@ -160,6 +161,51 @@ const KOLFeed: React.FC = () => {
               }`}
             >
               Volume
+            </button>
+          </div>
+
+          <div className="h-6 w-px bg-white/10"></div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => setTimeRange('1h')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                timeRange === '1h'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              1H
+            </button>
+            <button
+              onClick={() => setTimeRange('24h')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                timeRange === '24h'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              24H
+            </button>
+            <button
+              onClick={() => setTimeRange('7d')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                timeRange === '7d'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              7D
+            </button>
+            <button
+              onClick={() => setTimeRange('30d')}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                timeRange === '30d'
+                  ? 'bg-white text-noir-black'
+                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+              }`}
+            >
+              30D
             </button>
           </div>
 

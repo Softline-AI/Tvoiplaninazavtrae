@@ -402,6 +402,124 @@ def get_token_price(token_address):
             "data": {}
         }), 500
 
+@app.route('/api/trader/<wallet_address>', methods=['GET'])
+def get_trader_profile(wallet_address):
+    try:
+        cache_key = f"trader_profile_{wallet_address}"
+
+        if REDIS_AVAILABLE:
+            cached_data = cache.get(cache_key)
+            if cached_data:
+                return jsonify(json.loads(cached_data))
+
+        headers = {
+            'Authorization': f'Bearer {SUPABASE_KEY}',
+            'apikey': SUPABASE_KEY,
+            'Content-Type': 'application/json'
+        }
+
+        profile_url = f"{SUPABASE_URL}/rest/v1/kol_profiles"
+        profile_params = {
+            'select': '*',
+            'wallet_address': f'eq.{wallet_address}'
+        }
+
+        profile_response = requests.get(profile_url, headers=headers, params=profile_params, timeout=10)
+        profile_response.raise_for_status()
+        profiles = profile_response.json()
+
+        if not profiles:
+            return jsonify({
+                "success": False,
+                "error": "Trader not found"
+            }), 404
+
+        profile = profiles[0]
+
+        now_utc = datetime.now(timezone.utc)
+        time_filter = now_utc - timedelta(days=30)
+
+        tx_url = f"{SUPABASE_URL}/rest/v1/webhook_transactions"
+        tx_params = {
+            'select': '*',
+            'from_address': f'eq.{wallet_address}',
+            'block_time': f'gte.{time_filter.isoformat()}',
+            'order': 'block_time.desc',
+            'limit': '100'
+        }
+
+        tx_response = requests.get(tx_url, headers=headers, params=tx_params, timeout=10)
+        tx_response.raise_for_status()
+        transactions = tx_response.json()
+
+        recent_trades = []
+        for tx in transactions[:20]:
+            time_diff = now_utc - datetime.fromisoformat(tx['block_time'].replace('Z', '+00:00'))
+            if time_diff.total_seconds() < 60:
+                time_ago = f"{int(time_diff.total_seconds())}s"
+            elif time_diff.total_seconds() < 3600:
+                time_ago = f"{int(time_diff.total_seconds() / 60)}m"
+            elif time_diff.total_seconds() < 86400:
+                time_ago = f"{int(time_diff.total_seconds() / 3600)}h"
+            else:
+                time_ago = f"{int(time_diff.total_seconds() / 86400)}d"
+
+            trade = {
+                'id': tx['id'],
+                'type': 'buy' if tx.get('transaction_type') in ['SWAP', 'BUY'] else 'sell',
+                'token': tx.get('token_symbol', 'Unknown'),
+                'tokenContract': tx.get('token_mint', ''),
+                'amount': float(tx.get('amount', 0)),
+                'timestamp': tx['block_time'],
+                'timeAgo': time_ago
+            }
+            recent_trades.append(trade)
+
+        result = {
+            "success": True,
+            "profile": {
+                "wallet_address": profile['wallet_address'],
+                "name": profile['name'],
+                "avatar_url": profile.get('avatar_url', 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg'),
+                "twitter_handle": profile.get('twitter_handle', ''),
+                "bio": profile.get('bio', ''),
+                "total_pnl": float(profile.get('total_pnl', 0)),
+                "total_trades": profile.get('total_trades', 0),
+                "win_rate": float(profile.get('win_rate', 0)),
+                "total_volume": float(profile.get('total_volume', 0)),
+                "followers_count": profile.get('followers_count', 0),
+                "is_verified": profile.get('is_verified', False),
+                "rank": profile.get('rank'),
+                "created_at": profile.get('created_at'),
+                "updated_at": profile.get('updated_at')
+            },
+            "recent_trades": recent_trades,
+            "stats": {
+                "total_transactions": len(transactions),
+                "buy_count": len([t for t in transactions if t.get('transaction_type') in ['SWAP', 'BUY']]),
+                "sell_count": len([t for t in transactions if t.get('transaction_type') not in ['SWAP', 'BUY']]),
+                "total_volume_30d": sum([float(t.get('amount', 0)) for t in transactions])
+            }
+        }
+
+        if REDIS_AVAILABLE:
+            cache.setex(cache_key, 300, json.dumps(result))
+
+        return jsonify(result)
+
+    except requests.exceptions.RequestException as e:
+        app.logger.error(f"Trader profile request error: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Failed to fetch trader profile: {str(e)}"
+        }), 500
+    except Exception as e:
+        app.logger.error(f"Trader profile error: {str(e)}")
+        return jsonify({
+            "success": False,
+            "error": f"Internal server error: {str(e)}"
+        }), 500
+
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({
@@ -411,6 +529,7 @@ def health_check():
         "endpoints": {
             "transactions": "/api/transactions",
             "kol_feed": "/api/kol-feed",
+            "trader_profile": "/api/trader/<wallet_address>",
             "insider_scan": "/api/insider-scan",
             "wallet_transactions": "/api/wallet/<address>/transactions",
             "token_price": "/api/token/<address>/price"
