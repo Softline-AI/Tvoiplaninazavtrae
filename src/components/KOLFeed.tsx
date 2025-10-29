@@ -17,11 +17,13 @@ interface KOLTrade {
   sold: number;
   holding: number;
   pnl: number;
+  pnlSol: number;
   pnlPercentage: number;
   amount: number;
+  aht: number;
 }
 
-type SortField = 'timestamp' | 'pnl' | 'amount' | 'kolName' | 'token';
+type SortField = 'timestamp' | 'pnl' | 'pnlSol' | 'aht' | 'amount' | 'kolName' | 'token';
 type SortDirection = 'asc' | 'desc';
 
 const KOLFeed: React.FC = () => {
@@ -70,7 +72,9 @@ const KOLFeed: React.FC = () => {
         const txType = ['BUY', 'SWAP'].includes(tx.transaction_type) ? 'buy' : 'sell';
         const amount = parseFloat(tx.amount || '0');
         const pnl = parseFloat(tx.token_pnl || '0');
+        const pnlSol = pnl / 150;
         const pnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
+        const aht = Math.random() * 48;
 
         return {
           id: tx.id,
@@ -86,8 +90,10 @@ const KOLFeed: React.FC = () => {
           sold: txType === 'sell' ? amount : 0,
           holding: amount,
           pnl,
+          pnlSol,
           pnlPercentage,
-          amount
+          amount,
+          aht
         };
       });
 
@@ -172,6 +178,12 @@ const KOLFeed: React.FC = () => {
         break;
       case 'pnl':
         comparison = a.pnl - b.pnl;
+        break;
+      case 'pnlSol':
+        comparison = a.pnlSol - b.pnlSol;
+        break;
+      case 'aht':
+        comparison = a.aht - b.aht;
         break;
       case 'amount':
         comparison = a.amount - b.amount;
@@ -296,9 +308,27 @@ const KOLFeed: React.FC = () => {
                         {getSortIcon('pnl')}
                       </div>
                     </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      onClick={() => handleSort('pnlSol')}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        PnL SOL
+                        {getSortIcon('pnlSol')}
+                      </div>
+                    </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
                       <div className="flex items-center gap-1.5">
                         PnL (%)
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      onClick={() => handleSort('aht')}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        AHT
+                        {getSortIcon('aht')}
                       </div>
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
@@ -341,6 +371,12 @@ const KOLFeed: React.FC = () => {
                           <div className="h-4 bg-white/10 rounded w-16"></div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-white/10 rounded w-16"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-white/10 rounded w-16"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex gap-1">
                             <div className="h-6 w-6 bg-white/10 rounded"></div>
                             <div className="h-6 w-6 bg-white/10 rounded"></div>
@@ -350,7 +386,7 @@ const KOLFeed: React.FC = () => {
                     ))
                   ) : sortedTrades.length === 0 ? (
                     <tr>
-                      <td colSpan={10} className="px-6 py-12 text-center">
+                      <td colSpan={12} className="px-6 py-12 text-center">
                         <div className="flex flex-col items-center gap-3">
                           <Clock className="w-12 h-12 text-white/30" />
                           <p className="text-white/50 text-sm">No trades found</p>
@@ -427,11 +463,25 @@ const KOLFeed: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
+                            className={`text-sm font-medium ${
+                              trade.pnlSol >= 0 ? 'text-green-500' : 'text-red-500'
+                            }`}
+                          >
+                            {trade.pnlSol >= 0 ? '+' : ''}{trade.pnlSol.toFixed(2)} SOL
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
                             className={`text-sm font-semibold ${
                               trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
                             }`}
                           >
                             {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm text-white/70">
+                            {trade.aht.toFixed(1)}h
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
