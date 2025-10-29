@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   Copy, ExternalLink, TrendingUp, TrendingDown, Activity, DollarSign,
   Target, Wallet, BarChart3, Clock, ArrowUpRight, ArrowDownRight,
-  Shield, Award, Zap, Crown, Trophy, Flame
+  Calendar, Zap, Users
 } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 
@@ -26,6 +26,12 @@ interface KOLProfile {
   total_bought: number;
   total_sold: number;
   portfolio_value: number;
+  roi: number;
+  sharpe_ratio: number;
+  max_drawdown: number;
+  profit_factor: number;
+  avg_win: number;
+  avg_loss: number;
 }
 
 interface Transaction {
@@ -52,15 +58,7 @@ interface TokenStats {
   bestTrade: number;
   worstTrade: number;
   lastTradeTime: string;
-}
-
-interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  unlocked: boolean;
-  color: string;
+  roi: number;
 }
 
 type SortField = 'block_time' | 'token_pnl' | 'amount' | 'token_symbol';
@@ -73,9 +71,8 @@ const KOLProfile: React.FC = () => {
   const [profile, setProfile] = useState<KOLProfile | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [tokenStats, setTokenStats] = useState<TokenStats[]>([]);
-  const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'tokens'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'tokens' | 'analytics'>('overview');
   const [sortField, setSortField] = useState<SortField>('block_time');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -101,7 +98,7 @@ const KOLProfile: React.FC = () => {
         .select('*')
         .eq('from_address', walletAddress)
         .order('block_time', { ascending: false })
-        .limit(200);
+        .limit(500);
 
       if (txError) {
         console.error('Error loading transactions:', txError);
@@ -112,6 +109,7 @@ const KOLProfile: React.FC = () => {
       const totalPnl = transactions.reduce((sum, tx) => sum + parseFloat(tx.token_pnl || '0'), 0);
       const totalVolume = transactions.reduce((sum, tx) => sum + parseFloat(tx.amount || '0'), 0);
       const profitableTrades = transactions.filter(tx => parseFloat(tx.token_pnl || '0') > 0).length;
+      const losingTrades = transactions.filter(tx => parseFloat(tx.token_pnl || '0') < 0).length;
       const winRate = transactions.length > 0 ? (profitableTrades / transactions.length) * 100 : 0;
 
       const pnlValues = transactions.map(tx => parseFloat(tx.token_pnl || '0'));
@@ -132,6 +130,38 @@ const KOLProfile: React.FC = () => {
 
       const totalPnlSol = totalPnl / 150;
 
+      const roi = totalBought > 0 ? (totalPnl / totalBought) * 100 : 0;
+
+      const wins = pnlValues.filter(v => v > 0);
+      const losses = pnlValues.filter(v => v < 0);
+      const avgWin = wins.length > 0 ? wins.reduce((sum, v) => sum + v, 0) / wins.length : 0;
+      const avgLoss = losses.length > 0 ? Math.abs(losses.reduce((sum, v) => sum + v, 0) / losses.length) : 0;
+
+      const grossProfit = wins.reduce((sum, v) => sum + v, 0);
+      const grossLoss = Math.abs(losses.reduce((sum, v) => sum + v, 0));
+      const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : 0;
+
+      const returns = pnlValues.map(v => totalBought > 0 ? (v / totalBought) : 0);
+      const avgReturn = returns.reduce((sum, r) => sum + r, 0) / returns.length;
+      const variance = returns.reduce((sum, r) => sum + Math.pow(r - avgReturn, 2), 0) / returns.length;
+      const stdDev = Math.sqrt(variance);
+      const sharpeRatio = stdDev > 0 ? (avgReturn / stdDev) * Math.sqrt(252) : 0;
+
+      let cumulativePnl = 0;
+      let peak = 0;
+      let maxDrawdown = 0;
+
+      pnlValues.forEach(pnl => {
+        cumulativePnl += pnl;
+        if (cumulativePnl > peak) {
+          peak = cumulativePnl;
+        }
+        const drawdown = peak - cumulativePnl;
+        if (drawdown > maxDrawdown) {
+          maxDrawdown = drawdown;
+        }
+      });
+
       const profile: KOLProfile = {
         wallet_address: walletAddress,
         name: profileData?.name || walletAddress.substring(0, 8),
@@ -150,64 +180,17 @@ const KOLProfile: React.FC = () => {
         last_active: transactions.length > 0 ? transactions[0].block_time : new Date().toISOString(),
         total_bought: totalBought,
         total_sold: totalSold,
-        portfolio_value: totalBought - totalSold + totalPnl
+        portfolio_value: totalBought - totalSold + totalPnl,
+        roi,
+        sharpe_ratio: sharpeRatio,
+        max_drawdown: maxDrawdown,
+        profit_factor: profitFactor,
+        avg_win: avgWin,
+        avg_loss: avgLoss
       };
 
       setProfile(profile);
       setTransactions(transactions);
-
-      const calculatedAchievements: Achievement[] = [
-        {
-          id: 'profitable',
-          title: 'Profit Master',
-          description: 'Total PnL over $10,000',
-          icon: <Trophy className="w-5 h-5" />,
-          unlocked: totalPnl > 10000,
-          color: totalPnl > 10000 ? 'text-yellow-500' : 'text-white/20'
-        },
-        {
-          id: 'high_win_rate',
-          title: 'Sharp Shooter',
-          description: 'Win rate above 70%',
-          icon: <Target className="w-5 h-5" />,
-          unlocked: winRate > 70,
-          color: winRate > 70 ? 'text-green-500' : 'text-white/20'
-        },
-        {
-          id: 'active_trader',
-          title: 'Active Trader',
-          description: 'Over 100 trades',
-          icon: <Activity className="w-5 h-5" />,
-          unlocked: transactions.length > 100,
-          color: transactions.length > 100 ? 'text-blue-500' : 'text-white/20'
-        },
-        {
-          id: 'volume_king',
-          title: 'Volume King',
-          description: 'Total volume over $500K',
-          icon: <Crown className="w-5 h-5" />,
-          unlocked: totalVolume > 500000,
-          color: totalVolume > 500000 ? 'text-purple-500' : 'text-white/20'
-        },
-        {
-          id: 'quick_trader',
-          title: 'Speed Demon',
-          description: 'Average hold time under 12h',
-          icon: <Zap className="w-5 h-5" />,
-          unlocked: avgHoldTime < 12,
-          color: avgHoldTime < 12 ? 'text-orange-500' : 'text-white/20'
-        },
-        {
-          id: 'consistent',
-          title: 'Consistent',
-          description: 'Profitable in 80%+ trades',
-          icon: <Shield className="w-5 h-5" />,
-          unlocked: winRate > 80,
-          color: winRate > 80 ? 'text-cyan-500' : 'text-white/20'
-        },
-      ];
-
-      setAchievements(calculatedAchievements);
 
       const tokenMap = new Map<string, {
         trades: number;
@@ -218,6 +201,7 @@ const KOLProfile: React.FC = () => {
         bestTrade: number;
         worstTrade: number;
         lastTradeTime: string;
+        invested: number;
       }>();
 
       transactions.forEach((tx: any) => {
@@ -231,14 +215,19 @@ const KOLProfile: React.FC = () => {
             mint: tx.token_mint || '',
             bestTrade: -Infinity,
             worstTrade: Infinity,
-            lastTradeTime: tx.block_time
+            lastTradeTime: tx.block_time,
+            invested: 0
           });
         }
         const stats = tokenMap.get(symbol)!;
         stats.trades++;
         const pnl = parseFloat(tx.token_pnl || '0');
+        const amount = parseFloat(tx.amount || '0');
         stats.totalPnl += pnl;
-        stats.totalVolume += parseFloat(tx.amount || '0');
+        stats.totalVolume += amount;
+        if (tx.transaction_type === 'BUY') {
+          stats.invested += amount;
+        }
         if (pnl > 0) stats.profitableTrades++;
         if (pnl > stats.bestTrade) stats.bestTrade = pnl;
         if (pnl < stats.worstTrade) stats.worstTrade = pnl;
@@ -257,7 +246,8 @@ const KOLProfile: React.FC = () => {
         winRate: (stats.profitableTrades / stats.trades) * 100,
         bestTrade: stats.bestTrade === -Infinity ? 0 : stats.bestTrade,
         worstTrade: stats.worstTrade === Infinity ? 0 : stats.worstTrade,
-        lastTradeTime: stats.lastTradeTime
+        lastTradeTime: stats.lastTradeTime,
+        roi: stats.invested > 0 ? (stats.totalPnl / stats.invested) * 100 : 0
       }));
 
       tokenStatsArray.sort((a, b) => b.totalPnl - a.totalPnl);
@@ -345,25 +335,6 @@ const KOLProfile: React.FC = () => {
     navigator.clipboard.writeText(text);
   };
 
-  const getTraderRank = () => {
-    if (!profile) return 'Beginner';
-    if (profile.total_pnl > 50000 && profile.win_rate > 70) return 'Elite';
-    if (profile.total_pnl > 20000 && profile.win_rate > 60) return 'Expert';
-    if (profile.total_pnl > 10000) return 'Advanced';
-    if (profile.total_trades > 50) return 'Intermediate';
-    return 'Beginner';
-  };
-
-  const getRankColor = (rank: string) => {
-    switch (rank) {
-      case 'Elite': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
-      case 'Expert': return 'text-purple-500 bg-purple-500/10 border-purple-500/20';
-      case 'Advanced': return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
-      case 'Intermediate': return 'text-green-500 bg-green-500/10 border-green-500/20';
-      default: return 'text-white/50 bg-white/5 border-white/10';
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-noir-black flex items-center justify-center">
@@ -391,9 +362,6 @@ const KOLProfile: React.FC = () => {
     );
   }
 
-  const rank = getTraderRank();
-  const unlockedAchievements = achievements.filter(a => a.unlocked).length;
-
   return (
     <div className="min-h-screen bg-noir-black">
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -412,9 +380,6 @@ const KOLProfile: React.FC = () => {
                 alt={profile.name}
                 className="w-24 h-24 rounded-xl border border-white/20 object-cover"
               />
-              <div className={`absolute -bottom-2 -right-2 px-2 py-1 rounded-lg text-xs font-bold border ${getRankColor(rank)}`}>
-                {rank}
-              </div>
             </div>
 
             <div className="flex-1">
@@ -465,11 +430,6 @@ const KOLProfile: React.FC = () => {
                   <Clock className="w-3.5 h-3.5 text-white/50" />
                   <span className="text-xs text-white/70">Last: {formatTimeAgo(profile.last_active)}</span>
                 </div>
-
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10">
-                  <Award className="w-3.5 h-3.5 text-white/50" />
-                  <span className="text-xs text-white/70">{unlockedAchievements}/{achievements.length} Achievements</span>
-                </div>
               </div>
             </div>
 
@@ -502,7 +462,7 @@ const KOLProfile: React.FC = () => {
               <div className="p-2 bg-blue-500/10 rounded-lg">
                 <Activity className="w-4 h-4 text-blue-500" />
               </div>
-              <span className="text-xs text-white/50 uppercase tracking-wider">Trades</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">Total Trades</span>
             </div>
             <p className="text-2xl font-bold text-white mb-1">{profile.total_trades}</p>
             <p className="text-xs text-white/40">{formatCurrency(profile.total_volume)} volume</p>
@@ -513,10 +473,10 @@ const KOLProfile: React.FC = () => {
               <div className="p-2 bg-purple-500/10 rounded-lg">
                 <Clock className="w-4 h-4 text-purple-500" />
               </div>
-              <span className="text-xs text-white/50 uppercase tracking-wider">Avg Hold</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">Avg Hold Time</span>
             </div>
             <p className="text-2xl font-bold text-white mb-1">{profile.avg_hold_time_hours.toFixed(1)}h</p>
-            <p className="text-xs text-white/40">Hold time</p>
+            <p className="text-xs text-white/40">Average period</p>
           </div>
 
           <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-5">
@@ -524,36 +484,12 @@ const KOLProfile: React.FC = () => {
               <div className="p-2 bg-orange-500/10 rounded-lg">
                 <TrendingUp className="w-4 h-4 text-orange-500" />
               </div>
-              <span className="text-xs text-white/50 uppercase tracking-wider">Best Trade</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">ROI</span>
             </div>
-            <p className="text-2xl font-bold text-green-500 mb-1">+{formatCurrency(profile.best_trade_pnl)}</p>
-            <p className="text-xs text-red-500">Worst: {formatCurrency(profile.worst_trade_pnl)}</p>
-          </div>
-        </div>
-
-        <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-6 mb-6">
-          <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
-            <Award className="w-4 h-4" />
-            Achievements & Badges
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
-            {achievements.map((achievement) => (
-              <div
-                key={achievement.id}
-                className={`p-4 rounded-xl border transition-all ${
-                  achievement.unlocked
-                    ? 'bg-white/5 border-white/20 hover:bg-white/10'
-                    : 'bg-white/[0.02] border-white/5 opacity-40'
-                }`}
-                title={achievement.description}
-              >
-                <div className={`mb-2 ${achievement.color}`}>
-                  {achievement.icon}
-                </div>
-                <div className="text-xs font-semibold text-white mb-0.5">{achievement.title}</div>
-                <div className="text-[10px] text-white/40">{achievement.description}</div>
-              </div>
-            ))}
+            <p className={`text-2xl font-bold mb-1 ${profile.roi >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              {profile.roi >= 0 ? '+' : ''}{profile.roi.toFixed(1)}%
+            </p>
+            <p className="text-xs text-white/40">Return on investment</p>
           </div>
         </div>
 
@@ -583,9 +519,41 @@ const KOLProfile: React.FC = () => {
               <div className="p-2 bg-blue-500/10 rounded-lg">
                 <DollarSign className="w-4 h-4 text-blue-500" />
               </div>
-              <span className="text-xs text-white/50 uppercase tracking-wider">Portfolio</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">Portfolio Value</span>
             </div>
             <p className="text-xl font-bold text-white">{formatCurrency(profile.portfolio_value)}</p>
+          </div>
+        </div>
+
+        <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-6 mb-6">
+          <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
+            <BarChart3 className="w-4 h-4" />
+            Advanced Analytics
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="p-4 bg-white/5 rounded-lg border border-white/5">
+              <div className="text-xs text-white/50 uppercase tracking-wider mb-2">Profit Factor</div>
+              <div className="text-xl font-bold text-white">{profile.profit_factor.toFixed(2)}</div>
+              <div className="text-xs text-white/40 mt-1">Gross profit / loss</div>
+            </div>
+
+            <div className="p-4 bg-white/5 rounded-lg border border-white/5">
+              <div className="text-xs text-white/50 uppercase tracking-wider mb-2">Sharpe Ratio</div>
+              <div className="text-xl font-bold text-white">{profile.sharpe_ratio.toFixed(2)}</div>
+              <div className="text-xs text-white/40 mt-1">Risk-adjusted return</div>
+            </div>
+
+            <div className="p-4 bg-white/5 rounded-lg border border-white/5">
+              <div className="text-xs text-white/50 uppercase tracking-wider mb-2">Max Drawdown</div>
+              <div className="text-xl font-bold text-red-500">{formatCurrency(profile.max_drawdown)}</div>
+              <div className="text-xs text-white/40 mt-1">Peak to trough</div>
+            </div>
+
+            <div className="p-4 bg-white/5 rounded-lg border border-white/5">
+              <div className="text-xs text-white/50 uppercase tracking-wider mb-2">Avg Win/Loss</div>
+              <div className="text-xl font-bold text-white">{(profile.avg_win / Math.abs(profile.avg_loss)).toFixed(2)}</div>
+              <div className="text-xs text-white/40 mt-1">Win/loss ratio</div>
+            </div>
           </div>
         </div>
 
@@ -643,7 +611,7 @@ const KOLProfile: React.FC = () => {
                             </div>
                             <div>
                               <div className="font-semibold text-white text-sm">{token.symbol}</div>
-                              <div className="text-xs text-white/40">{token.trades} trades</div>
+                              <div className="text-xs text-white/40">{token.trades} trades • ROI: {token.roi.toFixed(1)}%</div>
                             </div>
                           </div>
                           <div className="text-right">
@@ -843,13 +811,16 @@ const KOLProfile: React.FC = () => {
                         Avg P&L
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                        ROI
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Win Rate
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                        Best
+                        Best Trade
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                        Last
+                        Last Trade
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Link
@@ -881,6 +852,15 @@ const KOLProfile: React.FC = () => {
                             }`}
                           >
                             {token.avgPnl >= 0 ? '+' : ''}{formatCurrency(token.avgPnl)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`text-sm font-medium ${
+                              token.roi >= 0 ? 'text-green-500' : 'text-red-500'
+                            }`}
+                          >
+                            {token.roi >= 0 ? '+' : ''}{token.roi.toFixed(1)}%
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
