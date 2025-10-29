@@ -1,552 +1,551 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Copy, ExternalLink, Loader2 } from 'lucide-react';
-import Navigation from './Navigation';
-import { walletService } from '../services/walletService';
-import { heliusService } from '../services/heliusApi';
+import { Copy, ExternalLink, TrendingUp, TrendingDown, Activity, DollarSign, Target, Percent, ChevronUp, ChevronDown } from 'lucide-react';
+import { supabase } from '../services/supabaseClient';
 
-interface TokenHolding {
+interface KOLProfile {
+  wallet_address: string;
   name: string;
-  symbol: string;
-  address: string;
-  value: string;
-  amount: string;
-  mcap: string;
-  verified: boolean;
-  image: string;
+  avatar_url: string;
+  twitter_handle: string;
+  twitter_followers: number;
+  total_pnl: number;
+  total_trades: number;
+  total_volume: number;
+  win_rate: number;
+  profitable_trades: number;
 }
 
-interface Trade {
+interface Transaction {
   id: string;
-  type: 'buy' | 'sell';
-  timeAgo: string;
-  token: string;
-  tokenAddress: string;
-  bought: string;
-  sold: string;
-  pnl: string;
-  pnlPercentage: string;
-  holdings: string;
+  transaction_type: string;
+  block_time: string;
+  token_symbol: string;
+  token_mint: string;
+  amount: number;
+  token_pnl: number;
+  token_pnl_percentage: number;
+  current_token_price: number;
+  signature: string;
 }
 
-interface KOLData {
-  name: string;
-  twitter: string;
-  followers: string;
-  walletAddress: string;
-  avatar: string;
+interface TokenStats {
+  symbol: string;
+  mint: string;
+  trades: number;
+  totalPnl: number;
+  totalVolume: number;
+  avgPnl: number;
+  winRate: number;
 }
+
+type SortField = 'block_time' | 'token_pnl' | 'amount' | 'token_symbol';
+type SortDirection = 'asc' | 'desc';
 
 const KOLProfile: React.FC = () => {
   const { walletAddress } = useParams<{ walletAddress: string }>();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'trades' | 'dca' | 'pnl'>('portfolio');
-  const [kolData, setKolData] = useState<KOLData | null>(null);
-  const [copied, setCopied] = useState(false);
+
+  const [profile, setProfile] = useState<KOLProfile | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [tokenStats, setTokenStats] = useState<TokenStats[]>([]);
   const [loading, setLoading] = useState(true);
-  const [walletBalance, setWalletBalance] = useState<number>(0);
-  const [solBalance, setSolBalance] = useState<number>(0);
-  const [tokenHoldings, setTokenHoldings] = useState<TokenHolding[]>([]);
-  const [trades, setTrades] = useState<Trade[]>([]);
+  const [activeTab, setActiveTab] = useState<'transactions' | 'tokens'>('transactions');
+  const [sortField, setSortField] = useState<SortField>('block_time');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
   useEffect(() => {
-    if (!walletAddress) return;
-
-    const loadKOLData = async () => {
-      try {
-        const profile = await walletService.getKOLProfile(walletAddress);
-
-        if (profile) {
-          setKolData({
-            name: profile.name || 'Unknown',
-            twitter: profile.twitter_handle || '',
-            followers: profile.twitter_followers ? `${(profile.twitter_followers / 1000).toFixed(1)}K` : '0',
-            walletAddress: profile.wallet_address,
-            avatar: profile.avatar_url || 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1'
-          });
-        } else {
-          setKolData({
-            name: 'Unknown Trader',
-            twitter: '',
-            followers: '0',
-            walletAddress: walletAddress,
-            avatar: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1'
-          });
-        }
-        setLoading(false);
-
-        walletService.getWalletBalance(walletAddress).then(balance => {
-          setWalletBalance(balance.totalUSD);
-          setSolBalance(balance.sol);
-
-          const holdings: TokenHolding[] = balance.tokens.map(token => ({
-            name: token.name,
-            symbol: token.symbol,
-            address: token.mint,
-            value: token.valueUSD,
-            amount: token.amount,
-            mcap: token.mcap,
-            verified: token.verified,
-            image: token.image
-          }));
-          setTokenHoldings(holdings);
-        }).catch(err => {
-          console.error('Error loading balance:', err);
-          setWalletBalance(86320);
-          setSolBalance(413.41);
-          setTokenHoldings(mockHoldings);
-        });
-
-        heliusService.getEnhancedTransactions(walletAddress, 20).then(transactions => {
-          const tradesData: Trade[] = transactions.slice(0, 10).map((tx) => ({
-            id: tx.signature,
-            type: tx.type,
-            timeAgo: formatTimeAgo(Date.now() - tx.timestamp),
-            token: tx.token.symbol,
-            tokenAddress: tx.token.mint,
-            bought: tx.type === 'buy' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
-            sold: tx.type === 'sell' ? `$${(tx.amount * 0.001).toFixed(2)}` : '$0.00',
-            pnl: Math.random() > 0.5 ? `+$${(Math.random() * 500).toFixed(2)}` : `-$${(Math.random() * 200).toFixed(2)}`,
-            pnlPercentage: Math.random() > 0.5 ? `+${(Math.random() * 100).toFixed(2)}%` : `-${(Math.random() * 50).toFixed(2)}%`,
-            holdings: Math.random() > 0.5 ? 'sold all' : `$${(Math.random() * 1000).toFixed(2)}`
-          }));
-          setTrades(tradesData);
-        }).catch(err => {
-          console.error('Error loading trades:', err);
-          setTrades(mockTrades);
-        });
-      } catch (error) {
-        console.error('Error loading KOL data:', error);
-        loadMockData();
-        setLoading(false);
-      }
-    };
-
-    loadKOLData();
+    if (walletAddress) {
+      loadProfile();
+    }
   }, [walletAddress]);
 
-  const formatTimeAgo = (ms: number): string => {
-    const seconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
+  const loadProfile = async () => {
+    if (!walletAddress) return;
 
-    if (hours > 0) return `${hours}h`;
-    if (minutes > 0) return `${minutes}m`;
-    return `${seconds}s`;
-  };
+    setLoading(true);
+    try {
+      const { data: profileData } = await supabase
+        .from('kol_profiles')
+        .select('*')
+        .eq('wallet_address', walletAddress)
+        .maybeSingle();
 
-  const loadMockData = () => {
-    const mockKOLs: Record<string, KOLData> = {
-      '5B52w1ZW9tuwUduueP5J7HXz5AcGfruGoX6YoAudvyxG': {
-        name: 'Yenni',
-        twitter: 'Yennii56',
-        followers: '81.4K',
-        walletAddress: '5B52w1ZW9tuwUduueP5J7HXz5AcGfruGoX6YoAudvyxG',
-        avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1',
-      },
-      '9L76w2ZW9tuwUderuP5J7HZx5AcGfruGoX6YoAudvyxG': {
-        name: 'Crypto Whale',
-        twitter: 'cryptowhale',
-        followers: '125.3K',
-        walletAddress: '9L76w2ZW9tuwUderuP5J7HZx5AcGfruGoX6YoAudvyxG',
-        avatar: 'https://images.pexels.com/photos/614810/pexels-photo-614810.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1',
-      },
-      '7NAd2EpYGGeFofpyvgehSXhH5vg6Ry6VRMW2Y6jiqCu1': {
-        name: 'Untaxxable',
-        twitter: 'untaxxable',
-        followers: '94.7K',
-        walletAddress: '7NAd2EpYGGeFofpyvgehSXhH5vg6Ry6VRMW2Y6jiqCu1',
-        avatar: 'https://images.pexels.com/photos/1043471/pexels-photo-1043471.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1',
-      },
-      '8xKm3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR': {
-        name: 'Crypto Bull',
-        twitter: 'cryptobull',
-        followers: '156.2K',
-        walletAddress: '8xKm3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR',
-        avatar: 'https://images.pexels.com/photos/1559486/pexels-photo-1559486.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1',
-      },
-      '9yLm4WZ5CptM6vsH3zpfR267KTenbnwm0L6geMxlQnbNS': {
-        name: 'Whale Hunter',
-        twitter: 'whalehunter',
-        followers: '203.8K',
-        walletAddress: '9yLm4WZ5CptM6vsH3zpfR267KTenbnwm0L6geMxlQnbNS',
-        avatar: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1',
-      },
-    };
+      const { data: txData, error: txError } = await supabase
+        .from('webhook_transactions')
+        .select('*')
+        .eq('from_address', walletAddress)
+        .order('block_time', { ascending: false })
+        .limit(100);
 
-    if (walletAddress && mockKOLs[walletAddress]) {
-      setKolData(mockKOLs[walletAddress]);
-      setWalletBalance(86320);
-      setSolBalance(413.41);
-    } else {
-      setKolData({
-        name: 'Cented',
-        twitter: 'cented',
-        followers: '456.4K',
-        walletAddress: walletAddress || '',
-        avatar: 'https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&dpr=1',
+      if (txError) {
+        console.error('Error loading transactions:', txError);
+      }
+
+      const transactions = txData || [];
+
+      const totalPnl = transactions.reduce((sum, tx) => sum + parseFloat(tx.token_pnl || '0'), 0);
+      const totalVolume = transactions.reduce((sum, tx) => sum + parseFloat(tx.amount || '0'), 0);
+      const profitableTrades = transactions.filter(tx => parseFloat(tx.token_pnl || '0') > 0).length;
+      const winRate = transactions.length > 0 ? (profitableTrades / transactions.length) * 100 : 0;
+
+      const profile: KOLProfile = {
+        wallet_address: walletAddress,
+        name: profileData?.name || walletAddress.substring(0, 8),
+        avatar_url: profileData?.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+        twitter_handle: profileData?.twitter_handle || '',
+        twitter_followers: profileData?.twitter_followers || 0,
+        total_pnl: totalPnl,
+        total_trades: transactions.length,
+        total_volume: totalVolume,
+        win_rate: winRate,
+        profitable_trades: profitableTrades
+      };
+
+      setProfile(profile);
+      setTransactions(transactions);
+
+      const tokenMap = new Map<string, {
+        trades: number;
+        totalPnl: number;
+        totalVolume: number;
+        profitableTrades: number;
+        mint: string;
+      }>();
+
+      transactions.forEach((tx: any) => {
+        const symbol = tx.token_symbol || 'Unknown';
+        if (!tokenMap.has(symbol)) {
+          tokenMap.set(symbol, {
+            trades: 0,
+            totalPnl: 0,
+            totalVolume: 0,
+            profitableTrades: 0,
+            mint: tx.token_mint || ''
+          });
+        }
+        const stats = tokenMap.get(symbol)!;
+        stats.trades++;
+        const pnl = parseFloat(tx.token_pnl || '0');
+        stats.totalPnl += pnl;
+        stats.totalVolume += parseFloat(tx.amount || '0');
+        if (pnl > 0) stats.profitableTrades++;
       });
-      setWalletBalance(86320);
-      setSolBalance(413.41);
-    }
 
-    setTokenHoldings(mockHoldings);
-    setTrades(mockTrades);
+      const tokenStatsArray: TokenStats[] = Array.from(tokenMap.entries()).map(([symbol, stats]) => ({
+        symbol,
+        mint: stats.mint,
+        trades: stats.trades,
+        totalPnl: stats.totalPnl,
+        totalVolume: stats.totalVolume,
+        avgPnl: stats.totalPnl / stats.trades,
+        winRate: (stats.profitableTrades / stats.trades) * 100
+      }));
+
+      tokenStatsArray.sort((a, b) => b.totalPnl - a.totalPnl);
+      setTokenStats(tokenStatsArray);
+
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const mockHoldings: TokenHolding[] = [
-    {
-      name: 'Solana',
-      symbol: 'SOL',
-      address: 'So11111111111111111111111111111111111111112',
-      value: '$77.82',
-      amount: '0.5272',
-      mcap: '$85.2B',
-      verified: true,
-      image: 'https://images.pexels.com/photos/844124/pexels-photo-844124.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-    },
-    {
-      name: 'LAUNCHCOIN',
-      symbol: 'LAUNCH',
-      address: 'Ey59PH7Z4BFU4HjyKnyMdWt5GGN76KazTAwQihoUXRnk',
-      value: '$1.44M',
-      amount: '10.0269M',
-      mcap: '$104.52M',
-      verified: true,
-      image: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-    },
-    {
-      name: 'House',
-      symbol: 'HOUSE',
-      address: 'DitHyRMQiSDhn5cnKMJV2CDDt6sVct96YrECiM49pump',
-      value: '$291.91K',
-      amount: '9.7083M',
-      mcap: '$7.29M',
-      verified: false,
-      image: 'https://images.pexels.com/photos/1029624/pexels-photo-1029624.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-    },
-    {
-      name: 'Jupiter',
-      symbol: 'JUP',
-      address: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN',
-      value: '$15.8K',
-      amount: '12,543',
-      mcap: '$1.8B',
-      verified: true,
-      image: 'https://images.pexels.com/photos/39561/solar-flare-sun-eruption-energy-39561.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1',
-    },
-  ];
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortDirection('desc');
+    }
+  };
 
-  const mockTrades: Trade[] = [
-    {
-      id: '1',
-      type: 'sell',
-      timeAgo: '18s',
-      token: 'DBA',
-      tokenAddress: '5ToPP9Mq9H4fkRQ68V9knabtXDTbpjDLbikTgzwUpump',
-      bought: '$439.42',
-      sold: '$622.13',
-      pnl: '+$182.71',
-      pnlPercentage: '+41.58%',
-      holdings: 'sold all',
-    },
-    {
-      id: '2',
-      type: 'buy',
-      timeAgo: '1m',
-      token: 'REALCOIN',
-      tokenAddress: 'Ghrcrh9YgyU6baT3Wt5XNiQ7UXWNNYSZMEuCcauspump',
-      bought: '$479.97',
-      sold: '$2.24K',
-      pnl: '+$2.32K',
-      pnlPercentage: '+483.52%',
-      holdings: '$563.68',
-    },
-  ];
+  const getSortIcon = (field: SortField) => {
+    if (sortField !== field) {
+      return (
+        <svg className="w-3 h-3 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M7 10l5 5 5-5" />
+        </svg>
+      );
+    }
+    return sortDirection === 'asc' ? (
+      <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M7 14l5-5 5 5" />
+      </svg>
+    ) : (
+      <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M7 10l5 5 5-5" />
+      </svg>
+    );
+  };
+
+  const sortedTransactions = [...transactions].sort((a, b) => {
+    let comparison = 0;
+    switch (sortField) {
+      case 'block_time':
+        comparison = new Date(a.block_time).getTime() - new Date(b.block_time).getTime();
+        break;
+      case 'token_pnl':
+        comparison = parseFloat(a.token_pnl?.toString() || '0') - parseFloat(b.token_pnl?.toString() || '0');
+        break;
+      case 'amount':
+        comparison = parseFloat(a.amount?.toString() || '0') - parseFloat(b.amount?.toString() || '0');
+        break;
+      case 'token_symbol':
+        comparison = (a.token_symbol || '').localeCompare(b.token_symbol || '');
+        break;
+    }
+    return sortDirection === 'asc' ? comparison : -comparison;
+  });
+
+  const formatCurrency = (value: number): string => {
+    if (value >= 1000000) return `$${(value / 1000000).toFixed(2)}M`;
+    if (value >= 1000) return `$${(value / 1000).toFixed(1)}K`;
+    return `$${value.toFixed(0)}`;
+  };
+
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const txTime = new Date(timestamp);
+    const diffMs = now.getTime() - txTime.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    return `${diffDays}d ago`;
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
   };
 
-  if (loading || !kolData) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Loader2 className="w-8 h-8 text-white animate-spin" />
-          <div className="text-white">Loading trader data...</div>
-        </div>
+      <div className="min-h-screen bg-noir-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return (
+      <div className="min-h-screen bg-noir-black flex items-center justify-center">
+        <p className="text-white/70">Profile not found</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black">
-      <Navigation />
+    <div className="min-h-screen bg-noir-black">
+      <div className="max-w-7xl mx-auto px-6 py-8">
+        <button
+          onClick={() => navigate('/app/kol-feed')}
+          className="mb-6 text-white/60 hover:text-white transition-colors text-sm"
+        >
+          ← Back to KOL Feed
+        </button>
 
-      <div className="pt-16 px-6">
-        <div className="max-w-7xl mx-auto py-8">
-          <div className="noir-card p-6 mb-6">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <img
-                  src={kolData.avatar}
-                  alt={kolData.name}
-                  className="w-16 h-16 rounded-full object-cover border-2 border-white/10"
-                />
-                <div>
-                  <h1 className="text-2xl font-bold text-white mb-1">{kolData.name}</h1>
-                  <div className="flex items-center gap-3">
-                    {kolData.twitter && (
-                      <a
-                        href={`https://x.com/${kolData.twitter}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-gray-400 hover:text-white transition-colors text-sm"
-                      >
-                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                        </svg>
-                        @{kolData.twitter}
-                      </a>
-                    )}
-                    <span className="text-gray-600">•</span>
-                    <span className="text-gray-400 text-sm">{kolData.followers} followers</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3">
+        <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-8 mb-6">
+          <div className="flex items-start gap-6">
+            <img
+              src={profile.avatar_url}
+              alt={profile.name}
+              className="w-24 h-24 rounded-full border-2 border-white/20 object-cover"
+            />
+            <div className="flex-1">
+              <h1 className="text-3xl font-bold text-white mb-2">{profile.name}</h1>
+              {profile.twitter_handle && (
                 <a
-                  href={`https://solscan.io/account/${kolData.walletAddress}`}
+                  href={`https://twitter.com/${profile.twitter_handle.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
-                  title="View on Solscan"
+                  className="text-blue-400 hover:text-blue-300 text-sm mb-3 inline-block"
                 >
-                  <ExternalLink className="w-4 h-4 text-gray-400" />
+                  @{profile.twitter_handle.replace('@', '')}
+                  {profile.twitter_followers > 0 && ` • ${(profile.twitter_followers / 1000).toFixed(1)}K followers`}
                 </a>
-                <button
-                  onClick={() => copyToClipboard(kolData.walletAddress)}
-                  className="p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
-                  title={copied ? 'Copied!' : 'Copy wallet address'}
-                >
-                  <Copy className="w-4 h-4 text-gray-400" />
-                </button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-4 mt-6 pt-6 border-t border-white/10">
-              <div>
-                <div className="text-gray-400 text-xs uppercase mb-1">Wallet Balance</div>
-                <div className="text-white text-xl font-bold">${(walletBalance / 1000).toFixed(2)}K</div>
-                <div className="text-gray-500 text-sm">{solBalance.toFixed(2)} SOL</div>
-              </div>
-              <div>
-                <div className="text-gray-400 text-xs uppercase mb-1">Holdings</div>
-                <div className="text-white text-xl font-bold">{tokenHoldings.length}</div>
-                <div className="text-gray-500 text-sm">Tokens</div>
-              </div>
-              <div>
-                <div className="text-gray-400 text-xs uppercase mb-1">Trades</div>
-                <div className="text-white text-xl font-bold">{trades.length}</div>
-                <div className="text-gray-500 text-sm">Last 24h</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="border-b border-white/10 mb-6">
-            <div className="flex items-center gap-8">
-              <button
-                onClick={() => setActiveTab('portfolio')}
-                className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
-                  activeTab === 'portfolio'
-                    ? 'text-white'
-                    : 'text-gray-400 hover:text-gray-300'
-                }`}
-              >
-                Portfolio
-                {activeTab === 'portfolio' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
-                )}
-              </button>
-              <button
-                onClick={() => setActiveTab('trades')}
-                className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
-                  activeTab === 'trades'
-                    ? 'text-white'
-                    : 'text-gray-400 hover:text-gray-300'
-                }`}
-              >
-                Trades
-                {activeTab === 'trades' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
-                )}
-              </button>
-              <button
-                onClick={() => setActiveTab('dca')}
-                className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
-                  activeTab === 'dca'
-                    ? 'text-white'
-                    : 'text-gray-400 hover:text-gray-300'
-                }`}
-              >
-                DCA
-                {activeTab === 'dca' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
-                )}
-              </button>
-              <button
-                onClick={() => setActiveTab('pnl')}
-                className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
-                  activeTab === 'pnl'
-                    ? 'text-white'
-                    : 'text-gray-400 hover:text-gray-300'
-                }`}
-              >
-                PNL
-                {activeTab === 'pnl' && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white"></div>
-                )}
-              </button>
-            </div>
-          </div>
-
-          {activeTab === 'portfolio' && (
-            <div className="space-y-3">
-              {tokenHoldings.length === 0 && (
-                <div className="noir-card p-12 text-center">
-                  <p className="text-gray-400">No tokens found in this wallet</p>
-                </div>
               )}
-              {tokenHoldings.map((holding) => (
-                <div
-                  key={holding.address}
-                  className="noir-card p-4 hover:bg-white/5 transition-colors cursor-pointer"
+              <div className="flex items-center gap-2 mt-3">
+                <span className="text-sm text-white/50">{profile.wallet_address}</span>
+                <button
+                  onClick={() => copyToClipboard(profile.wallet_address)}
+                  className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-full overflow-hidden flex-shrink-0 border border-white/10">
-                        <img
-                          src={holding.image}
-                          alt={holding.symbol}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className="font-semibold text-white text-lg">{holding.symbol}</span>
-                          {holding.verified && (
-                            <div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
-                              <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-400">MC {holding.mcap}</div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-bold text-white text-lg">{holding.value}</div>
-                      <div className="text-sm text-gray-400">{holding.amount}</div>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  <Copy className="w-3.5 h-3.5" />
+                </button>
+                <a
+                  href={`https://solscan.io/account/${profile.wallet_address}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
             </div>
-          )}
+          </div>
+        </div>
 
-          {activeTab === 'trades' && (
-            <div className="noir-card overflow-hidden">
-              <table className="w-full">
-                <thead className="border-b border-white/10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-green-500/10 rounded-lg">
+                <DollarSign className="w-5 h-5 text-green-500" />
+              </div>
+              <span className="text-sm text-white/50">Total P&L</span>
+            </div>
+            <p className={`text-2xl font-bold ${profile.total_pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              {profile.total_pnl >= 0 ? '+' : ''}{formatCurrency(profile.total_pnl)}
+            </p>
+          </div>
+
+          <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-blue-500/10 rounded-lg">
+                <Activity className="w-5 h-5 text-blue-500" />
+              </div>
+              <span className="text-sm text-white/50">Total Trades</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{profile.total_trades}</p>
+          </div>
+
+          <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-purple-500/10 rounded-lg">
+                <Target className="w-5 h-5 text-purple-500" />
+              </div>
+              <span className="text-sm text-white/50">Win Rate</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{profile.win_rate.toFixed(1)}%</p>
+            <p className="text-xs text-white/50 mt-1">
+              {profile.profitable_trades} / {profile.total_trades} profitable
+            </p>
+          </div>
+
+          <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-orange-500/10 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-orange-500" />
+              </div>
+              <span className="text-sm text-white/50">Total Volume</span>
+            </div>
+            <p className="text-2xl font-bold text-white">{formatCurrency(profile.total_volume)}</p>
+          </div>
+        </div>
+
+        <div className="bg-noir-dark/40 border border-white/10 rounded-xl overflow-hidden">
+          <div className="border-b border-white/10">
+            <div className="flex gap-4 px-6 py-4">
+              <button
+                onClick={() => setActiveTab('transactions')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === 'transactions'
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                Transactions ({transactions.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('tokens')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                  activeTab === 'tokens'
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                }`}
+              >
+                Tokens ({tokenStats.length})
+              </button>
+            </div>
+          </div>
+
+          <div className="overflow-x-auto">
+            {activeTab === 'transactions' ? (
+              <table className="min-w-full">
+                <thead className="bg-black/40 border-b border-white/10">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Token</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Bought</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Sold</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">P&L</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase">Holdings</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Type
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      onClick={() => handleSort('block_time')}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        Time
+                        {getSortIcon('block_time')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      onClick={() => handleSort('token_symbol')}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        Token
+                        {getSortIcon('token_symbol')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      onClick={() => handleSort('amount')}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        Amount
+                        {getSortIcon('amount')}
+                      </div>
+                    </th>
+                    <th
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      onClick={() => handleSort('token_pnl')}
+                    >
+                      <div className="flex items-center gap-1.5">
+                        P&L
+                        {getSortIcon('token_pnl')}
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      P&L %
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Links
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/10">
-                  {trades.length === 0 && (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
-                        No trades found
-                      </td>
-                    </tr>
-                  )}
-                  {trades.map((trade) => (
-                    <tr key={trade.id} className="hover:bg-white/5">
+                <tbody className="divide-y divide-white/5">
+                  {sortedTransactions.map((tx) => (
+                    <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col gap-1">
-                          <span
-                            className={`text-sm font-bold uppercase ${
-                              trade.type === 'buy' ? 'text-green-500' : 'text-red-500'
-                            }`}
-                          >
-                            {trade.type}
-                          </span>
-                          <span className="text-xs text-gray-500">{trade.timeAgo} ago</span>
-                        </div>
+                        <span
+                          className={`text-sm font-bold uppercase ${
+                            ['BUY', 'SWAP'].includes(tx.transaction_type) ? 'text-green-600' : 'text-red-600'
+                          }`}
+                        >
+                          {tx.transaction_type}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-semibold text-white">{trade.token}</span>
+                        <span className="text-xs text-white/50">{formatTimeAgo(tx.block_time)}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-green-500">{trade.bought}</span>
+                        <span className="text-sm font-medium text-white">{tx.token_symbol || 'Unknown'}</span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-red-500">{trade.sold}</span>
+                        <span className="text-sm font-medium text-white/80">
+                          {formatCurrency(tx.amount)}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex flex-col gap-0.5">
-                          <span
-                            className={`text-sm font-semibold ${
-                              trade.pnl.startsWith('+') ? 'text-green-500' : 'text-red-500'
-                            }`}
-                          >
-                            {trade.pnl}
-                          </span>
-                          <span
-                            className={`text-xs ${
-                              trade.pnl.startsWith('+') ? 'text-green-500/70' : 'text-red-500/70'
-                            }`}
-                          >
-                            {trade.pnlPercentage}
-                          </span>
-                        </div>
+                        <span
+                          className={`text-sm font-semibold ${
+                            tx.token_pnl >= 0 ? 'text-green-500' : 'text-red-500'
+                          }`}
+                        >
+                          {tx.token_pnl >= 0 ? '+' : ''}{formatCurrency(tx.token_pnl)}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-white">{trade.holdings}</span>
+                        <span
+                          className={`text-sm font-semibold ${
+                            tx.token_pnl_percentage >= 0 ? 'text-green-500' : 'text-red-500'
+                          }`}
+                        >
+                          {tx.token_pnl_percentage >= 0 ? '+' : ''}{tx.token_pnl_percentage.toFixed(1)}%
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <a
+                          href={`https://solscan.io/tx/${tx.signature}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white inline-block"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
                       </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
-            </div>
-          )}
-
-          {(activeTab === 'dca' || activeTab === 'pnl') && (
-            <div className="noir-card p-12 text-center">
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center">
-                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-white mb-2">Coming Soon</h3>
-                  <p className="text-sm text-gray-400 mb-4 max-w-md">
-                    {activeTab === 'dca' ? 'DCA tracking is coming soon.' : 'PNL analytics are coming soon.'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
+            ) : (
+              <table className="min-w-full">
+                <thead className="bg-black/40 border-b border-white/10">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Token
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Trades
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Total P&L
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Avg P&L
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Win Rate
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Volume
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      Links
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {tokenStats.map((token, index) => (
+                    <tr key={index} className="hover:bg-white/[0.02] transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm font-semibold text-white">{token.symbol}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-white/80">{token.trades}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`text-sm font-semibold ${
+                            token.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'
+                          }`}
+                        >
+                          {token.totalPnl >= 0 ? '+' : ''}{formatCurrency(token.totalPnl)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`text-sm font-medium ${
+                            token.avgPnl >= 0 ? 'text-green-500' : 'text-red-500'
+                          }`}
+                        >
+                          {token.avgPnl >= 0 ? '+' : ''}{formatCurrency(token.avgPnl)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-white/80">{token.winRate.toFixed(1)}%</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="text-sm text-white/80">{formatCurrency(token.totalVolume)}</span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <a
+                          href={`https://birdeye.so/token/${token.mint}?chain=solana`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white inline-block"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
     </div>
