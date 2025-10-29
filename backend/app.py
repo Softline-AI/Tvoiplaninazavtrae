@@ -177,6 +177,9 @@ def get_kol_feed():
                 else:
                     time_ago = f"{int(time_diff.total_seconds() / 3600)}h"
 
+                token_pnl = float(tx.get('token_pnl', 0))
+                token_pnl_percentage = float(tx.get('token_pnl_percentage', 0))
+
                 trade = {
                     'id': tx['id'],
                     'lastTx': tx_category,
@@ -190,8 +193,8 @@ def get_kol_feed():
                     'bought': f"${float(tx.get('amount', 0)):,.2f}",
                     'sold': '$0.00' if tx_category == 'buy' else f"${float(tx.get('amount', 0)):,.2f}",
                     'holding': f"${float(tx.get('amount', 0)):,.2f}" if tx_category == 'buy' else 'sold all',
-                    'pnl': f"+${abs(float(profile.get('total_pnl', 0))):,.2f}" if profile.get('total_pnl', 0) >= 0 else f"-${abs(float(profile.get('total_pnl', 0))):,.2f}",
-                    'pnlPercentage': f"+{profile.get('win_rate', 0):.2f}%" if profile.get('win_rate', 0) >= 0 else f"{profile.get('win_rate', 0):.2f}%",
+                    'pnl': f"+${abs(token_pnl):,.2f}" if token_pnl >= 0 else f"-${abs(token_pnl):,.2f}",
+                    'pnlPercentage': f"+{token_pnl_percentage:.2f}%" if token_pnl_percentage >= 0 else f"{token_pnl_percentage:.2f}%",
                     'timestamp': tx['block_time']
                 }
                 kol_trades.append(trade)

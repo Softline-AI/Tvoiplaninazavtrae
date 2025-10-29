@@ -141,8 +141,8 @@ export const kolFeedService = {
           }
 
           const amount = parseFloat(tx.amount || '0');
-          const totalPnl = parseFloat(profile.total_pnl || '0');
-          const winRate = parseFloat(profile.win_rate || '0');
+          const tokenPnl = parseFloat(tx.token_pnl || '0');
+          const tokenPnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
 
           return {
             id: tx.id,
@@ -157,8 +157,8 @@ export const kolFeedService = {
             bought: txType === 'buy' ? `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '$0.00',
             sold: txType === 'sell' ? `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '$0.00',
             holding: txType === 'buy' ? `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'sold all',
-            pnl: `${totalPnl >= 0 ? '+' : ''}$${Math.abs(totalPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-            pnlPercentage: `${winRate >= 0 ? '+' : ''}${winRate.toFixed(2)}%`,
+            pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
             timestamp: tx.block_time
           };
         })
