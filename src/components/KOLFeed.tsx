@@ -111,11 +111,21 @@ const KOLFeed: React.FC = () => {
 
   const getSortIcon = (field: SortField) => {
     if (sortField !== field) {
-      return <ChevronUp className="w-3 h-3 opacity-30" />;
+      return (
+        <svg className="w-3 h-3 text-white/30" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M7 10l5 5 5-5" />
+        </svg>
+      );
     }
-    return sortDirection === 'asc' ?
-      <ChevronUp className="w-3 h-3 text-white" /> :
-      <ChevronDown className="w-3 h-3 text-white" />;
+    return sortDirection === 'asc' ? (
+      <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M7 14l5-5 5 5" />
+      </svg>
+    ) : (
+      <svg className="w-3 h-3 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <path d="M7 10l5 5 5-5" />
+      </svg>
+    );
   };
 
   const formatTimeAgo = (timestamp: string) => {
@@ -230,29 +240,26 @@ const KOLFeed: React.FC = () => {
               <table className="min-w-full">
                 <thead className="bg-black/40 border-b border-white/10">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                      Type
-                    </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
                       onClick={() => handleSort('timestamp')}
                     >
                       <div className="flex items-center gap-1.5">
-                        Time
+                        Last Tx
                         {getSortIcon('timestamp')}
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
                       onClick={() => handleSort('kolName')}
                     >
                       <div className="flex items-center gap-1.5">
-                        Trader
+                        KOL
                         {getSortIcon('kolName')}
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
                       onClick={() => handleSort('token')}
                     >
                       <div className="flex items-center gap-1.5">
@@ -260,26 +267,42 @@ const KOLFeed: React.FC = () => {
                         {getSortIcon('token')}
                       </div>
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
-                      onClick={() => handleSort('amount')}
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
                       <div className="flex items-center gap-1.5">
-                        Amount
-                        {getSortIcon('amount')}
+                        Mcap
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <div className="flex items-center gap-1.5">
+                        Bought
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <div className="flex items-center gap-1.5">
+                        Sold
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <div className="flex items-center gap-1.5">
+                        Holding
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
                       onClick={() => handleSort('pnl')}
                     >
                       <div className="flex items-center gap-1.5">
-                        P&L
+                        PnL
                         {getSortIcon('pnl')}
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
-                      Links
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <div className="flex items-center gap-1.5">
+                        PnL (%)
+                      </div>
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+
                     </th>
                   </tr>
                 </thead>
@@ -287,41 +310,47 @@ const KOLFeed: React.FC = () => {
                   {loading ? (
                     Array.from({ length: 6 }).map((_, i) => (
                       <tr key={i} className="animate-pulse">
-                        <td className="px-6 py-5 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="h-4 bg-white/10 rounded w-12"></div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <div className="h-4 bg-white/10 rounded w-16"></div>
-                        </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-white/10"></div>
-                            <div className="space-y-2">
-                              <div className="h-4 bg-white/10 rounded w-20"></div>
-                              <div className="h-3 bg-white/10 rounded w-16"></div>
-                            </div>
+                            <div className="w-8 h-8 rounded-full bg-white/10"></div>
+                            <div className="h-4 bg-white/10 rounded w-20"></div>
                           </div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="h-4 bg-white/10 rounded w-16"></div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <div className="h-4 bg-white/10 rounded w-20"></div>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-white/10 rounded w-16"></div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <div className="h-4 bg-white/10 rounded w-24"></div>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-white/10 rounded w-16"></div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <div className="flex gap-2">
-                            <div className="h-8 w-8 bg-white/10 rounded"></div>
-                            <div className="h-8 w-8 bg-white/10 rounded"></div>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-white/10 rounded w-16"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-white/10 rounded w-16"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-white/10 rounded w-16"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="h-4 bg-white/10 rounded w-16"></div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex gap-1">
+                            <div className="h-6 w-6 bg-white/10 rounded"></div>
+                            <div className="h-6 w-6 bg-white/10 rounded"></div>
                           </div>
                         </td>
                       </tr>
                     ))
                   ) : sortedTrades.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-6 py-12 text-center">
+                      <td colSpan={10} className="px-6 py-12 text-center">
                         <div className="flex flex-col items-center gap-3">
                           <Clock className="w-12 h-12 text-white/30" />
                           <p className="text-white/50 text-sm">No trades found</p>
@@ -331,95 +360,97 @@ const KOLFeed: React.FC = () => {
                   ) : (
                     sortedTrades.map((trade) => (
                       <tr key={trade.id} className="transition-all duration-200 hover:bg-white/[0.02] group">
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <span
-                            className={`text-sm font-bold uppercase tracking-wide ${
-                              trade.lastTx === 'buy' ? 'text-green-600' : 'text-red-600'
-                            }`}
-                          >
-                            {trade.lastTx}
-                          </span>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-col gap-1">
+                            <span
+                              className={`text-sm font-bold uppercase tracking-wide ${
+                                trade.lastTx === 'buy' ? 'text-green-600' : 'text-red-600'
+                              }`}
+                            >
+                              {trade.lastTx}
+                            </span>
+                            <span className="text-xs text-white/40">{formatTimeAgo(trade.timestamp)}</span>
+                          </div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <span className="text-xs text-white/50">{formatTimeAgo(trade.timestamp)}</span>
-                        </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div
                             className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
                             onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
                           >
                             <img
                               alt={trade.kolName}
-                              className="w-10 h-10 rounded-full object-cover border border-white/20"
+                              className="w-8 h-8 rounded-full object-cover border border-white/20"
                               src={trade.kolAvatar}
                               loading="lazy"
                             />
                             <div className="flex flex-col">
-                              <span className="text-sm font-semibold text-white">{trade.kolName}</span>
-                              <a
-                                href={`https://twitter.com/${trade.twitterHandle}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs text-white/50 hover:text-white/80 transition-colors"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                @{trade.twitterHandle}
-                              </a>
+                              <span className="text-sm font-medium text-white">{trade.kolName}</span>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/20">
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/20">
                               <span className="text-white font-bold text-xs">
                                 {trade.token.substring(0, 2).toUpperCase()}
                               </span>
                             </div>
-                            <span className="text-sm font-semibold text-white">{trade.token}</span>
+                            <span className="text-sm font-medium text-white">{trade.token}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <span className={`text-sm font-medium ${
-                            trade.lastTx === 'buy' ? 'text-green-500' : 'text-red-500'
-                          }`}>
-                            {formatCurrency(trade.amount)}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm text-white/60">-</span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-green-500">
+                            {trade.bought > 0 ? formatCurrency(trade.bought) : '-'}
                           </span>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <div className="flex flex-col gap-0.5">
-                            <span
-                              className={`text-sm font-semibold ${
-                                trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
-                              }`}
-                            >
-                              {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
-                            </span>
-                            <span
-                              className={`text-xs ${
-                                trade.pnl >= 0 ? 'text-green-500/70' : 'text-red-500/70'
-                              }`}
-                            >
-                              {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(1)}%
-                            </span>
-                          </div>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-red-500">
+                            {trade.sold > 0 ? formatCurrency(trade.sold) : '-'}
+                          </span>
                         </td>
-                        <td className="px-6 py-5 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className="text-sm font-medium text-white/80">
+                            {formatCurrency(trade.holding)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`text-sm font-semibold ${
+                              trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
+                            }`}
+                          >
+                            {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`text-sm font-semibold ${
+                              trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
+                            }`}
+                          >
+                            {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1">
                             <button
                               onClick={() => copyToClipboard(trade.walletAddress)}
-                              className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white"
+                              className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
                               title="Copy wallet address"
                             >
-                              <Copy className="w-4 h-4" />
+                              <Copy className="w-3.5 h-3.5" />
                             </button>
                             <a
                               href={`https://solscan.io/account/${trade.walletAddress}`}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-1.5 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white"
+                              className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
                               title="View on Solscan"
                             >
-                              <ExternalLink className="w-4 h-4" />
+                              <ExternalLink className="w-3.5 h-3.5" />
                             </a>
                           </div>
                         </td>
