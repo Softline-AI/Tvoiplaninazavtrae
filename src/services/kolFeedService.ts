@@ -64,7 +64,8 @@ export const kolFeedService = {
     type: 'all' | 'buy' | 'sell';
     sortBy: 'time' | 'pnl' | 'volume';
     limit: number;
-  }): Promise<{ success: boolean; data: KOLFeedItem[]; error?: string }> {
+    page?: number;
+  }): Promise<{ success: boolean; data: KOLFeedItem[]; error?: string; hasMore?: boolean; total?: number }> {
     try {
       // Calculate time filter
       const now = new Date();
@@ -109,14 +110,29 @@ export const kolFeedService = {
       // Get wallet addresses
       const walletAddresses = Array.from(profileMap.keys());
 
-      // Fetch transactions for KOL wallets
+      // Calculate pagination
+      const page = params.page || 1;
+      const offset = (page - 1) * params.limit;
+
+      // Get total count for pagination
+      const { count, error: countError } = await supabase
+        .from('webhook_transactions')
+        .select('*', { count: 'exact', head: true })
+        .in('from_address', walletAddresses)
+        .gte('block_time', timeFilter.toISOString());
+
+      if (countError) {
+        console.error('Error counting transactions:', countError);
+      }
+
+      // Fetch transactions for KOL wallets with pagination
       const { data: transactions, error: txError } = await supabase
         .from('webhook_transactions')
         .select('*')
         .in('from_address', walletAddresses)
         .gte('block_time', timeFilter.toISOString())
         .order('block_time', { ascending: false })
-        .limit(params.limit * 2);
+        .range(offset, offset + params.limit - 1);
 
       if (txError) {
         console.error('Error fetching transactions:', txError);
@@ -180,12 +196,15 @@ export const kolFeedService = {
       }
       // 'time' is already sorted by default
 
-      // Limit results
-      const limitedItems = feedItems.slice(0, params.limit);
+      // Calculate if there are more pages
+      const total = count || feedItems.length;
+      const hasMore = (page * params.limit) < total;
 
       return {
         success: true,
-        data: limitedItems
+        data: feedItems,
+        hasMore,
+        total
       };
     } catch (error) {
       console.error('Error in getKOLFeed:', error);

@@ -8,6 +8,7 @@ const corsHeaders = {
 };
 
 const BIRDEYE_API_KEY = "a6296c5f82664e92aadffe9e99773d73";
+const CACHE_DURATION_MINUTES = 5;
 
 interface HeliusWebhookData {
   type: string;
@@ -47,9 +48,97 @@ interface HeliusWebhookData {
   [key: string]: any;
 }
 
-interface TokenPrice {
-  value: number;
-  updateUnixTime: number;
+function validateTransactionData(data: any): { valid: boolean; errors: string[] } {
+  const errors: string[] = [];
+
+  if (!data.type) {
+    errors.push("Missing transaction type");
+  }
+
+  if (!data.signature && !data.timestamp) {
+    errors.push("Missing transaction signature or timestamp");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors
+  };
+}
+
+function validateTokenMint(tokenMint: string): boolean {
+  if (!tokenMint || tokenMint === "unknown") {
+    return false;
+  }
+
+  if (tokenMint.length < 32 || tokenMint.length > 44) {
+    return false;
+  }
+
+  return true;
+}
+
+function validateAmount(amount: number): boolean {
+  return !isNaN(amount) && amount > 0 && isFinite(amount);
+}
+
+async function getCachedTokenPrice(
+  supabase: any,
+  tokenMint: string
+): Promise<number | null> {
+  try {
+    const cacheExpiry = new Date(Date.now() - CACHE_DURATION_MINUTES * 60 * 1000);
+
+    const { data, error } = await supabase
+      .from("token_price_cache")
+      .select("price, last_updated")
+      .eq("token_mint", tokenMint)
+      .gte("last_updated", cacheExpiry.toISOString())
+      .maybeSingle();
+
+    if (error) {
+      console.error("Error fetching cached price:", error);
+      return null;
+    }
+
+    if (data) {
+      console.log(`Cache HIT for ${tokenMint}: $${data.price}`);
+      return parseFloat(data.price);
+    }
+
+    console.log(`Cache MISS for ${tokenMint}`);
+    return null;
+  } catch (error) {
+    console.error("Error in getCachedTokenPrice:", error);
+    return null;
+  }
+}
+
+async function updateTokenPriceCache(
+  supabase: any,
+  tokenMint: string,
+  tokenSymbol: string | null,
+  price: number
+): Promise<void> {
+  try {
+    const { error } = await supabase
+      .from("token_price_cache")
+      .upsert({
+        token_mint: tokenMint,
+        token_symbol: tokenSymbol,
+        price: price.toString(),
+        last_updated: new Date().toISOString()
+      }, {
+        onConflict: "token_mint"
+      });
+
+    if (error) {
+      console.error("Error updating price cache:", error);
+    } else {
+      console.log(`Updated cache for ${tokenMint}: $${price}`);
+    }
+  } catch (error) {
+    console.error("Error in updateTokenPriceCache:", error);
+  }
 }
 
 async function fetchTokenPrice(tokenMint: string): Promise<number> {
@@ -69,11 +158,43 @@ async function fetchTokenPrice(tokenMint: string): Promise<number> {
     }
 
     const data = await response.json();
-    return data?.data?.value || 0;
+    const price = data?.data?.value || 0;
+
+    if (!validateAmount(price)) {
+      console.error(`Invalid price from API: ${price}`);
+      return 0;
+    }
+
+    return price;
   } catch (error) {
     console.error("Error fetching token price:", error);
     return 0;
   }
+}
+
+async function getTokenPriceWithCache(
+  supabase: any,
+  tokenMint: string,
+  tokenSymbol: string | null
+): Promise<number> {
+  if (!validateTokenMint(tokenMint)) {
+    console.error(`Invalid token mint: ${tokenMint}`);
+    return 0;
+  }
+
+  const cachedPrice = await getCachedTokenPrice(supabase, tokenMint);
+
+  if (cachedPrice !== null) {
+    return cachedPrice;
+  }
+
+  const freshPrice = await fetchTokenPrice(tokenMint);
+
+  if (freshPrice > 0) {
+    await updateTokenPriceCache(supabase, tokenMint, tokenSymbol, freshPrice);
+  }
+
+  return freshPrice;
 }
 
 async function getEntryPrice(
@@ -95,7 +216,8 @@ async function getEntryPrice(
       return 0;
     }
 
-    return data[0].entry_price || data[0].current_token_price || 0;
+    const price = parseFloat(data[0].entry_price || data[0].current_token_price || "0");
+    return validateAmount(price) ? price : 0;
   } catch (error) {
     console.error("Error getting entry price:", error);
     return 0;
@@ -113,6 +235,11 @@ async function calculateTokenPnl(
   let tokenPnl = 0;
   let tokenPnlPercentage = 0;
   let entryPrice = 0;
+
+  if (!validateAmount(amount) || !validateAmount(currentPrice)) {
+    console.error(`Invalid calculation inputs - amount: ${amount}, price: ${currentPrice}`);
+    return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: 0 };
+  }
 
   if (transactionType === "BUY" || transactionType === "SWAP") {
     entryPrice = currentPrice;
@@ -136,6 +263,16 @@ async function calculateTokenPnl(
       tokenPnl = amount * ((exitPrice - entryPrice) / entryPrice);
       tokenPnlPercentage = ((exitPrice - entryPrice) / entryPrice) * 100;
     }
+  }
+
+  if (!isFinite(tokenPnl) || isNaN(tokenPnl)) {
+    console.error(`Invalid P&L calculation result: ${tokenPnl}`);
+    tokenPnl = 0;
+  }
+
+  if (!isFinite(tokenPnlPercentage) || isNaN(tokenPnlPercentage)) {
+    console.error(`Invalid P&L percentage result: ${tokenPnlPercentage}`);
+    tokenPnlPercentage = 0;
   }
 
   return {
@@ -251,6 +388,21 @@ Deno.serve(async (req: Request) => {
     const data: HeliusWebhookData = await req.json();
     console.log("Received webhook:", JSON.stringify(data, null, 2));
 
+    const validation = validateTransactionData(data);
+    if (!validation.valid) {
+      console.error("Invalid transaction data:", validation.errors);
+      return new Response(
+        JSON.stringify({ error: "Invalid transaction data", details: validation.errors }),
+        {
+          status: 400,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
     let fromAddress = data.from || data.feePayer || "unknown";
     let toAddress = data.to || "unknown";
     let tokenMint = data.tokenMint || "unknown";
@@ -276,9 +428,37 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    if (!validateTokenMint(tokenMint)) {
+      console.error(`Invalid token mint: ${tokenMint}`);
+      return new Response(
+        JSON.stringify({ error: "Invalid token mint address" }),
+        {
+          status: 400,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
+    if (!validateAmount(amount)) {
+      console.error(`Invalid amount: ${amount}`);
+      return new Response(
+        JSON.stringify({ error: "Invalid transaction amount" }),
+        {
+          status: 400,
+          headers: {
+            ...corsHeaders,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
+
     const transactionType = determineTransactionType(data);
 
-    const currentPrice = await fetchTokenPrice(tokenMint);
+    const currentPrice = await getTokenPriceWithCache(supabase, tokenMint, tokenSymbol);
     console.log(`Current price for ${tokenMint}: $${currentPrice}`);
 
     const { tokenPnl, tokenPnlPercentage, entryPrice } = await calculateTokenPnl(
