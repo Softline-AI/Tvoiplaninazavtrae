@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Copy, ExternalLink, TrendingUp, TrendingDown, Activity, DollarSign,
-  Target, Percent, Wallet, Award, BarChart3, Clock, ArrowUpRight,
-  ArrowDownRight, Zap, TrendingDown as TrendingDownIcon, Star
+  Target, Wallet, BarChart3, Clock, ArrowUpRight, ArrowDownRight,
+  Shield, Award, Zap, Crown, Trophy, Flame
 } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 
@@ -54,6 +54,15 @@ interface TokenStats {
   lastTradeTime: string;
 }
 
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  unlocked: boolean;
+  color: string;
+}
+
 type SortField = 'block_time' | 'token_pnl' | 'amount' | 'token_symbol';
 type SortDirection = 'asc' | 'desc';
 
@@ -64,8 +73,9 @@ const KOLProfile: React.FC = () => {
   const [profile, setProfile] = useState<KOLProfile | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [tokenStats, setTokenStats] = useState<TokenStats[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'transactions' | 'tokens' | 'analytics'>('analytics');
+  const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'tokens'>('overview');
   const [sortField, setSortField] = useState<SortField>('block_time');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
 
@@ -145,6 +155,59 @@ const KOLProfile: React.FC = () => {
 
       setProfile(profile);
       setTransactions(transactions);
+
+      const calculatedAchievements: Achievement[] = [
+        {
+          id: 'profitable',
+          title: 'Profit Master',
+          description: 'Total PnL over $10,000',
+          icon: <Trophy className="w-5 h-5" />,
+          unlocked: totalPnl > 10000,
+          color: totalPnl > 10000 ? 'text-yellow-500' : 'text-white/20'
+        },
+        {
+          id: 'high_win_rate',
+          title: 'Sharp Shooter',
+          description: 'Win rate above 70%',
+          icon: <Target className="w-5 h-5" />,
+          unlocked: winRate > 70,
+          color: winRate > 70 ? 'text-green-500' : 'text-white/20'
+        },
+        {
+          id: 'active_trader',
+          title: 'Active Trader',
+          description: 'Over 100 trades',
+          icon: <Activity className="w-5 h-5" />,
+          unlocked: transactions.length > 100,
+          color: transactions.length > 100 ? 'text-blue-500' : 'text-white/20'
+        },
+        {
+          id: 'volume_king',
+          title: 'Volume King',
+          description: 'Total volume over $500K',
+          icon: <Crown className="w-5 h-5" />,
+          unlocked: totalVolume > 500000,
+          color: totalVolume > 500000 ? 'text-purple-500' : 'text-white/20'
+        },
+        {
+          id: 'quick_trader',
+          title: 'Speed Demon',
+          description: 'Average hold time under 12h',
+          icon: <Zap className="w-5 h-5" />,
+          unlocked: avgHoldTime < 12,
+          color: avgHoldTime < 12 ? 'text-orange-500' : 'text-white/20'
+        },
+        {
+          id: 'consistent',
+          title: 'Consistent',
+          description: 'Profitable in 80%+ trades',
+          icon: <Shield className="w-5 h-5" />,
+          unlocked: winRate > 80,
+          color: winRate > 80 ? 'text-cyan-500' : 'text-white/20'
+        },
+      ];
+
+      setAchievements(calculatedAchievements);
 
       const tokenMap = new Map<string, {
         trades: number;
@@ -282,6 +345,25 @@ const KOLProfile: React.FC = () => {
     navigator.clipboard.writeText(text);
   };
 
+  const getTraderRank = () => {
+    if (!profile) return 'Beginner';
+    if (profile.total_pnl > 50000 && profile.win_rate > 70) return 'Elite';
+    if (profile.total_pnl > 20000 && profile.win_rate > 60) return 'Expert';
+    if (profile.total_pnl > 10000) return 'Advanced';
+    if (profile.total_trades > 50) return 'Intermediate';
+    return 'Beginner';
+  };
+
+  const getRankColor = (rank: string) => {
+    switch (rank) {
+      case 'Elite': return 'text-yellow-500 bg-yellow-500/10 border-yellow-500/20';
+      case 'Expert': return 'text-purple-500 bg-purple-500/10 border-purple-500/20';
+      case 'Advanced': return 'text-blue-500 bg-blue-500/10 border-blue-500/20';
+      case 'Intermediate': return 'text-green-500 bg-green-500/10 border-green-500/20';
+      default: return 'text-white/50 bg-white/5 border-white/10';
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-noir-black flex items-center justify-center">
@@ -309,6 +391,9 @@ const KOLProfile: React.FC = () => {
     );
   }
 
+  const rank = getTraderRank();
+  const unlockedAchievements = achievements.filter(a => a.unlocked).length;
+
   return (
     <div className="min-h-screen bg-noir-black">
       <div className="max-w-7xl mx-auto px-6 py-8">
@@ -319,55 +404,48 @@ const KOLProfile: React.FC = () => {
           ← Back to KOL Feed
         </button>
 
-        <div className="relative bg-gradient-to-br from-noir-dark/60 to-noir-dark/40 border border-white/10 rounded-2xl p-8 mb-6 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl"></div>
-
-          <div className="relative flex flex-col md:flex-row items-start md:items-center gap-6">
+        <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-8 mb-6">
+          <div className="flex flex-col md:flex-row items-start gap-6">
             <div className="relative">
               <img
                 src={profile.avatar_url}
                 alt={profile.name}
-                className="w-28 h-28 rounded-2xl border-2 border-white/20 object-cover shadow-2xl"
+                className="w-24 h-24 rounded-xl border border-white/20 object-cover"
               />
-              <div className="absolute -bottom-2 -right-2 bg-green-500 w-8 h-8 rounded-full border-4 border-noir-dark flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white" />
+              <div className={`absolute -bottom-2 -right-2 px-2 py-1 rounded-lg text-xs font-bold border ${getRankColor(rank)}`}>
+                {rank}
               </div>
             </div>
 
             <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-4xl font-bold text-white">{profile.name}</h1>
-                <div className="flex items-center gap-1 px-3 py-1 bg-yellow-500/20 rounded-full">
-                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                  <span className="text-sm font-semibold text-yellow-500">Top Trader</span>
-                </div>
-              </div>
+              <h1 className="text-3xl font-bold text-white mb-2">{profile.name}</h1>
 
               {profile.twitter_handle && (
                 <a
                   href={`https://twitter.com/${profile.twitter_handle.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300 text-base mb-4 inline-flex items-center gap-2 transition-colors"
+                  className="text-white/60 hover:text-white text-sm mb-3 inline-flex items-center gap-2 transition-colors"
                 >
                   @{profile.twitter_handle.replace('@', '')}
                   {profile.twitter_followers > 0 && (
-                    <span className="text-white/50">
+                    <span className="text-white/40">
                       • {(profile.twitter_followers / 1000).toFixed(1)}K followers
                     </span>
                   )}
-                  <ExternalLink className="w-4 h-4" />
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               )}
 
               <div className="flex items-center gap-3 mt-4 flex-wrap">
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg">
-                  <Wallet className="w-4 h-4 text-white/50" />
-                  <span className="text-sm text-white/70 font-mono">{profile.wallet_address.substring(0, 12)}...{profile.wallet_address.slice(-8)}</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10">
+                  <Wallet className="w-3.5 h-3.5 text-white/50" />
+                  <span className="text-xs text-white/70 font-mono">
+                    {profile.wallet_address.substring(0, 8)}...{profile.wallet_address.slice(-6)}
+                  </span>
                   <button
                     onClick={() => copyToClipboard(profile.wallet_address)}
-                    className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
+                    className="p-0.5 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
                   >
                     <Copy className="w-3 h-3" />
                   </button>
@@ -377,78 +455,105 @@ const KOLProfile: React.FC = () => {
                   href={`https://solscan.io/account/${profile.wallet_address}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg transition-colors text-white/70 hover:text-white text-sm flex items-center gap-2"
+                  className="px-3 py-1.5 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 transition-colors text-white/70 hover:text-white text-xs flex items-center gap-2"
                 >
                   View on Solscan
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <ExternalLink className="w-3 h-3" />
                 </a>
 
-                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg">
-                  <Clock className="w-4 h-4 text-white/50" />
-                  <span className="text-sm text-white/70">Last active: {formatTimeAgo(profile.last_active)}</span>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10">
+                  <Clock className="w-3.5 h-3.5 text-white/50" />
+                  <span className="text-xs text-white/70">Last: {formatTimeAgo(profile.last_active)}</span>
+                </div>
+
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10">
+                  <Award className="w-3.5 h-3.5 text-white/50" />
+                  <span className="text-xs text-white/70">{unlockedAchievements}/{achievements.length} Achievements</span>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col items-end gap-2">
-              <div className="text-right">
-                <div className="text-sm text-white/50 mb-1">Total P&L</div>
-                <div className={`text-3xl font-bold ${profile.total_pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {profile.total_pnl >= 0 ? '+' : ''}{formatCurrency(profile.total_pnl)}
-                </div>
-                <div className={`text-sm ${profile.total_pnl_sol >= 0 ? 'text-green-500/70' : 'text-red-500/70'}`}>
-                  {profile.total_pnl_sol >= 0 ? '+' : ''}{formatSol(profile.total_pnl_sol)}
-                </div>
+            <div className="text-right">
+              <div className="text-xs text-white/50 mb-1 uppercase tracking-wider">Total P&L</div>
+              <div className={`text-3xl font-bold mb-1 ${profile.total_pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {profile.total_pnl >= 0 ? '+' : ''}{formatCurrency(profile.total_pnl)}
+              </div>
+              <div className={`text-sm ${profile.total_pnl_sol >= 0 ? 'text-green-500/70' : 'text-red-500/70'}`}>
+                {profile.total_pnl_sol >= 0 ? '+' : ''}{formatSol(profile.total_pnl_sol)}
               </div>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div className="bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-green-500/20 rounded-lg">
-                <TrendingUp className="w-5 h-5 text-green-500" />
+          <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-green-500/10 rounded-lg">
+                <Target className="w-4 h-4 text-green-500" />
               </div>
               <span className="text-xs text-white/50 uppercase tracking-wider">Win Rate</span>
             </div>
-            <p className="text-3xl font-bold text-white mb-1">{profile.win_rate.toFixed(1)}%</p>
-            <p className="text-xs text-white/50">
-              {profile.profitable_trades} / {profile.total_trades} profitable
-            </p>
+            <p className="text-2xl font-bold text-white mb-1">{profile.win_rate.toFixed(1)}%</p>
+            <p className="text-xs text-white/40">{profile.profitable_trades} / {profile.total_trades} wins</p>
           </div>
 
-          <div className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-blue-500/20 rounded-lg">
-                <Activity className="w-5 h-5 text-blue-500" />
+          <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-blue-500/10 rounded-lg">
+                <Activity className="w-4 h-4 text-blue-500" />
               </div>
-              <span className="text-xs text-white/50 uppercase tracking-wider">Total Trades</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">Trades</span>
             </div>
-            <p className="text-3xl font-bold text-white mb-1">{profile.total_trades}</p>
-            <p className="text-xs text-white/50">Volume: {formatCurrency(profile.total_volume)}</p>
+            <p className="text-2xl font-bold text-white mb-1">{profile.total_trades}</p>
+            <p className="text-xs text-white/40">{formatCurrency(profile.total_volume)} volume</p>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-purple-500/20 rounded-lg">
-                <Clock className="w-5 h-5 text-purple-500" />
+          <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-purple-500/10 rounded-lg">
+                <Clock className="w-4 h-4 text-purple-500" />
               </div>
-              <span className="text-xs text-white/50 uppercase tracking-wider">Avg Hold Time</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">Avg Hold</span>
             </div>
-            <p className="text-3xl font-bold text-white mb-1">{profile.avg_hold_time_hours.toFixed(1)}h</p>
-            <p className="text-xs text-white/50">Average holding period</p>
+            <p className="text-2xl font-bold text-white mb-1">{profile.avg_hold_time_hours.toFixed(1)}h</p>
+            <p className="text-xs text-white/40">Hold time</p>
           </div>
 
-          <div className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border border-orange-500/20 rounded-xl p-5">
-            <div className="flex items-center justify-between mb-3">
-              <div className="p-2 bg-orange-500/20 rounded-lg">
-                <Award className="w-5 h-5 text-orange-500" />
+          <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-5">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="p-2 bg-orange-500/10 rounded-lg">
+                <TrendingUp className="w-4 h-4 text-orange-500" />
               </div>
               <span className="text-xs text-white/50 uppercase tracking-wider">Best Trade</span>
             </div>
-            <p className="text-3xl font-bold text-green-500 mb-1">+{formatCurrency(profile.best_trade_pnl)}</p>
+            <p className="text-2xl font-bold text-green-500 mb-1">+{formatCurrency(profile.best_trade_pnl)}</p>
             <p className="text-xs text-red-500">Worst: {formatCurrency(profile.worst_trade_pnl)}</p>
+          </div>
+        </div>
+
+        <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-6 mb-6">
+          <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
+            <Award className="w-4 h-4" />
+            Achievements & Badges
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {achievements.map((achievement) => (
+              <div
+                key={achievement.id}
+                className={`p-4 rounded-xl border transition-all ${
+                  achievement.unlocked
+                    ? 'bg-white/5 border-white/20 hover:bg-white/10'
+                    : 'bg-white/[0.02] border-white/5 opacity-40'
+                }`}
+                title={achievement.description}
+              >
+                <div className={`mb-2 ${achievement.color}`}>
+                  {achievement.icon}
+                </div>
+                <div className="text-xs font-semibold text-white mb-0.5">{achievement.title}</div>
+                <div className="text-[10px] text-white/40">{achievement.description}</div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -458,9 +563,9 @@ const KOLProfile: React.FC = () => {
               <div className="p-2 bg-green-500/10 rounded-lg">
                 <ArrowUpRight className="w-4 h-4 text-green-500" />
               </div>
-              <span className="text-sm text-white/50">Total Bought</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">Total Bought</span>
             </div>
-            <p className="text-2xl font-bold text-white">{formatCurrency(profile.total_bought)}</p>
+            <p className="text-xl font-bold text-white">{formatCurrency(profile.total_bought)}</p>
           </div>
 
           <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-5">
@@ -468,114 +573,114 @@ const KOLProfile: React.FC = () => {
               <div className="p-2 bg-red-500/10 rounded-lg">
                 <ArrowDownRight className="w-4 h-4 text-red-500" />
               </div>
-              <span className="text-sm text-white/50">Total Sold</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">Total Sold</span>
             </div>
-            <p className="text-2xl font-bold text-white">{formatCurrency(profile.total_sold)}</p>
+            <p className="text-xl font-bold text-white">{formatCurrency(profile.total_sold)}</p>
           </div>
 
           <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-5">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2 bg-blue-500/10 rounded-lg">
-                <Wallet className="w-4 h-4 text-blue-500" />
+                <DollarSign className="w-4 h-4 text-blue-500" />
               </div>
-              <span className="text-sm text-white/50">Portfolio Value</span>
+              <span className="text-xs text-white/50 uppercase tracking-wider">Portfolio</span>
             </div>
-            <p className="text-2xl font-bold text-white">{formatCurrency(profile.portfolio_value)}</p>
+            <p className="text-xl font-bold text-white">{formatCurrency(profile.portfolio_value)}</p>
           </div>
         </div>
 
         <div className="bg-noir-dark/40 border border-white/10 rounded-xl overflow-hidden">
           <div className="border-b border-white/10 bg-black/20">
-            <div className="flex gap-2 px-6 py-4">
+            <div className="flex gap-1 px-4 py-3">
               <button
-                onClick={() => setActiveTab('analytics')}
-                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
-                  activeTab === 'analytics'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                onClick={() => setActiveTab('overview')}
+                className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
+                  activeTab === 'overview'
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                📊 Analytics
+                Overview
               </button>
               <button
                 onClick={() => setActiveTab('transactions')}
-                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
                   activeTab === 'transactions'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                💼 Transactions ({transactions.length})
+                Transactions ({transactions.length})
               </button>
               <button
                 onClick={() => setActiveTab('tokens')}
-                className={`px-6 py-2.5 rounded-lg text-sm font-semibold transition-all ${
+                className={`px-4 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all ${
                   activeTab === 'tokens'
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                    : 'text-white/70 hover:text-white hover:bg-white/5'
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/60 hover:text-white hover:bg-white/5'
                 }`}
               >
-                🪙 Top Tokens ({tokenStats.length})
+                Top Tokens ({tokenStats.length})
               </button>
             </div>
           </div>
 
           <div className="p-6">
-            {activeTab === 'analytics' && (
+            {activeTab === 'overview' && (
               <div className="space-y-6">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div className="bg-black/20 border border-white/5 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <TrendingUp className="w-5 h-5 text-green-500" />
+                  <div className="bg-black/20 border border-white/5 rounded-xl p-5">
+                    <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-green-500" />
                       Top 5 Profitable Tokens
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {tokenStats.slice(0, 5).map((token, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/5">
                           <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm">
+                            <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-white font-bold text-xs border border-white/20">
                               {index + 1}
                             </div>
                             <div>
-                              <div className="font-semibold text-white">{token.symbol}</div>
-                              <div className="text-xs text-white/50">{token.trades} trades</div>
+                              <div className="font-semibold text-white text-sm">{token.symbol}</div>
+                              <div className="text-xs text-white/40">{token.trades} trades</div>
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className={`font-bold ${token.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                            <div className={`font-bold text-sm ${token.totalPnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                               {token.totalPnl >= 0 ? '+' : ''}{formatCurrency(token.totalPnl)}
                             </div>
-                            <div className="text-xs text-white/50">{token.winRate.toFixed(0)}% WR</div>
+                            <div className="text-xs text-white/40">{token.winRate.toFixed(0)}% WR</div>
                           </div>
                         </div>
                       ))}
                     </div>
                   </div>
 
-                  <div className="bg-black/20 border border-white/5 rounded-xl p-6">
-                    <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                      <Activity className="w-5 h-5 text-blue-500" />
+                  <div className="bg-black/20 border border-white/5 rounded-xl p-5">
+                    <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-blue-500" />
                       Recent Activity
                     </h3>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {sortedTransactions.slice(0, 5).map((tx) => (
-                        <div key={tx.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                        <div key={tx.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/5">
                           <div className="flex items-center gap-3">
-                            <div className={`px-2 py-1 rounded text-xs font-bold ${
+                            <div className={`px-2 py-0.5 rounded text-xs font-bold ${
                               tx.transaction_type === 'BUY' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
                             }`}>
                               {tx.transaction_type}
                             </div>
                             <div>
-                              <div className="font-medium text-white">{tx.token_symbol}</div>
-                              <div className="text-xs text-white/50">{formatTimeAgo(tx.block_time)}</div>
+                              <div className="font-medium text-white text-sm">{tx.token_symbol}</div>
+                              <div className="text-xs text-white/40">{formatTimeAgo(tx.block_time)}</div>
                             </div>
                           </div>
                           <div className="text-right">
                             <div className={`font-semibold text-sm ${tx.token_pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                               {tx.token_pnl >= 0 ? '+' : ''}{formatCurrency(tx.token_pnl)}
                             </div>
-                            <div className="text-xs text-white/50">{formatCurrency(tx.amount)}</div>
+                            <div className="text-xs text-white/40">{formatCurrency(tx.amount)}</div>
                           </div>
                         </div>
                       ))}
@@ -583,27 +688,27 @@ const KOLProfile: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-black/20 border border-white/5 rounded-xl p-6">
-                  <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-purple-500" />
+                <div className="bg-black/20 border border-white/5 rounded-xl p-5">
+                  <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wider flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-purple-500" />
                     Performance Summary
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 bg-white/5 rounded-lg">
+                    <div className="text-center p-4 bg-white/5 rounded-lg border border-white/5">
                       <div className="text-2xl font-bold text-white mb-1">{tokenStats.length}</div>
-                      <div className="text-xs text-white/50">Unique Tokens</div>
+                      <div className="text-xs text-white/40 uppercase tracking-wider">Unique Tokens</div>
                     </div>
-                    <div className="text-center p-4 bg-white/5 rounded-lg">
+                    <div className="text-center p-4 bg-white/5 rounded-lg border border-white/5">
                       <div className="text-2xl font-bold text-green-500 mb-1">{profile.profitable_trades}</div>
-                      <div className="text-xs text-white/50">Winning Trades</div>
+                      <div className="text-xs text-white/40 uppercase tracking-wider">Winning</div>
                     </div>
-                    <div className="text-center p-4 bg-white/5 rounded-lg">
+                    <div className="text-center p-4 bg-white/5 rounded-lg border border-white/5">
                       <div className="text-2xl font-bold text-red-500 mb-1">{profile.total_trades - profile.profitable_trades}</div>
-                      <div className="text-xs text-white/50">Losing Trades</div>
+                      <div className="text-xs text-white/40 uppercase tracking-wider">Losing</div>
                     </div>
-                    <div className="text-center p-4 bg-white/5 rounded-lg">
-                      <div className="text-2xl font-bold text-white mb-1">{(profile.total_volume / profile.total_trades).toFixed(0)}</div>
-                      <div className="text-xs text-white/50">Avg Trade Size</div>
+                    <div className="text-center p-4 bg-white/5 rounded-lg border border-white/5">
+                      <div className="text-2xl font-bold text-white mb-1">${(profile.total_volume / profile.total_trades).toFixed(0)}</div>
+                      <div className="text-xs text-white/40 uppercase tracking-wider">Avg Size</div>
                     </div>
                   </div>
                 </div>
@@ -615,11 +720,11 @@ const KOLProfile: React.FC = () => {
                 <table className="min-w-full">
                   <thead className="bg-black/40 border-b border-white/10">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Type
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                        className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
                         onClick={() => handleSort('block_time')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -628,7 +733,7 @@ const KOLProfile: React.FC = () => {
                         </div>
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                        className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
                         onClick={() => handleSort('token_symbol')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -637,7 +742,7 @@ const KOLProfile: React.FC = () => {
                         </div>
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                        className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
                         onClick={() => handleSort('amount')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -646,7 +751,7 @@ const KOLProfile: React.FC = () => {
                         </div>
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
+                        className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
                         onClick={() => handleSort('token_pnl')}
                       >
                         <div className="flex items-center gap-1.5">
@@ -654,10 +759,10 @@ const KOLProfile: React.FC = () => {
                           {getSortIcon('token_pnl')}
                         </div>
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         P&L %
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Links
                       </th>
                     </tr>
@@ -667,7 +772,7 @@ const KOLProfile: React.FC = () => {
                       <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
-                            className={`text-sm font-bold uppercase ${
+                            className={`text-xs font-bold uppercase ${
                               ['BUY', 'SWAP'].includes(tx.transaction_type) ? 'text-green-600' : 'text-red-600'
                             }`}
                           >
@@ -725,29 +830,29 @@ const KOLProfile: React.FC = () => {
                 <table className="min-w-full">
                   <thead className="bg-black/40 border-b border-white/10">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Token
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Trades
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Total P&L
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Avg P&L
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
                         Win Rate
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
-                        Best Trade
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                        Best
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
-                        Last Trade
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                        Last
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
-                        Links
+                      <th className="px-6 py-3 text-left text-xs font-medium text-white/50 uppercase tracking-wider">
+                        Link
                       </th>
                     </tr>
                   </thead>
@@ -780,17 +885,17 @@ const KOLProfile: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <div className="flex-1 bg-white/10 rounded-full h-2 overflow-hidden">
+                            <div className="flex-1 bg-white/10 rounded-full h-1.5 overflow-hidden max-w-[60px]">
                               <div
                                 className="bg-green-500 h-full rounded-full"
                                 style={{ width: `${token.winRate}%` }}
                               ></div>
                             </div>
-                            <span className="text-sm text-white/80 min-w-[45px]">{token.winRate.toFixed(0)}%</span>
+                            <span className="text-xs text-white/80 min-w-[40px]">{token.winRate.toFixed(0)}%</span>
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-green-500 font-medium">
+                          <span className="text-xs text-green-500 font-medium">
                             +{formatCurrency(token.bestTrade)}
                           </span>
                         </td>
