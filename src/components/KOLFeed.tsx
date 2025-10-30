@@ -13,14 +13,15 @@ interface KOLTrade {
   twitterHandle: string;
   token: string;
   tokenContract: string;
-  bought: number;
-  sold: number;
-  holding: number;
-  pnl: number;
-  pnlSol: number;
-  pnlPercentage: number;
-  amount: number;
-  aht: number;
+  marketCap: number;
+  transactionValue: number; // Сумма сделки в $
+  holding: number; // Общий баланс в кошельке (в токенах)
+  pnl: number; // P&L в $
+  pnlSol: number; // P&L в SOL
+  pnlPercentage: number; // P&L в %
+  aht: number; // Age of Highest Trade
+  currentPrice: number; // Текущая цена токена
+  entryPrice: number; // Цена входа
 }
 
 type SortField = 'timestamp' | 'pnl' | 'pnlSol' | 'aht' | 'amount' | 'kolName' | 'token';
@@ -92,11 +93,20 @@ const KOLFeed: React.FC = () => {
       const formattedTrades: KOLTrade[] = transactions.map((tx: any) => {
         const profile = profileMap.get(tx.from_address);
         const txType = tx.transaction_type === 'BUY' ? 'buy' : 'sell';
-        const amount = parseFloat(tx.amount || '0');
+        const tokenAmount = parseFloat(tx.amount || '0');
+        const currentPrice = parseFloat(tx.current_token_price || '0');
+        const entryPrice = parseFloat(tx.entry_price || '0');
+        const marketCap = parseFloat(tx.market_cap || '0');
+
+        const transactionValue = tokenAmount * currentPrice;
+
         const pnl = parseFloat(tx.token_pnl || '0');
         const pnlSol = pnl / 150;
         const pnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
-        const aht = Math.random() * 48;
+
+        const now = new Date();
+        const txTime = new Date(tx.block_time);
+        const ageHours = (now.getTime() - txTime.getTime()) / (1000 * 60 * 60);
 
         return {
           id: tx.id,
@@ -108,14 +118,15 @@ const KOLFeed: React.FC = () => {
           twitterHandle: profile?.twitter_handle?.replace('@', '') || tx.from_address.substring(0, 8),
           token: tx.token_symbol || 'Unknown',
           tokenContract: tx.token_mint || '',
-          bought: txType === 'buy' ? amount : 0,
-          sold: txType === 'sell' ? amount : 0,
-          holding: amount,
+          marketCap,
+          transactionValue,
+          holding: tokenAmount,
           pnl,
           pnlSol,
           pnlPercentage,
-          amount,
-          aht
+          aht: ageHours,
+          currentPrice,
+          entryPrice
         };
       });
 
@@ -308,17 +319,7 @@ const KOLFeed: React.FC = () => {
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
                       <div className="flex items-center gap-1.5">
-                        Bought
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
-                      <div className="flex items-center gap-1.5">
-                        Sold
-                      </div>
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
-                      <div className="flex items-center gap-1.5">
-                        Holding
+                        Value
                       </div>
                     </th>
                     <th
@@ -408,7 +409,7 @@ const KOLFeed: React.FC = () => {
                     ))
                   ) : sortedTrades.length === 0 ? (
                     <tr>
-                      <td colSpan={12} className="px-6 py-12 text-center">
+                      <td colSpan={9} className="px-6 py-12 text-center">
                         <div className="flex flex-col items-center gap-3">
                           <Clock className="w-12 h-12 text-white/30" />
                           <p className="text-white/50 text-sm">No trades found</p>
@@ -457,21 +458,15 @@ const KOLFeed: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm text-white/60">-</span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-medium text-green-500">
-                            {trade.bought > 0 ? formatCurrency(trade.bought) : '-'}
+                          <span className="text-sm text-white/60">
+                            {trade.marketCap > 0 ? formatCurrency(trade.marketCap) : '-'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-medium text-red-500">
-                            {trade.sold > 0 ? formatCurrency(trade.sold) : '-'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span className="text-sm font-medium text-white/80">
-                            {formatCurrency(trade.holding)}
+                          <span className={`text-sm font-medium ${
+                            trade.lastTx === 'buy' ? 'text-green-500' : 'text-red-500'
+                          }`}>
+                            {formatCurrency(trade.transactionValue)}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">

@@ -141,7 +141,7 @@ async function updateTokenPriceCache(
   }
 }
 
-async function fetchTokenMetadata(tokenMint: string): Promise<{ symbol: string; name: string; price: number }> {
+async function fetchTokenMetadata(tokenMint: string): Promise<{ symbol: string; name: string; price: number; marketCap: number }> {
   try {
     const response = await fetch(
       `https://public-api.birdeye.so/defi/token_overview?address=${tokenMint}`,
@@ -154,20 +154,21 @@ async function fetchTokenMetadata(tokenMint: string): Promise<{ symbol: string; 
 
     if (!response.ok) {
       console.error(`Birdeye API error: ${response.status}`);
-      return { symbol: "UNKNOWN", name: "Unknown Token", price: 0 };
+      return { symbol: "UNKNOWN", name: "Unknown Token", price: 0, marketCap: 0 };
     }
 
     const data = await response.json();
     const symbol = data?.data?.symbol || "UNKNOWN";
     const name = data?.data?.name || "Unknown Token";
     const price = data?.data?.price || 0;
+    const marketCap = data?.data?.marketCap || 0;
 
-    console.log(`Token metadata for ${tokenMint}: ${symbol} (${name}) @ $${price}`);
+    console.log(`Token: ${symbol} @ $${price} | MC: $${marketCap}`);
 
-    return { symbol, name, price };
+    return { symbol, name, price, marketCap };
   } catch (error) {
     console.error("Error fetching token metadata:", error);
-    return { symbol: "UNKNOWN", name: "Unknown Token", price: 0 };
+    return { symbol: "UNKNOWN", name: "Unknown Token", price: 0, marketCap: 0 };
   }
 }
 
@@ -576,8 +577,9 @@ Deno.serve(async (req: Request) => {
     const tokenMetadata = await fetchTokenMetadata(tokenMint);
     const currentPrice = tokenMetadata.price;
     const realTokenSymbol = tokenMetadata.symbol;
+    const marketCap = tokenMetadata.marketCap;
 
-    console.log(`Token: ${realTokenSymbol} (${tokenMetadata.name}) @ $${currentPrice}`);
+    console.log(`Token: ${realTokenSymbol} @ $${currentPrice} | MC: $${marketCap}`);
 
     const { tokenPnl, tokenPnlPercentage, entryPrice } = await calculateTokenPnl(
       supabase,
@@ -600,12 +602,14 @@ Deno.serve(async (req: Request) => {
       amount: amount.toString(),
       token_mint: tokenMint,
       token_symbol: realTokenSymbol,
+      token_name: tokenMetadata.name,
       transaction_type: transactionType,
       fee: data.fee || 0,
       token_pnl: tokenPnl.toString(),
       token_pnl_percentage: tokenPnlPercentage.toString(),
       current_token_price: currentPrice.toString(),
       entry_price: entryPrice.toString(),
+      market_cap: marketCap.toString(),
       raw_data: data,
     };
 

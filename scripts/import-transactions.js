@@ -36,18 +36,19 @@ async function fetchTokenMetadata(tokenMint) {
 
     if (!response.ok) {
       console.error(`Birdeye API error for ${tokenMint}: ${response.status}`);
-      return { symbol: 'UNKNOWN', name: 'Unknown', price: 0 };
+      return { symbol: 'UNKNOWN', name: 'Unknown', price: 0, marketCap: 0 };
     }
 
     const data = await response.json();
     return {
       symbol: data?.data?.symbol || 'UNKNOWN',
       name: data?.data?.name || 'Unknown',
-      price: data?.data?.price || 0
+      price: data?.data?.price || 0,
+      marketCap: data?.data?.marketCap || 0
     };
   } catch (error) {
     console.error('Error fetching token metadata:', error);
-    return { symbol: 'UNKNOWN', name: 'Unknown', price: 0 };
+    return { symbol: 'UNKNOWN', name: 'Unknown', price: 0, marketCap: 0 };
   }
 }
 
@@ -183,12 +184,14 @@ async function importTransactionsForWallet(walletAddress, label) {
         amount: parsed.amount.toString(),
         token_mint: parsed.tokenMint,
         token_symbol: tokenMetadata.symbol,
+        token_name: tokenMetadata.name,
         transaction_type: parsed.type,
         fee: parsed.fee,
         token_pnl: '0',
         token_pnl_percentage: '0',
         current_token_price: currentPrice.toString(),
         entry_price: currentPrice.toString(),
+        market_cap: (tokenMetadata.marketCap || 0).toString(),
         raw_data: tx,
       });
 
