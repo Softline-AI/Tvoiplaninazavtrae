@@ -208,7 +208,7 @@ async function getEntryPrice(
       .select("entry_price, current_token_price")
       .eq("from_address", walletAddress)
       .eq("token_mint", tokenMint)
-      .in("transaction_type", ["BUY", "SWAP"])
+      .eq("transaction_type", "BUY")
       .order("block_time", { ascending: true })
       .limit(1);
 
@@ -221,6 +221,46 @@ async function getEntryPrice(
   } catch (error) {
     console.error("Error getting entry price:", error);
     return 0;
+  }
+}
+
+async function getTokenBalance(
+  supabase: any,
+  walletAddress: string,
+  tokenMint: string
+): Promise<{ totalBought: number; totalSold: number; avgEntryPrice: number }> {
+  try {
+    const { data: buyData } = await supabase
+      .from("webhook_transactions")
+      .select("amount, current_token_price")
+      .eq("from_address", walletAddress)
+      .eq("token_mint", tokenMint)
+      .eq("transaction_type", "BUY");
+
+    const { data: sellData } = await supabase
+      .from("webhook_transactions")
+      .select("amount")
+      .eq("from_address", walletAddress)
+      .eq("token_mint", tokenMint)
+      .eq("transaction_type", "SELL");
+
+    const totalBought = (buyData || []).reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0);
+    const totalSold = (sellData || []).reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0);
+
+    let avgEntryPrice = 0;
+    if (buyData && buyData.length > 0) {
+      const totalCost = buyData.reduce((sum, tx) => {
+        const amount = parseFloat(tx.amount || "0");
+        const price = parseFloat(tx.current_token_price || "0");
+        return sum + (amount * price);
+      }, 0);
+      avgEntryPrice = totalBought > 0 ? totalCost / totalBought : 0;
+    }
+
+    return { totalBought, totalSold, avgEntryPrice };
+  } catch (error) {
+    console.error("Error getting token balance:", error);
+    return { totalBought: 0, totalSold: 0, avgEntryPrice: 0 };
   }
 }
 
@@ -241,27 +281,42 @@ async function calculateTokenPnl(
     return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: 0 };
   }
 
-  if (transactionType === "BUY" || transactionType === "SWAP") {
+  if (transactionType === "BUY") {
     entryPrice = currentPrice;
-
+    tokenPnl = 0;
+    tokenPnlPercentage = 0;
+    console.log(`BUY transaction: Entry price set to $${currentPrice}, P&L = $0`);
+  } else if (transactionType === "SELL") {
     const previousEntry = await getEntryPrice(supabase, walletAddress, tokenMint);
 
     if (previousEntry > 0) {
       entryPrice = previousEntry;
-      tokenPnl = amount * ((currentPrice - previousEntry) / previousEntry);
-      tokenPnlPercentage = ((currentPrice - previousEntry) / previousEntry) * 100;
+      const exitPrice = currentPrice;
+      tokenPnl = amount * (exitPrice - entryPrice);
+      tokenPnlPercentage = ((exitPrice - entryPrice) / entryPrice) * 100;
+      console.log(`SELL transaction: Entry $${entryPrice}, Exit $${exitPrice}, P&L = $${tokenPnl}`);
     } else {
       entryPrice = currentPrice;
       tokenPnl = 0;
       tokenPnlPercentage = 0;
+      console.log(`SELL transaction: No entry price found, P&L = $0`);
     }
-  } else if (transactionType === "SELL") {
-    entryPrice = await getEntryPrice(supabase, walletAddress, tokenMint);
+  } else if (transactionType === "SWAP") {
+    const balance = await getTokenBalance(supabase, walletAddress, tokenMint);
+    const currentHolding = balance.totalBought - balance.totalSold;
 
-    if (entryPrice > 0) {
-      const exitPrice = currentPrice;
-      tokenPnl = amount * ((exitPrice - entryPrice) / entryPrice);
-      tokenPnlPercentage = ((exitPrice - entryPrice) / entryPrice) * 100;
+    if (currentHolding > 0 && balance.avgEntryPrice > 0) {
+      entryPrice = balance.avgEntryPrice;
+      const unrealizedPnl = currentHolding * (currentPrice - balance.avgEntryPrice);
+
+      tokenPnl = unrealizedPnl;
+      tokenPnlPercentage = ((currentPrice - balance.avgEntryPrice) / balance.avgEntryPrice) * 100;
+      console.log(`SWAP transaction: Avg Entry $${balance.avgEntryPrice}, Current $${currentPrice}, Unrealized P&L = $${tokenPnl}`);
+    } else {
+      entryPrice = currentPrice;
+      tokenPnl = 0;
+      tokenPnlPercentage = 0;
+      console.log(`SWAP transaction: New position or no holdings, P&L = $0`);
     }
   }
 
@@ -295,14 +350,18 @@ function determineTransactionType(data: HeliusWebhookData): string {
     "BUY_ITEM": "BUY",
   };
 
-  return typeMapping[type] || type || "UNKNOWN";
+  const mappedType = typeMapping[type] || type || "UNKNOWN";
+  console.log(`Transaction type mapping: ${type} -> ${mappedType}`);
+
+  return mappedType;
 }
 
 async function updateKolProfile(
   supabase: any,
   walletAddress: string,
   tokenPnl: number,
-  volume: number
+  volume: number,
+  transactionType: string
 ): Promise<void> {
   try {
     const { data: profile, error: fetchError } = await supabase
@@ -325,14 +384,16 @@ async function updateKolProfile(
     const newTotalTrades = (profile.total_trades || 0) + 1;
     const newTotalVolume = (parseFloat(profile.total_volume) || 0) + volume;
 
-    const { data: profitableTrades } = await supabase
+    const { data: allTransactions } = await supabase
       .from("webhook_transactions")
       .select("token_pnl")
-      .eq("from_address", walletAddress)
-      .gt("token_pnl", 0);
+      .eq("from_address", walletAddress);
 
-    const profitableCount = profitableTrades?.length || 0;
-    const newWinRate = newTotalTrades > 0 ? (profitableCount / newTotalTrades) * 100 : 0;
+    const profitableCount = (allTransactions || []).filter(tx => parseFloat(tx.token_pnl || "0") > 0).length;
+    const totalCount = (allTransactions || []).length + 1;
+    const newWinRate = totalCount > 0 ? (profitableCount / totalCount) * 100 : 0;
+
+    console.log(`Updating KOL profile: P&L +$${tokenPnl}, Total: $${newTotalPnl}, WR: ${newWinRate.toFixed(1)}%`);
 
     const { error: updateError } = await supabase
       .from("kol_profiles")
@@ -515,7 +576,7 @@ Deno.serve(async (req: Request) => {
     } else {
       console.log(`Transaction saved successfully: ${transactionData.transaction_signature}`);
 
-      await updateKolProfile(supabase, fromAddress, tokenPnl, amount);
+      await updateKolProfile(supabase, fromAddress, tokenPnl, amount, transactionType);
     }
 
     return new Response(
