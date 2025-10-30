@@ -36,6 +36,27 @@ const KOLFeed: React.FC = () => {
 
   useEffect(() => {
     loadTrades();
+
+    const channel = supabase
+      .channel('webhook_transactions_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'webhook_transactions',
+          filter: 'transaction_type=in.(BUY,SELL)'
+        },
+        (payload) => {
+          console.log('New transaction received:', payload);
+          loadTrades();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   const loadTrades = async () => {
@@ -53,6 +74,7 @@ const KOLFeed: React.FC = () => {
       const { data: transactions, error } = await supabase
         .from('webhook_transactions')
         .select('*')
+        .in('transaction_type', ['BUY', 'SELL'])
         .order('block_time', { ascending: false })
         .limit(200);
 
@@ -69,7 +91,7 @@ const KOLFeed: React.FC = () => {
 
       const formattedTrades: KOLTrade[] = transactions.map((tx: any) => {
         const profile = profileMap.get(tx.from_address);
-        const txType = ['BUY', 'SWAP'].includes(tx.transaction_type) ? 'buy' : 'sell';
+        const txType = tx.transaction_type === 'BUY' ? 'buy' : 'sell';
         const amount = parseFloat(tx.amount || '0');
         const pnl = parseFloat(tx.token_pnl || '0');
         const pnlSol = pnl / 150;

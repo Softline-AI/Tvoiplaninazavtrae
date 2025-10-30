@@ -337,11 +337,35 @@ async function calculateTokenPnl(
   };
 }
 
-function determineTransactionType(data: HeliusWebhookData): string {
+function determineTransactionType(data: HeliusWebhookData, walletAddress: string): string {
   const type = data.type?.toUpperCase();
 
+  if (type === "SWAP") {
+    if (data.tokenTransfers && data.tokenTransfers.length >= 2) {
+      const solTransfer = data.tokenTransfers.find(t =>
+        t.mint === 'So11111111111111111111111111111111111111112'
+      );
+
+      const tokenTransfer = data.tokenTransfers.find(t =>
+        t.mint !== 'So11111111111111111111111111111111111111112'
+      );
+
+      if (solTransfer && tokenTransfer) {
+        if (solTransfer.fromUserAccount === walletAddress) {
+          console.log(`SWAP detected as BUY: Wallet spent SOL for tokens`);
+          return "BUY";
+        } else if (solTransfer.toUserAccount === walletAddress) {
+          console.log(`SWAP detected as SELL: Wallet received SOL for tokens`);
+          return "SELL";
+        }
+      }
+    }
+
+    console.log(`SWAP type kept as SWAP (insufficient data to determine)`);
+    return "SWAP";
+  }
+
   const typeMapping: { [key: string]: string } = {
-    "SWAP": "SWAP",
     "BUY": "BUY",
     "SELL": "SELL",
     "TRANSFER": "TRANSFER",
@@ -517,7 +541,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const transactionType = determineTransactionType(data);
+    const transactionType = determineTransactionType(data, fromAddress);
 
     const currentPrice = await getTokenPriceWithCache(supabase, tokenMint, tokenSymbol);
     console.log(`Current price for ${tokenMint}: $${currentPrice}`);
