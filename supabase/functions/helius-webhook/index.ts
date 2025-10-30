@@ -48,93 +48,35 @@ interface HeliusWebhookData {
   [key: string]: any;
 }
 
-function validateTransactionData(data: any): { valid: boolean; errors: string[] } {
-  const errors: string[] = [];
-
-  if (!data.type) {
-    errors.push("Missing transaction type");
-  }
-
-  if (!data.signature && !data.timestamp) {
-    errors.push("Missing transaction signature or timestamp");
-  }
-
-  return {
-    valid: errors.length === 0,
-    errors
-  };
-}
-
-function validateTokenMint(tokenMint: string): boolean {
-  if (!tokenMint || tokenMint === "unknown") {
-    return false;
-  }
-
-  if (tokenMint.length < 32 || tokenMint.length > 44) {
-    return false;
-  }
-
+function validateAmount(value: number): boolean {
+  if (typeof value !== "number") return false;
+  if (!isFinite(value)) return false;
+  if (isNaN(value)) return false;
+  if (value < 0) return false;
   return true;
-}
-
-function validateAmount(amount: number): boolean {
-  return !isNaN(amount) && amount > 0 && isFinite(amount);
-}
-
-async function getCachedTokenPrice(
-  supabase: any,
-  tokenMint: string
-): Promise<number | null> {
-  try {
-    const cacheExpiry = new Date(Date.now() - CACHE_DURATION_MINUTES * 60 * 1000);
-
-    const { data, error } = await supabase
-      .from("token_price_cache")
-      .select("price, last_updated")
-      .eq("token_mint", tokenMint)
-      .gte("last_updated", cacheExpiry.toISOString())
-      .maybeSingle();
-
-    if (error) {
-      console.error("Error fetching cached price:", error);
-      return null;
-    }
-
-    if (data) {
-      console.log(`Cache HIT for ${tokenMint}: $${data.price}`);
-      return parseFloat(data.price);
-    }
-
-    console.log(`Cache MISS for ${tokenMint}`);
-    return null;
-  } catch (error) {
-    console.error("Error in getCachedTokenPrice:", error);
-    return null;
-  }
 }
 
 async function updateTokenPriceCache(
   supabase: any,
   tokenMint: string,
-  tokenSymbol: string | null,
-  price: number
+  price: number,
+  tokenSymbol: string
 ): Promise<void> {
   try {
-    const { error } = await supabase
-      .from("token_price_cache")
-      .upsert({
+    const { error } = await supabase.from("token_price_cache").upsert(
+      {
         token_mint: tokenMint,
         token_symbol: tokenSymbol,
         price: price.toString(),
-        last_updated: new Date().toISOString()
-      }, {
-        onConflict: "token_mint"
-      });
+        last_updated: new Date().toISOString(),
+      },
+      {
+        onConflict: "token_mint",
+      }
+    );
 
     if (error) {
-      console.error("Error updating price cache:", error);
-    } else {
-      console.log(`Updated cache for ${tokenMint}: $${price}`);
+      console.error("Error updating token price cache:", error);
     }
   } catch (error) {
     console.error("Error in updateTokenPriceCache:", error);
@@ -206,92 +148,34 @@ async function fetchTokenPrice(tokenMint: string): Promise<number> {
 async function getTokenPriceWithCache(
   supabase: any,
   tokenMint: string,
-  tokenSymbol: string | null
-): Promise<number> {
-  if (!validateTokenMint(tokenMint)) {
-    console.error(`Invalid token mint: ${tokenMint}`);
-    return 0;
-  }
-
-  const cachedPrice = await getCachedTokenPrice(supabase, tokenMint);
-
-  if (cachedPrice !== null) {
-    return cachedPrice;
-  }
-
-  const freshPrice = await fetchTokenPrice(tokenMint);
-
-  if (freshPrice > 0) {
-    await updateTokenPriceCache(supabase, tokenMint, tokenSymbol, freshPrice);
-  }
-
-  return freshPrice;
-}
-
-async function getEntryPrice(
-  supabase: any,
-  walletAddress: string,
-  tokenMint: string
+  tokenSymbol: string
 ): Promise<number> {
   try {
-    const { data, error } = await supabase
-      .from("webhook_transactions")
-      .select("entry_price, current_token_price")
-      .eq("from_address", walletAddress)
+    const { data: cachedPrice, error } = await supabase
+      .from("token_price_cache")
+      .select("price, last_updated")
       .eq("token_mint", tokenMint)
-      .eq("transaction_type", "BUY")
-      .order("block_time", { ascending: true })
-      .limit(1);
+      .maybeSingle();
 
-    if (error || !data || data.length === 0) {
-      return 0;
+    if (!error && cachedPrice) {
+      const lastUpdated = new Date(cachedPrice.last_updated);
+      const now = new Date();
+      const minutesSinceUpdate =
+        (now.getTime() - lastUpdated.getTime()) / (1000 * 60);
+
+      if (minutesSinceUpdate < CACHE_DURATION_MINUTES) {
+        const price = parseFloat(cachedPrice.price);
+        console.log(`Using cached price for ${tokenMint}: $${price}`);
+        return price;
+      }
     }
 
-    const price = parseFloat(data[0].entry_price || data[0].current_token_price || "0");
-    return validateAmount(price) ? price : 0;
+    const price = await fetchTokenPrice(tokenMint);
+    await updateTokenPriceCache(supabase, tokenMint, price, tokenSymbol);
+    return price;
   } catch (error) {
-    console.error("Error getting entry price:", error);
+    console.error("Error in getTokenPriceWithCache:", error);
     return 0;
-  }
-}
-
-async function getTokenBalance(
-  supabase: any,
-  walletAddress: string,
-  tokenMint: string
-): Promise<{ totalBought: number; totalSold: number; avgEntryPrice: number }> {
-  try {
-    const { data: buyData } = await supabase
-      .from("webhook_transactions")
-      .select("amount, current_token_price")
-      .eq("from_address", walletAddress)
-      .eq("token_mint", tokenMint)
-      .eq("transaction_type", "BUY");
-
-    const { data: sellData } = await supabase
-      .from("webhook_transactions")
-      .select("amount")
-      .eq("from_address", walletAddress)
-      .eq("token_mint", tokenMint)
-      .eq("transaction_type", "SELL");
-
-    const totalBought = (buyData || []).reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0);
-    const totalSold = (sellData || []).reduce((sum, tx) => sum + parseFloat(tx.amount || "0"), 0);
-
-    let avgEntryPrice = 0;
-    if (buyData && buyData.length > 0) {
-      const totalCost = buyData.reduce((sum, tx) => {
-        const amount = parseFloat(tx.amount || "0");
-        const price = parseFloat(tx.current_token_price || "0");
-        return sum + (amount * price);
-      }, 0);
-      avgEntryPrice = totalBought > 0 ? totalCost / totalBought : 0;
-    }
-
-    return { totalBought, totalSold, avgEntryPrice };
-  } catch (error) {
-    console.error("Error getting token balance:", error);
-    return { totalBought: 0, totalSold: 0, avgEntryPrice: 0 };
   }
 }
 
@@ -300,175 +184,173 @@ async function calculateTokenPnl(
   transactionType: string,
   walletAddress: string,
   tokenMint: string,
-  amount: number,
+  currentAmount: number,
   currentPrice: number
-): Promise<{ tokenPnl: number; tokenPnlPercentage: number; entryPrice: number }> {
-  let tokenPnl = 0;
-  let tokenPnlPercentage = 0;
-  let entryPrice = 0;
+): Promise<{
+  tokenPnl: number;
+  tokenPnlPercentage: number;
+  entryPrice: number;
+}> {
+  try {
+    const { data: previousTransactions, error } = await supabase
+      .from("webhook_transactions")
+      .select("*")
+      .eq("from_address", walletAddress)
+      .eq("token_mint", tokenMint)
+      .order("block_time", { ascending: true });
 
-  if (!validateAmount(amount) || !validateAmount(currentPrice)) {
-    console.error(`Invalid calculation inputs - amount: ${amount}, price: ${currentPrice}`);
-    return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: 0 };
-  }
-
-  if (transactionType === "BUY") {
-    entryPrice = currentPrice;
-    tokenPnl = 0;
-    tokenPnlPercentage = 0;
-    console.log(`BUY transaction: Entry price set to $${currentPrice}, P&L = $0`);
-  } else if (transactionType === "SELL") {
-    const previousEntry = await getEntryPrice(supabase, walletAddress, tokenMint);
-
-    if (previousEntry > 0) {
-      entryPrice = previousEntry;
-      const exitPrice = currentPrice;
-      tokenPnl = amount * (exitPrice - entryPrice);
-      tokenPnlPercentage = ((exitPrice - entryPrice) / entryPrice) * 100;
-      console.log(`SELL transaction: Entry $${entryPrice}, Exit $${exitPrice}, P&L = $${tokenPnl}`);
-    } else {
-      entryPrice = currentPrice;
-      tokenPnl = 0;
-      tokenPnlPercentage = 0;
-      console.log(`SELL transaction: No entry price found, P&L = $0`);
+    if (error) {
+      console.error("Error fetching previous transactions:", error);
+      return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: currentPrice };
     }
-  } else if (transactionType === "SWAP") {
-    const balance = await getTokenBalance(supabase, walletAddress, tokenMint);
-    const currentHolding = balance.totalBought - balance.totalSold;
 
-    if (currentHolding > 0 && balance.avgEntryPrice > 0) {
-      entryPrice = balance.avgEntryPrice;
-      const unrealizedPnl = currentHolding * (currentPrice - balance.avgEntryPrice);
-
-      tokenPnl = unrealizedPnl;
-      tokenPnlPercentage = ((currentPrice - balance.avgEntryPrice) / balance.avgEntryPrice) * 100;
-      console.log(`SWAP transaction: Avg Entry $${balance.avgEntryPrice}, Current $${currentPrice}, Unrealized P&L = $${tokenPnl}`);
-    } else {
-      entryPrice = currentPrice;
-      tokenPnl = 0;
-      tokenPnlPercentage = 0;
-      console.log(`SWAP transaction: New position or no holdings, P&L = $0`);
+    if (!previousTransactions || previousTransactions.length === 0) {
+      return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: currentPrice };
     }
-  }
 
-  if (!isFinite(tokenPnl) || isNaN(tokenPnl)) {
-    console.error(`Invalid P&L calculation result: ${tokenPnl}`);
-    tokenPnl = 0;
-  }
+    let totalBought = 0;
+    let totalSpent = 0;
+    let totalSold = 0;
+    let totalReceived = 0;
 
-  if (!isFinite(tokenPnlPercentage) || isNaN(tokenPnlPercentage)) {
-    console.error(`Invalid P&L percentage result: ${tokenPnlPercentage}`);
-    tokenPnlPercentage = 0;
-  }
+    for (const tx of previousTransactions) {
+      const amount = parseFloat(tx.amount || "0");
+      const price = parseFloat(tx.current_token_price || "0");
 
-  return {
-    tokenPnl: parseFloat(tokenPnl.toFixed(2)),
-    tokenPnlPercentage: parseFloat(tokenPnlPercentage.toFixed(2)),
-    entryPrice: parseFloat(entryPrice.toFixed(8)),
-  };
-}
-
-function determineTransactionType(data: HeliusWebhookData, walletAddress: string): string {
-  const type = data.type?.toUpperCase();
-
-  if (type === "SWAP") {
-    if (data.tokenTransfers && data.tokenTransfers.length >= 2) {
-      const solTransfer = data.tokenTransfers.find(t =>
-        t.mint === 'So11111111111111111111111111111111111111112'
-      );
-
-      const tokenTransfer = data.tokenTransfers.find(t =>
-        t.mint !== 'So11111111111111111111111111111111111111112'
-      );
-
-      if (solTransfer && tokenTransfer) {
-        if (solTransfer.fromUserAccount === walletAddress) {
-          console.log(`SWAP detected as BUY: Wallet spent SOL for tokens`);
-          return "BUY";
-        } else if (solTransfer.toUserAccount === walletAddress) {
-          console.log(`SWAP detected as SELL: Wallet received SOL for tokens`);
-          return "SELL";
-        }
+      if (tx.transaction_type === "BUY") {
+        totalBought += amount;
+        totalSpent += amount * price;
+      } else if (tx.transaction_type === "SELL") {
+        totalSold += amount;
+        totalReceived += amount * price;
       }
     }
 
-    console.log(`SWAP type kept as SWAP (insufficient data to determine)`);
+    if (transactionType === "BUY") {
+      totalBought += currentAmount;
+      totalSpent += currentAmount * currentPrice;
+    } else if (transactionType === "SELL") {
+      totalSold += currentAmount;
+      totalReceived += currentAmount * currentPrice;
+    }
+
+    const currentHolding = totalBought - totalSold;
+    const avgEntryPrice = totalBought > 0 ? totalSpent / totalBought : 0;
+
+    let unrealizedPnl = 0;
+    let realizedPnl = 0;
+
+    if (currentHolding > 0) {
+      unrealizedPnl = currentHolding * currentPrice - currentHolding * avgEntryPrice;
+    }
+
+    if (totalSold > 0) {
+      realizedPnl = totalReceived - (totalSold * avgEntryPrice);
+    }
+
+    const totalPnl = unrealizedPnl + realizedPnl;
+    const totalInvested = totalSpent - totalReceived;
+    const pnlPercentage = totalInvested > 0 ? (totalPnl / totalInvested) * 100 : 0;
+
+    return {
+      tokenPnl: totalPnl,
+      tokenPnlPercentage: pnlPercentage,
+      entryPrice: avgEntryPrice,
+    };
+  } catch (error) {
+    console.error("Error calculating token P&L:", error);
+    return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: currentPrice };
+  }
+}
+
+function determineTransactionType(data: HeliusWebhookData, walletAddress: string): string {
+  const type = data.type?.toUpperCase() || "UNKNOWN";
+
+  if (type === "SWAP" && data.tokenTransfers && data.tokenTransfers.length >= 2) {
+    const solTransfer = data.tokenTransfers.find(
+      (t) => t.mint === "So11111111111111111111111111111111111111112"
+    );
+
+    if (solTransfer) {
+      if (solTransfer.fromUserAccount === walletAddress) return "BUY";
+      if (solTransfer.toUserAccount === walletAddress) return "SELL";
+    }
     return "SWAP";
   }
 
-  const typeMapping: { [key: string]: string } = {
-    "BUY": "BUY",
-    "SELL": "SELL",
-    "TRANSFER": "TRANSFER",
-    "TOKEN_MINT": "BUY",
-    "FILL_ORDER": "BUY",
-    "BUY_ITEM": "BUY",
-  };
+  if (type === "TRANSFER" && data.tokenTransfers && data.tokenTransfers.length > 0) {
+    const transfer = data.tokenTransfers.find(
+      (t) => t.fromUserAccount === walletAddress
+    );
+    return transfer ? "SELL" : "BUY";
+  }
 
-  const mappedType = typeMapping[type] || type || "UNKNOWN";
-  console.log(`Transaction type mapping: ${type} -> ${mappedType}`);
+  if (["TOKEN_MINT", "FILL_ORDER", "BUY_ITEM"].includes(type)) return "BUY";
 
-  return mappedType;
+  return type;
 }
 
-async function updateKolProfile(
-  supabase: any,
-  walletAddress: string,
-  tokenPnl: number,
-  volume: number,
-  transactionType: string
-): Promise<void> {
-  try {
-    const { data: profile, error: fetchError } = await supabase
-      .from("kol_profiles")
-      .select("*")
-      .eq("wallet_address", walletAddress)
-      .maybeSingle();
+function extractTransactionData(
+  data: HeliusWebhookData
+): {
+  fromAddress: string | null;
+  toAddress: string | null;
+  amount: number;
+  tokenMint: string | null;
+  tokenSymbol: string | null;
+} {
+  let fromAddress: string | null = null;
+  let toAddress: string | null = null;
+  let amount = 0;
+  let tokenMint: string | null = null;
+  let tokenSymbol: string | null = null;
 
-    if (fetchError) {
-      console.error("Error fetching KOL profile:", fetchError);
-      return;
+  if (data.tokenTransfers && data.tokenTransfers.length > 0) {
+    const tokenTransfer = data.tokenTransfers.find(
+      (t) => t.mint !== "So11111111111111111111111111111111111111112"
+    );
+
+    if (tokenTransfer) {
+      fromAddress = tokenTransfer.fromUserAccount;
+      toAddress = tokenTransfer.toUserAccount;
+      amount = tokenTransfer.tokenAmount || 0;
+      tokenMint = tokenTransfer.mint;
+      tokenSymbol = tokenTransfer.tokenStandard;
     }
-
-    if (!profile) {
-      console.log(`No KOL profile found for ${walletAddress}`);
-      return;
-    }
-
-    const newTotalPnl = (parseFloat(profile.total_pnl) || 0) + tokenPnl;
-    const newTotalTrades = (profile.total_trades || 0) + 1;
-    const newTotalVolume = (parseFloat(profile.total_volume) || 0) + volume;
-
-    const { data: allTransactions } = await supabase
-      .from("webhook_transactions")
-      .select("token_pnl")
-      .eq("from_address", walletAddress);
-
-    const profitableCount = (allTransactions || []).filter(tx => parseFloat(tx.token_pnl || "0") > 0).length;
-    const totalCount = (allTransactions || []).length + 1;
-    const newWinRate = totalCount > 0 ? (profitableCount / totalCount) * 100 : 0;
-
-    console.log(`Updating KOL profile: P&L +$${tokenPnl}, Total: $${newTotalPnl}, WR: ${newWinRate.toFixed(1)}%`);
-
-    const { error: updateError } = await supabase
-      .from("kol_profiles")
-      .update({
-        total_pnl: newTotalPnl.toFixed(2),
-        total_trades: newTotalTrades,
-        total_volume: newTotalVolume.toFixed(2),
-        win_rate: newWinRate.toFixed(2),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("wallet_address", walletAddress);
-
-    if (updateError) {
-      console.error("Error updating KOL profile:", updateError);
-    } else {
-      console.log(`Updated KOL profile for ${walletAddress}`);
-    }
-  } catch (error) {
-    console.error("Error in updateKolProfile:", error);
   }
+
+  if (!fromAddress && data.accountData && data.accountData.length > 0) {
+    for (const account of data.accountData) {
+      if (account.tokenBalanceChanges && account.tokenBalanceChanges.length > 0) {
+        const tokenChange = account.tokenBalanceChanges[0];
+        fromAddress = account.account;
+        tokenMint = tokenChange.mint;
+
+        const rawAmount = tokenChange.rawTokenAmount.tokenAmount;
+        const decimals = tokenChange.rawTokenAmount.decimals;
+        amount = parseFloat(rawAmount) / Math.pow(10, decimals);
+        break;
+      }
+    }
+  }
+
+  if (!fromAddress) {
+    fromAddress = data.feePayer || data.from || null;
+  }
+
+  if (!toAddress) {
+    toAddress = data.to || null;
+  }
+
+  if (!amount && data.amount) {
+    amount = data.amount;
+  }
+
+  if (!tokenMint && data.tokenMint) {
+    tokenMint = data.tokenMint;
+  }
+
+  return { fromAddress, toAddress, amount, tokenMint, tokenSymbol };
 }
 
 Deno.serve(async (req: Request) => {
@@ -480,94 +362,64 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const webhookSecret = req.headers.get("x-webhook-secret");
-    const validSecret = Deno.env.get("HELIUS_WEBHOOK_SECRET");
-
-    if (validSecret && webhookSecret !== validSecret) {
-      console.error("Invalid webhook secret");
-      return new Response(
-        JSON.stringify({ error: "Unauthorized: Invalid webhook secret" }),
-        {
-          status: 401,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-    }
-
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const data: HeliusWebhookData = await req.json();
-    console.log("Received webhook:", JSON.stringify(data, null, 2));
-
-    const validation = validateTransactionData(data);
-    if (!validation.valid) {
-      console.error("Invalid transaction data:", validation.errors);
+    if (req.method !== "POST") {
       return new Response(
-        JSON.stringify({ error: "Invalid transaction data", details: validation.errors }),
+        JSON.stringify({ error: "Method not allowed" }),
         {
-          status: 400,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
+          status: 405,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
 
-    let fromAddress = data.from || data.feePayer || "unknown";
-    let toAddress = data.to || "unknown";
-    let tokenMint = data.tokenMint || "unknown";
-    let tokenSymbol = data.tokenSymbol || null;
-    let amount = data.amount || 0;
+    const body = await req.json();
+    const data: HeliusWebhookData = Array.isArray(body) ? body[0] : body;
 
-    if (data.tokenTransfers && data.tokenTransfers.length > 0) {
-      const transfer = data.tokenTransfers[0];
-      fromAddress = transfer.fromUserAccount || fromAddress;
-      toAddress = transfer.toUserAccount || toAddress;
-      tokenMint = transfer.mint || tokenMint;
-      amount = transfer.tokenAmount || amount;
-    }
-
-    if (data.accountData && data.accountData.length > 0) {
-      const account = data.accountData[0];
-      fromAddress = account.account || fromAddress;
-
-      if (account.tokenBalanceChanges && account.tokenBalanceChanges.length > 0) {
-        const tokenChange = account.tokenBalanceChanges[0];
-        tokenMint = tokenChange.mint || tokenMint;
-        amount = parseFloat(tokenChange.rawTokenAmount?.tokenAmount || "0");
-      }
-    }
-
-    if (!validateTokenMint(tokenMint)) {
-      console.error(`Invalid token mint: ${tokenMint}`);
+    if (!data || !data.type) {
       return new Response(
-        JSON.stringify({ error: "Invalid token mint address" }),
+        JSON.stringify({ error: "Invalid webhook data" }),
         {
           status: 400,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
 
-    if (!validateAmount(amount)) {
-      console.error(`Invalid amount: ${amount}`);
+    console.log(`Processing ${data.type} transaction`);
+
+    const { fromAddress, toAddress, amount, tokenMint, tokenSymbol } =
+      extractTransactionData(data);
+
+    if (!fromAddress || !tokenMint || amount <= 0) {
+      console.log(
+        `Skipping transaction: fromAddress=${fromAddress}, tokenMint=${tokenMint}, amount=${amount}`
+      );
       return new Response(
-        JSON.stringify({ error: "Invalid transaction amount" }),
+        JSON.stringify({ message: "Transaction skipped - insufficient data" }),
         {
-          status: 400,
-          headers: {
-            ...corsHeaders,
-            "Content-Type": "application/json",
-          },
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    const { data: monitoredWallet } = await supabase
+      .from("monitored_wallets")
+      .select("*")
+      .eq("wallet_address", fromAddress)
+      .maybeSingle();
+
+    if (!monitoredWallet) {
+      console.log(`Wallet ${fromAddress} is not monitored, skipping`);
+      return new Response(
+        JSON.stringify({ message: "Wallet not monitored" }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
         }
       );
     }
@@ -615,62 +467,39 @@ Deno.serve(async (req: Request) => {
 
     const { error } = await supabase
       .from("webhook_transactions")
-      .insert(transactionData);
+      .insert(transactionData)
+      .select()
+      .single();
 
     if (error) {
-      console.error(`Error inserting transaction:`, error);
-
-      if (error.code !== "23505") {
-        return new Response(
-          JSON.stringify({ error: error.message }),
-          {
-            status: 500,
-            headers: {
-              ...corsHeaders,
-              "Content-Type": "application/json",
-            },
-          }
-        );
-      } else {
-        console.log("Duplicate transaction, skipping...");
-      }
-    } else {
-      console.log(`Transaction saved successfully: ${transactionData.transaction_signature}`);
-
-      await updateKolProfile(supabase, fromAddress, tokenPnl, amount, transactionType);
+      console.error("Error inserting transaction:", error);
+      return new Response(
+        JSON.stringify({ error: error.message }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
     }
 
+    console.log(
+      `✅ Transaction processed: ${transactionType} ${amount} ${realTokenSymbol} @ $${currentPrice}`
+    );
+
     return new Response(
-      JSON.stringify({
-        success: true,
-        message: "Webhook processed",
-        data: {
-          signature: transactionData.transaction_signature,
-          type: transactionType,
-          token: tokenSymbol || tokenMint,
-          amount: amount,
-          pnl: tokenPnl,
-          pnlPercentage: tokenPnlPercentage,
-        }
-      }),
+      JSON.stringify({ message: "Transaction processed successfully" }),
       {
         status: 200,
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    console.error("Webhook processing error:", error);
+    console.error("Error processing webhook:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       {
         status: 500,
-        headers: {
-          ...corsHeaders,
-          "Content-Type": "application/json",
-        },
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
   }
