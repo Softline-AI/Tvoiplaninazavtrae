@@ -85,20 +85,39 @@ async function createWebhook(wallets) {
 async function main() {
   console.log('Starting Helius webhook setup...\n');
 
-  // Hardcoded list of monitored wallets (from database)
+  // ALL monitored wallets from database (31 total)
   const walletAddresses = [
     '2fg5QD1eD7rzNNCsvnhmXFm5hqNgwTTG8p7kQ6f3rx6f',
+    '2kv8X2a9bxnBM8NKLc6BBTX2z13GFNRL4oRotMUJRva9',
     '3BLjRcxWGtR7WRshJ3hL25U3RjWr5Ud98wMcczQqk4Ei',
+    '4BdKaxN8G6ka4GYtQQWk4G4dZRUTX2vQH9GcXdBREFUk',
     '4cXnf2z85UiZ5cyKsPMEULq1yufAtpkatmX4j4DBZqj2',
+    '52C9T2T7JRojtxumYnYZhyUmrN7kqzvCLc4Ksvjk7TxD',
+    '76zneZhcvEzF5JXznQuF5tpoVSDiuchw4h5epCdi4bdT',
     '86AEJExyjeNNgcp7GrAvCXTDicf5aGWgoERbXFiG1EdD',
+    '8BseXT9EtoEhBTKFFYkwTnjKSUZwhtmdKY2Jrj8j45Rt',
+    '8MaVa9kdt3NW4Q5HyNAm1X5LbR8PQRVDc1W8NMVK88D5',
     '8rvAsDKeAcEjEkiZMug9k8v1y8mW6gQQiMobd89Uy7qR',
     '9yYya3F5EJoLnBNKW6z4bZvyQytMXzDcpU5D6yYr4jqL',
+    'AeLaMjzxErZt4drbWVWvcxpVyo8p94xu5vrg41eZPFe3',
+    'Av3xWHJ5EsoLZag6pr7LKbrGgLRTaykXomDD5kBhL9YQ',
+    'BoYHJoKntk3pjkaV8qFojEonSPWmWMfQocZTwDd1bcGG',
+    'BTYBjYjodGY7K2ifq1c4Wv4WMbJQPVN7tUStTsfcvR31',
+    'BuhkHhM3j4viF71pMTd23ywxPhF35LUnc2QCLAvUxCdW',
     'CA4keXLtGJWBcsWivjtMFBghQ8pFsGRWFxLrRCtirzu5',
     'CyaE1VxvBrahnPWkqm5VsdCvyS2QmNht2UFrKJHga54o',
+    'Di75xbVUg3u1qcmZci3NcZ8rjFMj7tsnYEoFdEMjS4ow',
     'DYAn4XpAkN5mhiXkRB7dGq4Jadnx6XYgu8L5b3WGhbrt',
+    'EHg5YkU2SZBTvuT87rUsvxArGp3HLeye1fXaSDfuMyaf',
     'FL4j8EEMAPUjrvASnqX7VdpWZJji1LFsAxwojhpueUYt',
+    'FxN3VZ4BosL5urG2yoeQ156JSdmavm9K5fdLxjkPmaMR',
+    'GJA1HEbxGnqBhBifH9uQauzXSB53to5rhDrzmKxhSU65',
     'GM7Hrz2bDq33ezMtL6KGidSWZXMWgZ6qBuugkb5H8NvN',
-    'HvDf4Cxd2evdYueLhK5LoaiEvDXFXgb1uRrkoYPdvHfH'
+    'HvDf4Cxd2evdYueLhK5LoaiEvDXFXgb1uRrkoYPdvHfH',
+    'JDd3hy3gQn2V982mi1zqhNqUw1GfV2UL6g76STojCJPN',
+    'm7Kaas3Kd8FHLnCioSjCoSuVDReZ6FDNBVM6HTNYuF7',
+    'MJKqp326RZCHnAAbew9MDdui3iCKWco7fsK9sVuZTX2',
+    'sAdNbe1cKNMDqDsa4npB3TfL62T14uAo2MsUQfLvzLT'
   ];
 
   console.log(`Using ${walletAddresses.length} monitored wallets\n`);

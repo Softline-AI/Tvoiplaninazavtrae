@@ -266,16 +266,37 @@ async function calculateTokenPnl(
 function determineTransactionType(data: HeliusWebhookData, walletAddress: string): string {
   const type = data.type?.toUpperCase() || "UNKNOWN";
 
-  if (type === "SWAP" && data.tokenTransfers && data.tokenTransfers.length >= 2) {
-    const solTransfer = data.tokenTransfers.find(
-      (t) => t.mint === "So11111111111111111111111111111111111111112"
-    );
+  if (type === "SWAP") {
+    if (data.tokenTransfers && data.tokenTransfers.length >= 2) {
+      const solTransfer = data.tokenTransfers.find(
+        (t) => t.mint === "So11111111111111111111111111111111111111112"
+      );
 
-    if (solTransfer) {
-      if (solTransfer.fromUserAccount === walletAddress) return "BUY";
-      if (solTransfer.toUserAccount === walletAddress) return "SELL";
+      if (solTransfer) {
+        if (solTransfer.fromUserAccount === walletAddress) return "BUY";
+        if (solTransfer.toUserAccount === walletAddress) return "SELL";
+      }
+
+      const nonSolTransfer = data.tokenTransfers.find(
+        (t) => t.mint !== "So11111111111111111111111111111111111111112"
+      );
+
+      if (nonSolTransfer) {
+        if (nonSolTransfer.toUserAccount === walletAddress) return "BUY";
+        if (nonSolTransfer.fromUserAccount === walletAddress) return "SELL";
+      }
     }
-    return "SWAP";
+
+    if (data.accountData && data.accountData.length > 0) {
+      const walletAccount = data.accountData.find(acc => acc.account === walletAddress);
+      if (walletAccount && walletAccount.tokenBalanceChanges) {
+        for (const balanceChange of walletAccount.tokenBalanceChanges) {
+          const amount = parseFloat(balanceChange.rawTokenAmount.tokenAmount);
+          if (amount > 0) return "BUY";
+          if (amount < 0) return "SELL";
+        }
+      }
+    }
   }
 
   if (type === "TRANSFER" && data.tokenTransfers && data.tokenTransfers.length > 0) {
@@ -491,7 +512,7 @@ Deno.serve(async (req: Request) => {
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+        }
     );
   } catch (error) {
     console.error("Error processing webhook:", error);
