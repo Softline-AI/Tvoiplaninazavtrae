@@ -23,10 +23,10 @@ const WALLETS = [
   '86AEJExyjeNNgcp7GrAvCXTDicf5aGWgoERbXFiG1EdD'
 ];
 
-async function fetchTokenPrice(tokenMint) {
+async function fetchTokenMetadata(tokenMint) {
   try {
     const response = await fetch(
-      `https://public-api.birdeye.so/defi/price?address=${tokenMint}`,
+      `https://public-api.birdeye.so/defi/token_overview?address=${tokenMint}`,
       {
         headers: {
           'X-API-KEY': BIRDEYE_API_KEY,
@@ -36,14 +36,18 @@ async function fetchTokenPrice(tokenMint) {
 
     if (!response.ok) {
       console.error(`Birdeye API error for ${tokenMint}: ${response.status}`);
-      return 0;
+      return { symbol: 'UNKNOWN', name: 'Unknown', price: 0 };
     }
 
     const data = await response.json();
-    return data?.data?.value || 0;
+    return {
+      symbol: data?.data?.symbol || 'UNKNOWN',
+      name: data?.data?.name || 'Unknown',
+      price: data?.data?.price || 0
+    };
   } catch (error) {
-    console.error('Error fetching token price:', error);
-    return 0;
+    console.error('Error fetching token metadata:', error);
+    return { symbol: 'UNKNOWN', name: 'Unknown', price: 0 };
   }
 }
 
@@ -73,7 +77,20 @@ function parseHeliusTransaction(tx, walletAddress) {
     const type = tx.type?.toUpperCase() || 'UNKNOWN';
 
     let transactionType = 'UNKNOWN';
-    if (type === 'SWAP') transactionType = 'SWAP';
+    if (type === 'SWAP') {
+      if (tx.tokenTransfers && tx.tokenTransfers.length >= 2) {
+        const solTransfer = tx.tokenTransfers.find(t => t.mint === 'So11111111111111111111111111111111111111112');
+        if (solTransfer) {
+          if (solTransfer.fromUserAccount === walletAddress) transactionType = 'BUY';
+          else if (solTransfer.toUserAccount === walletAddress) transactionType = 'SELL';
+          else transactionType = 'SWAP';
+        } else {
+          transactionType = 'SWAP';
+        }
+      } else {
+        transactionType = 'SWAP';
+      }
+    }
     else if (type === 'TRANSFER' && tx.tokenTransfers && tx.tokenTransfers.length > 0) {
       const transfer = tx.tokenTransfers.find(t => t.fromUserAccount === walletAddress);
       if (transfer) transactionType = 'SELL';
@@ -151,7 +168,8 @@ async function importTransactionsForWallet(walletAddress, label) {
       continue;
     }
 
-    const currentPrice = await fetchTokenPrice(parsed.tokenMint);
+    const tokenMetadata = await fetchTokenMetadata(parsed.tokenMint);
+    const currentPrice = tokenMetadata.price;
 
     await new Promise(resolve => setTimeout(resolve, 100));
 
@@ -164,7 +182,7 @@ async function importTransactionsForWallet(walletAddress, label) {
         to_address: 'unknown',
         amount: parsed.amount.toString(),
         token_mint: parsed.tokenMint,
-        token_symbol: parsed.tokenSymbol,
+        token_symbol: tokenMetadata.symbol,
         transaction_type: parsed.type,
         fee: parsed.fee,
         token_pnl: '0',
@@ -178,7 +196,7 @@ async function importTransactionsForWallet(walletAddress, label) {
       console.error(`Error inserting transaction: ${error.message}`);
     } else {
       imported++;
-      console.log(`✓ Imported ${parsed.type} ${parsed.tokenSymbol || parsed.tokenMint.substring(0, 8)}... ($${parsed.amount.toFixed(2)})`);
+      console.log(`✓ Imported ${parsed.type} ${tokenMetadata.symbol} ($${(parsed.amount * currentPrice).toFixed(2)})`);
     }
   }
 

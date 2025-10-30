@@ -141,6 +141,36 @@ async function updateTokenPriceCache(
   }
 }
 
+async function fetchTokenMetadata(tokenMint: string): Promise<{ symbol: string; name: string; price: number }> {
+  try {
+    const response = await fetch(
+      `https://public-api.birdeye.so/defi/token_overview?address=${tokenMint}`,
+      {
+        headers: {
+          "X-API-KEY": BIRDEYE_API_KEY,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`Birdeye API error: ${response.status}`);
+      return { symbol: "UNKNOWN", name: "Unknown Token", price: 0 };
+    }
+
+    const data = await response.json();
+    const symbol = data?.data?.symbol || "UNKNOWN";
+    const name = data?.data?.name || "Unknown Token";
+    const price = data?.data?.price || 0;
+
+    console.log(`Token metadata for ${tokenMint}: ${symbol} (${name}) @ $${price}`);
+
+    return { symbol, name, price };
+  } catch (error) {
+    console.error("Error fetching token metadata:", error);
+    return { symbol: "UNKNOWN", name: "Unknown Token", price: 0 };
+  }
+}
+
 async function fetchTokenPrice(tokenMint: string): Promise<number> {
   try {
     const response = await fetch(
@@ -543,8 +573,11 @@ Deno.serve(async (req: Request) => {
 
     const transactionType = determineTransactionType(data, fromAddress);
 
-    const currentPrice = await getTokenPriceWithCache(supabase, tokenMint, tokenSymbol);
-    console.log(`Current price for ${tokenMint}: $${currentPrice}`);
+    const tokenMetadata = await fetchTokenMetadata(tokenMint);
+    const currentPrice = tokenMetadata.price;
+    const realTokenSymbol = tokenMetadata.symbol;
+
+    console.log(`Token: ${realTokenSymbol} (${tokenMetadata.name}) @ $${currentPrice}`);
 
     const { tokenPnl, tokenPnlPercentage, entryPrice } = await calculateTokenPnl(
       supabase,
@@ -566,7 +599,7 @@ Deno.serve(async (req: Request) => {
       to_address: toAddress,
       amount: amount.toString(),
       token_mint: tokenMint,
-      token_symbol: tokenSymbol,
+      token_symbol: realTokenSymbol,
       transaction_type: transactionType,
       fee: data.fee || 0,
       token_pnl: tokenPnl.toString(),
