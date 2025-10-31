@@ -84,15 +84,15 @@ const HomePage: React.FC = () => {
               Real-time blockchain intelligence. Follow the biggest wallets, catch trends early, and make profitable moves before the market reacts.
             </p>
 
-            <ul className="grid grid-cols-1 gap-3 sm:gap-3.5 mb-8 sm:mb-12 w-full max-w-lg">
+            <ul className="grid grid-cols-1 gap-4 mb-10 sm:mb-14 w-full max-w-lg">
               {['Live whale wallet tracking', '1000+ KOL database', 'Early trend detection', 'Insider move alerts'].map((item, i) => (
                 <li
                   key={i}
-                  className="flex items-center gap-3"
+                  className="flex items-center gap-4"
                   style={{ transform: 'translateZ(0)' }}
                 >
-                  <div className="w-2 h-2 rounded-full bg-white flex-shrink-0 shadow-lg shadow-white/50"></div>
-                  <span className="font-medium text-base sm:text-lg noir-text-secondary tracking-wide">{item}</span>
+                  <div className="w-3 h-3 rounded-full bg-gradient-to-br from-white to-gray-300 flex-shrink-0 shadow-lg shadow-white/60 ring-2 ring-white/20 ring-offset-2 ring-offset-noir-black"></div>
+                  <span className="font-semibold text-lg sm:text-xl noir-text-secondary tracking-wide">{item}</span>
                 </li>
               ))}
             </ul>
@@ -100,9 +100,13 @@ const HomePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 w-full">
               <Link
                 to="/app/kol-feed"
-                className="noir-button noir-pulse inline-flex items-center justify-center whitespace-nowrap font-medium transition-all h-12 sm:h-14 md:h-16 rounded-lg px-8 sm:px-10 md:px-12 text-base sm:text-lg md:text-xl w-full sm:w-auto"
+                className="group relative inline-flex items-center justify-center whitespace-nowrap font-bold transition-all h-14 sm:h-16 md:h-18 rounded-xl px-10 sm:px-12 md:px-14 text-lg sm:text-xl md:text-2xl w-full sm:w-auto bg-white text-noir-black hover:bg-gray-100 hover:scale-105 active:scale-100 shadow-2xl shadow-white/20 overflow-hidden"
               >
-                <span>Get Started</span>
+                <span className="relative z-10 flex items-center gap-3">
+                  Start Tracking
+                  <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-white via-gray-50 to-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
               </Link>
             </div>
           </div>
@@ -212,14 +216,6 @@ const HomePage: React.FC = () => {
           ))}
         </div>
 
-        <div className="flex justify-center mt-16">
-          <Link
-            to="/app"
-            className="noir-button inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg text-lg font-semibold transition-all h-14 px-10 py-4"
-          >
-            Get Started
-          </Link>
-        </div>
       </section>
 
       <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
@@ -262,9 +258,13 @@ const HomePage: React.FC = () => {
               </div>
             </div>
 
-            <button className="w-full bg-white text-noir-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-6 sm:mb-8 shadow-lg">
-              Get Started
-            </button>
+            <Link
+              to="/app/kol-feed"
+              className="group w-full bg-gradient-to-r from-white to-gray-100 text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:from-gray-100 hover:to-white hover:scale-105 hover:shadow-2xl transition-all duration-300 mb-8 shadow-xl flex items-center justify-center gap-2"
+            >
+              <span>Start Free</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
 
             <ul className="space-y-4 text-left">
               {['Live KOL Feed', 'Smart Money Tracker', 'Wallet Finder', 'Token Insiders'].map((feature, i) => (
@@ -292,9 +292,13 @@ const HomePage: React.FC = () => {
               )}
             </div>
 
-            <button className="w-full bg-white text-noir-black py-3 sm:py-4 px-4 sm:px-6 rounded-xl font-bold text-base sm:text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-6 sm:mb-8 shadow-lg">
-              Get Started
-            </button>
+            <Link
+              to="/app/kol-feed"
+              className="group w-full bg-gradient-to-r from-white to-gray-100 text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:from-gray-100 hover:to-white hover:scale-105 hover:shadow-2xl transition-all duration-300 mb-8 shadow-xl flex items-center justify-center gap-2"
+            >
+              <span>Get Pro</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Link>
 
             <ul className="space-y-4 text-left">
               {['Everything in Free', 'Cabal Finder', 'Fresh Wallet Feeds', 'Custom KOL Feed', 'Insiders Scan'].map((feature, i) => (
@@ -332,9 +336,14 @@ const HomePage: React.FC = () => {
               )}
             </div>
 
-            <button className="w-full bg-white text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:bg-white/90 hover:scale-105 transition-all duration-300 mb-8 shadow-2xl">
-              Go Legend
-            </button>
+            <Link
+              to="/app/kol-feed"
+              className="group w-full bg-gradient-to-r from-white via-gray-50 to-white text-noir-black py-5 px-8 rounded-xl font-bold text-xl hover:shadow-3xl hover:scale-105 transition-all duration-300 mb-8 shadow-2xl flex items-center justify-center gap-3 border-2 border-white/50"
+            >
+              <Crown className="w-6 h-6" />
+              <span>Go Legend</span>
+              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+            </Link>
 
             <ul className="space-y-4 text-left">
               {['Everything in Pro', 'Whales Open Orders', 'Priority Alerts', 'Private Community', 'API Access', '1-on-1 Support'].map((feature, i) => (
