@@ -249,8 +249,7 @@ async function calculateTokenPnl(
     }
 
     const totalPnl = unrealizedPnl + realizedPnl;
-    const totalInvested = totalSpent - totalReceived;
-    const pnlPercentage = totalInvested > 0 ? (totalPnl / totalInvested) * 100 : 0;
+    const pnlPercentage = totalSpent > 0 ? (totalPnl / totalSpent) * 100 : 0;
 
     return {
       tokenPnl: totalPnl,
