@@ -1,0 +1,114 @@
+                      <tr key={trade.id} className="transition-all duration-200 hover:bg-white/[0.02] group">
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex flex-col gap-0.5">
+                            <span className={`text-xs font-semibold ${
+                              trade.lastTx === 'buy' ? 'text-green-500' : 'text-red-500'
+                            }`}>
+                              {trade.lastTx}
+                            </span>
+                            <span className="text-xs text-white/40">{formatTimeAgo(trade.timestamp)}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <img
+                              alt={trade.kolName}
+                              className="w-7 h-7 rounded-full object-cover border border-white/20"
+                              src={trade.kolAvatar}
+                              loading="lazy"
+                            />
+                            <span className="text-sm font-medium text-white">{trade.kolName}</span>
+                            {getTwitterUrl(trade.twitterHandle) && (
+                              <a
+                                href={getTwitterUrl(trade.twitterHandle)!}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-blue-400"
+                                title="View on Twitter"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Twitter className="w-3.5 h-3.5" />
+                              </a>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <img
+                              src={trade.tokenLogoUrl}
+                              alt={trade.token}
+                              className="w-6 h-6 rounded-full object-cover border border-white/20"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-white/20 to-white/5 items-center justify-center border border-white/20" style={{ display: 'none' }}>
+                              <span className="text-white font-bold text-xs">
+                                {trade.token.substring(0, 2).toUpperCase()}
+                              </span>
+                            </div>
+                            <span className="text-sm font-medium text-white">{trade.token}</span>
+                            <button
+                              onClick={() => copyToClipboard(trade.tokenContract)}
+                              className="p-1 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white"
+                              title="Copy token address"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                            <a
+                              href={`https://solscan.io/token/${trade.tokenContract}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white"
+                              title="View on Solscan"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className="text-sm text-white/60">
+                            {trade.marketCap > 0 ? formatCurrency(trade.marketCap) : '-'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className="text-sm font-medium text-green-500">
+                            {formatCurrency(trade.bought)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className="text-sm font-medium text-red-500">
+                            {trade.sold > 0 ? formatCurrency(trade.sold) : '$0.00'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className="text-sm text-white/80">
+                            {trade.holding > 0 ? formatCurrency(trade.holding) : 'sold all'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span
+                            className={`text-sm font-semibold ${
+                              trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
+                            }`}
+                          >
+                            {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span
+                            className={`text-sm font-semibold ${
+                              trade.pnlPercentage >= 0 ? 'text-green-500' : 'text-red-500'
+                            }`}
+                          >
+                            {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(1)}%
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <span className="text-sm text-white/70">
+                            {trade.aht > 0 ? `${trade.aht.toFixed(0)}h` : '-'}
+                          </span>
+                        </td>
+                      </tr>

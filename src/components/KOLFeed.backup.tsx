@@ -473,96 +473,82 @@ const KOLFeed: React.FC = () => {
                   ) : (
                     sortedTrades.map((trade) => (
                       <tr key={trade.id} className="transition-all duration-200 hover:bg-white/[0.02] group">
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="flex flex-col gap-0.5">
-                            <span className={`text-xs font-semibold ${
-                              trade.lastTx === 'buy' ? 'text-green-500' : 'text-red-500'
-                            }`}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex flex-col gap-1">
+                            <span
+                              className={`text-sm font-bold uppercase tracking-wide ${
+                                trade.lastTx === 'buy' ? 'text-green-600' : 'text-red-600'
+                              }`}
+                            >
                               {trade.lastTx}
                             </span>
                             <span className="text-xs text-white/40">{formatTimeAgo(trade.timestamp)}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-3">
                             <img
                               alt={trade.kolName}
-                              className="w-7 h-7 rounded-full object-cover border border-white/20"
+                              className="w-8 h-8 rounded-full object-cover border border-white/20 cursor-pointer hover:opacity-80 transition-opacity"
                               src={trade.kolAvatar}
                               loading="lazy"
+                              onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
                             />
-                            <span className="text-sm font-medium text-white">{trade.kolName}</span>
-                            {getTwitterUrl(trade.twitterHandle) && (
-                              <a
-                                href={getTwitterUrl(trade.twitterHandle)!}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-blue-400"
-                                title="View on Twitter"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <Twitter className="w-3.5 h-3.5" />
-                              </a>
-                            )}
+                            <div className="flex flex-col">
+                              {getTwitterUrl(trade.twitterHandle) ? (
+                                <a
+                                  href={getTwitterUrl(trade.twitterHandle)!}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm font-medium text-white hover:text-blue-400 transition-colors"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {trade.kolName}
+                                </a>
+                              ) : (
+                                <span
+                                  className="text-sm font-medium text-white cursor-pointer hover:opacity-80"
+                                  onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
+                                >
+                                  {trade.kolName}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <img
                               src={trade.tokenLogoUrl}
                               alt={trade.token}
-                              className="w-6 h-6 rounded-full object-cover border border-white/20"
+                              className="w-7 h-7 rounded-full object-cover border border-white/20"
                               onError={(e) => {
                                 e.currentTarget.style.display = 'none';
                                 const fallback = e.currentTarget.nextElementSibling as HTMLElement;
                                 if (fallback) fallback.style.display = 'flex';
                               }}
                             />
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-white/20 to-white/5 items-center justify-center border border-white/20" style={{ display: 'none' }}>
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-white/20 to-white/5 items-center justify-center border border-white/20" style={{ display: 'none' }}>
                               <span className="text-white font-bold text-xs">
                                 {trade.token.substring(0, 2).toUpperCase()}
                               </span>
                             </div>
                             <span className="text-sm font-medium text-white">{trade.token}</span>
-                            <button
-                              onClick={() => copyToClipboard(trade.tokenContract)}
-                              className="p-1 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white"
-                              title="Copy token address"
-                            >
-                              <Copy className="w-3 h-3" />
-                            </button>
-                            <a
-                              href={`https://solscan.io/token/${trade.tokenContract}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="p-1 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white"
-                              title="View on Solscan"
-                            >
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm text-white/60">
                             {trade.marketCap > 0 ? formatCurrency(trade.marketCap) : '-'}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="text-sm font-medium text-green-500">
-                            {formatCurrency(trade.bought)}
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`text-sm font-medium ${
+                            trade.lastTx === 'buy' ? 'text-green-500' : 'text-red-500'
+                          }`}>
+                            {formatCurrency(trade.transactionValue)}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="text-sm font-medium text-red-500">
-                            {trade.sold > 0 ? formatCurrency(trade.sold) : '$0.00'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="text-sm text-white/80">
-                            {trade.holding > 0 ? formatCurrency(trade.holding) : 'sold all'}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`text-sm font-semibold ${
                               trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
@@ -571,19 +557,48 @@ const KOLFeed: React.FC = () => {
                             {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span
+                            className={`text-sm font-medium ${
+                              trade.pnlSol >= 0 ? 'text-green-500' : 'text-red-500'
+                            }`}
+                          >
+                            {trade.pnlSol >= 0 ? '+' : ''}{trade.pnlSol.toFixed(2)} SOL
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`text-sm font-semibold ${
-                              trade.pnlPercentage >= 0 ? 'text-green-500' : 'text-red-500'
+                              trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
                             }`}
                           >
                             {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(1)}%
                           </span>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap">
+                        <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-sm text-white/70">
-                            {trade.aht > 0 ? `${trade.aht.toFixed(0)}h` : '-'}
+                            {trade.aht.toFixed(1)}h
                           </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => copyToClipboard(trade.transactionSignature)}
+                              className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
+                              title="Copy transaction signature"
+                            >
+                              <Copy className="w-3.5 h-3.5" />
+                            </button>
+                            <a
+                              href={`https://solscan.io/tx/${trade.transactionSignature}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
+                              title="View transaction on Solscan"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5" />
+                            </a>
+                          </div>
                         </td>
                       </tr>
                     ))
