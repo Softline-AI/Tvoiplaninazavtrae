@@ -109,7 +109,7 @@ const KOLFeed: React.FC = () => {
         .in('transaction_type', ['BUY', 'SELL'])
         .not('token_symbol', 'in', `(${EXCLUDED_TOKENS.join(',')})`)
         .order('block_time', { ascending: false })
-        .limit(200);
+        .limit(3000);
 
       if (error) {
         console.error('Error loading transactions:', error);
