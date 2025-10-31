@@ -24,7 +24,7 @@ interface KOLTrade {
   entryPrice: number; // Цена входа
 }
 
-type SortField = 'timestamp' | 'pnl' | 'pnlSol' | 'aht' | 'amount' | 'kolName' | 'token';
+type SortField = 'timestamp' | 'pnl' | 'pnlSol' | 'aht' | 'amount' | 'token';
 type SortDirection = 'asc' | 'desc';
 
 const KOLFeed: React.FC = () => {
@@ -72,10 +72,13 @@ const KOLFeed: React.FC = () => {
         profileMap.set(profile.wallet_address, profile);
       });
 
+      const EXCLUDED_TOKENS = ['SOL', 'USDC', 'USDT', 'USDS', 'DAI', 'WBTC', 'WETH', 'BTC', 'ETH'];
+
       const { data: transactions, error } = await supabase
         .from('webhook_transactions')
         .select('*')
         .in('transaction_type', ['BUY', 'SELL'])
+        .not('token_symbol', 'in', `(${EXCLUDED_TOKENS.join(',')})`)
         .order('block_time', { ascending: false })
         .limit(200);
 
@@ -219,10 +222,7 @@ const KOLFeed: React.FC = () => {
         comparison = a.aht - b.aht;
         break;
       case 'amount':
-        comparison = a.amount - b.amount;
-        break;
-      case 'kolName':
-        comparison = a.kolName.localeCompare(b.kolName);
+        comparison = a.transactionValue - b.transactionValue;
         break;
       case 'token':
         comparison = a.token.localeCompare(b.token);
@@ -294,13 +294,9 @@ const KOLFeed: React.FC = () => {
                         {getSortIcon('timestamp')}
                       </div>
                     </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider cursor-pointer hover:bg-white/5 select-none transition-colors"
-                      onClick={() => handleSort('kolName')}
-                    >
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white/50 tracking-wider">
                       <div className="flex items-center gap-1.5">
                         KOL
-                        {getSortIcon('kolName')}
                       </div>
                     </th>
                     <th
