@@ -13,15 +13,17 @@ interface KOLTrade {
   twitterHandle: string;
   token: string;
   tokenContract: string;
+  tokenLogoUrl: string;
   marketCap: number;
-  transactionValue: number; // Сумма сделки в $
-  holding: number; // Общий баланс в кошельке (в токенах)
-  pnl: number; // P&L в $
-  pnlSol: number; // P&L в SOL
-  pnlPercentage: number; // P&L в %
-  aht: number; // Age of Highest Trade
-  currentPrice: number; // Текущая цена токена
-  entryPrice: number; // Цена входа
+  transactionValue: number;
+  holding: number;
+  pnl: number;
+  pnlSol: number;
+  pnlPercentage: number;
+  aht: number;
+  currentPrice: number;
+  entryPrice: number;
+  transactionSignature: string;
 }
 
 type SortField = 'timestamp' | 'pnl' | 'pnlSol' | 'aht' | 'amount' | 'token';
@@ -60,9 +62,29 @@ const KOLFeed: React.FC = () => {
     };
   }, []);
 
+  const getTwitterAvatarUrl = (twitterHandle: string | null): string => {
+    if (!twitterHandle) return 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg';
+
+    const username = twitterHandle.replace('https://x.com/', '').replace('https://twitter.com/', '').replace('@', '');
+    return `https://unavatar.io/twitter/${username}`;
+  };
+
+  const getTokenLogoUrl = (tokenMint: string): string => {
+    return `https://img.fotofolio.xyz/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsolana-labs%2Ftoken-list%2Fmain%2Fassets%2Fmainnet%2F${tokenMint}%2Flogo.png`;
+  };
+
   const loadTrades = async () => {
     setLoading(true);
     try {
+      const { data: wallets } = await supabase
+        .from('monitored_wallets')
+        .select('*');
+
+      const walletMap = new Map();
+      wallets?.forEach((wallet: any) => {
+        walletMap.set(wallet.wallet_address, wallet);
+      });
+
       const { data: profiles } = await supabase
         .from('kol_profiles')
         .select('*');
@@ -94,6 +116,7 @@ const KOLFeed: React.FC = () => {
       }
 
       const formattedTrades: KOLTrade[] = transactions.map((tx: any) => {
+        const wallet = walletMap.get(tx.from_address);
         const profile = profileMap.get(tx.from_address);
         const txType = tx.transaction_type === 'BUY' ? 'buy' : 'sell';
         const tokenAmount = parseFloat(tx.amount || '0');
@@ -111,16 +134,20 @@ const KOLFeed: React.FC = () => {
         const txTime = new Date(tx.block_time);
         const ageHours = (now.getTime() - txTime.getTime()) / (1000 * 60 * 60);
 
+        const twitterHandle = wallet?.twitter_handle || profile?.twitter_handle || null;
+        const label = wallet?.label || profile?.name || tx.from_address.substring(0, 8);
+
         return {
           id: tx.id,
           lastTx: txType,
           timestamp: tx.block_time,
-          kolName: profile?.name || tx.from_address.substring(0, 8),
-          kolAvatar: profile?.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+          kolName: label,
+          kolAvatar: getTwitterAvatarUrl(twitterHandle),
           walletAddress: tx.from_address,
-          twitterHandle: profile?.twitter_handle?.replace('@', '') || tx.from_address.substring(0, 8),
+          twitterHandle: twitterHandle?.replace('https://x.com/', '').replace('https://twitter.com/', '').replace('@', '') || tx.from_address.substring(0, 8),
           token: tx.token_symbol || 'Unknown',
           tokenContract: tx.token_mint || '',
+          tokenLogoUrl: getTokenLogoUrl(tx.token_mint || ''),
           marketCap,
           transactionValue,
           holding: tokenAmount,
@@ -129,7 +156,8 @@ const KOLFeed: React.FC = () => {
           pnlPercentage,
           aht: ageHours,
           currentPrice,
-          entryPrice
+          entryPrice,
+          transactionSignature: tx.transaction_signature || ''
         };
       });
 
@@ -445,7 +473,17 @@ const KOLFeed: React.FC = () => {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/20">
+                            <img
+                              src={trade.tokenLogoUrl}
+                              alt={trade.token}
+                              className="w-7 h-7 rounded-full object-cover border border-white/20"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                            <div className="w-7 h-7 rounded-full bg-gradient-to-br from-white/20 to-white/5 items-center justify-center border border-white/20" style={{ display: 'none' }}>
                               <span className="text-white font-bold text-xs">
                                 {trade.token.substring(0, 2).toUpperCase()}
                               </span>
@@ -500,18 +538,18 @@ const KOLFeed: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center gap-1">
                             <button
-                              onClick={() => copyToClipboard(trade.walletAddress)}
+                              onClick={() => copyToClipboard(trade.transactionSignature)}
                               className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
-                              title="Copy wallet address"
+                              title="Copy transaction signature"
                             >
                               <Copy className="w-3.5 h-3.5" />
                             </button>
                             <a
-                              href={`https://solscan.io/account/${trade.walletAddress}`}
+                              href={`https://solscan.io/tx/${trade.transactionSignature}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
-                              title="View on Solscan"
+                              title="View transaction on Solscan"
                             >
                               <ExternalLink className="w-3.5 h-3.5" />
                             </a>
