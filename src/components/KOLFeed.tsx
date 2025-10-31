@@ -485,23 +485,25 @@ const KOLFeed: React.FC = () => {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <img
-                              alt={trade.kolName}
-                              className="w-7 h-7 rounded-full object-cover border border-white/20"
-                              src={trade.kolAvatar}
-                              loading="lazy"
-                            />
-                            <span className="text-sm font-medium text-white">{trade.kolName}</span>
+                            <div className="flex items-center gap-2 px-2 py-1.5 border border-white/10 rounded-lg bg-white/5">
+                              <img
+                                alt={trade.kolName}
+                                className="w-6 h-6 rounded-full object-cover border border-white/20"
+                                src={trade.kolAvatar}
+                                loading="lazy"
+                              />
+                              <span className="text-sm font-medium text-white">{trade.kolName}</span>
+                            </div>
                             {getTwitterUrl(trade.twitterHandle) && (
                               <a
                                 href={getTwitterUrl(trade.twitterHandle)!}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-blue-400"
+                                className="p-1.5 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-blue-400"
                                 title="View on Twitter"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Twitter className="w-3.5 h-3.5" />
+                                <Twitter className="w-4 h-4" />
                               </a>
                             )}
                           </div>
