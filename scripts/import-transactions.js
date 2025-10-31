@@ -8,20 +8,18 @@ const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const WALLETS = [
-  '2fg5QD1eD7rzNNCsvnhmXFm5hqNgwTTG8p7kQ6f3rx6f',
-  'GM7Hrz2bDq33ezMtL6KGidSWZXMWgZ6qBuugkb5H8NvN',
-  'DYAn4XpAkN5mhiXkRB7dGq4Jadnx6XYgu8L5b3WGhbrt',
-  '9yYya3F5EJoLnBNKW6z4bZvyQytMXzDcpU5D6yYr4jqL',
-  '3BLjRcxWGtR7WRshJ3hL25U3RjWr5Ud98wMcczQqk4Ei',
-  '4cXnf2z85UiZ5cyKsPMEULq1yufAtpkatmX4j4DBZqj2',
-  'CyaE1VxvBrahnPWkqm5VsdCvyS2QmNht2UFrKJHga54o',
-  'FL4j8EEMAPUjrvASnqX7VdpWZJji1LFsAxwojhpueUYt',
-  'CA4keXLtGJWBcsWivjtMFBghQ8pFsGRWFxLrRCtirzu5',
-  '8rvAsDKeAcEjEkiZMug9k8v1y8mW6gQQiMobd89Uy7qR',
-  'HvDf4Cxd2evdYueLhK5LoaiEvDXFXgb1uRrkoYPdvHfH',
-  '86AEJExyjeNNgcp7GrAvCXTDicf5aGWgoERbXFiG1EdD'
-];
+async function getMonitoredWallets() {
+  const { data, error } = await supabase
+    .from('monitored_wallets')
+    .select('wallet_address, label');
+
+  if (error) {
+    console.error('Error fetching monitored wallets:', error);
+    return [];
+  }
+
+  return data || [];
+}
 
 async function fetchTokenMetadata(tokenMint) {
   try {
@@ -84,12 +82,30 @@ function parseHeliusTransaction(tx, walletAddress) {
         if (solTransfer) {
           if (solTransfer.fromUserAccount === walletAddress) transactionType = 'BUY';
           else if (solTransfer.toUserAccount === walletAddress) transactionType = 'SELL';
-          else transactionType = 'SWAP';
         } else {
-          transactionType = 'SWAP';
+          const nonSolTransfer = tx.tokenTransfers.find(t => t.mint !== 'So11111111111111111111111111111111111111112');
+          if (nonSolTransfer) {
+            if (nonSolTransfer.toUserAccount === walletAddress) transactionType = 'BUY';
+            else if (nonSolTransfer.fromUserAccount === walletAddress) transactionType = 'SELL';
+          }
         }
-      } else {
-        transactionType = 'SWAP';
+      }
+
+      if (transactionType === 'UNKNOWN' && tx.accountData && tx.accountData.length > 0) {
+        const walletAccount = tx.accountData.find(acc => acc.account === walletAddress);
+        if (walletAccount && walletAccount.tokenBalanceChanges) {
+          for (const balanceChange of walletAccount.tokenBalanceChanges) {
+            const amount = parseFloat(balanceChange.rawTokenAmount.tokenAmount);
+            if (amount > 0) {
+              transactionType = 'BUY';
+              break;
+            }
+            if (amount < 0) {
+              transactionType = 'SELL';
+              break;
+            }
+          }
+        }
       }
     }
     else if (type === 'TRANSFER' && tx.tokenTransfers && tx.tokenTransfers.length > 0) {
@@ -208,27 +224,32 @@ async function importTransactionsForWallet(walletAddress, label) {
 }
 
 async function main() {
-  console.log('Starting transaction import...\n');
+  try {
+    console.log('Starting transaction import...\n');
 
-  let totalImported = 0;
+    const wallets = await getMonitoredWallets();
+    console.log(`Found ${wallets.length} monitored wallets\n`);
 
-  for (const wallet of WALLETS) {
-    const { data: walletData } = await supabase
-      .from('monitored_wallets')
-      .select('label')
-      .eq('wallet_address', wallet)
-      .maybeSingle();
+    if (wallets.length === 0) {
+      console.log('No monitored wallets found!');
+      return;
+    }
 
-    const label = walletData?.label || wallet.substring(0, 8);
+    let totalImported = 0;
 
-    const imported = await importTransactionsForWallet(wallet, label);
-    totalImported += imported;
+    for (const wallet of wallets) {
+      const label = wallet.label || wallet.wallet_address.substring(0, 8);
+      const imported = await importTransactionsForWallet(wallet.wallet_address, label);
+      totalImported += imported;
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
+    console.log(`\n=== Import Complete ===`);
+    console.log(`Total transactions imported: ${totalImported}`);
+  } catch (error) {
+    console.error('Error in main:', error);
   }
-
-  console.log(`\n=== Import Complete ===`);
-  console.log(`Total transactions imported: ${totalImported}`);
 }
 
-main().catch(console.error);
+main();
