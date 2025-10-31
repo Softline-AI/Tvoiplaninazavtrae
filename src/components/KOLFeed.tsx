@@ -10,7 +10,7 @@ interface KOLTrade {
   kolName: string;
   kolAvatar: string;
   walletAddress: string;
-  twitterHandle: string;
+  twitterHandle: string | null;
   token: string;
   tokenContract: string;
   tokenLogoUrl: string;
@@ -69,8 +69,14 @@ const KOLFeed: React.FC = () => {
     return `https://unavatar.io/twitter/${username}`;
   };
 
+  const getTwitterUrl = (twitterHandle: string | null): string | null => {
+    if (!twitterHandle) return null;
+    const username = twitterHandle.replace('https://x.com/', '').replace('https://twitter.com/', '').replace('@', '');
+    return `https://x.com/${username}`;
+  };
+
   const getTokenLogoUrl = (tokenMint: string): string => {
-    return `https://img.fotofolio.xyz/?url=https%3A%2F%2Fraw.githubusercontent.com%2Fsolana-labs%2Ftoken-list%2Fmain%2Fassets%2Fmainnet%2F${tokenMint}%2Flogo.png`;
+    return `https://img.fotofolio.xyz/?url=https://dd.dexscreener.com/ds-data/tokens/solana/${tokenMint}.png?size=lg`;
   };
 
   const loadTrades = async () => {
@@ -144,7 +150,7 @@ const KOLFeed: React.FC = () => {
           kolName: label,
           kolAvatar: getTwitterAvatarUrl(twitterHandle),
           walletAddress: tx.from_address,
-          twitterHandle: twitterHandle?.replace('https://x.com/', '').replace('https://twitter.com/', '').replace('@', '') || tx.from_address.substring(0, 8),
+          twitterHandle: twitterHandle,
           token: tx.token_symbol || 'Unknown',
           tokenContract: tx.token_mint || '',
           tokenLogoUrl: getTokenLogoUrl(tx.token_mint || ''),
@@ -456,18 +462,33 @@ const KOLFeed: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div
-                            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
-                            onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
-                          >
+                          <div className="flex items-center gap-3">
                             <img
                               alt={trade.kolName}
-                              className="w-8 h-8 rounded-full object-cover border border-white/20"
+                              className="w-8 h-8 rounded-full object-cover border border-white/20 cursor-pointer hover:opacity-80 transition-opacity"
                               src={trade.kolAvatar}
                               loading="lazy"
+                              onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
                             />
                             <div className="flex flex-col">
-                              <span className="text-sm font-medium text-white">{trade.kolName}</span>
+                              {getTwitterUrl(trade.twitterHandle) ? (
+                                <a
+                                  href={getTwitterUrl(trade.twitterHandle)!}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-sm font-medium text-white hover:text-blue-400 transition-colors"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  {trade.kolName}
+                                </a>
+                              ) : (
+                                <span
+                                  className="text-sm font-medium text-white cursor-pointer hover:opacity-80"
+                                  onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
+                                >
+                                  {trade.kolName}
+                                </span>
+                              )}
                             </div>
                           </div>
                         </td>
