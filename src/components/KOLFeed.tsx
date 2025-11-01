@@ -37,6 +37,7 @@ const KOLFeed: React.FC = () => {
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell'>('all');
   const [sortField, setSortField] = useState<SortField>('timestamp');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [newTradeIds, setNewTradeIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     loadTrades();
@@ -53,6 +54,19 @@ const KOLFeed: React.FC = () => {
         },
         (payload) => {
           console.log('New transaction received:', payload);
+          const newTx = payload.new as any;
+          const tradeId = `${newTx.from_address}-${newTx.token_mint}`;
+
+          setNewTradeIds(prev => new Set(prev).add(tradeId));
+
+          setTimeout(() => {
+            setNewTradeIds(prev => {
+              const updated = new Set(prev);
+              updated.delete(tradeId);
+              return updated;
+            });
+          }, 5000);
+
           loadTrades();
         }
       )
@@ -482,8 +496,19 @@ const KOLFeed: React.FC = () => {
                       </td>
                     </tr>
                   ) : (
-                    sortedTrades.map((trade) => (
-                      <tr key={trade.id} className="transition-all duration-200 hover:bg-white/[0.02] group">
+                    sortedTrades.map((trade) => {
+                      const isNewTrade = newTradeIds.has(trade.id);
+                      const highlightColor = trade.lastTx === 'buy'
+                        ? 'bg-green-500/20 border-l-4 border-green-500'
+                        : 'bg-red-500/20 border-l-4 border-red-500';
+
+                      return (
+                      <tr
+                        key={trade.id}
+                        className={`transition-all duration-500 hover:bg-white/[0.02] group ${
+                          isNewTrade ? highlightColor : ''
+                        }`}
+                      >
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex flex-col gap-0.5">
                             <span className={`text-xs font-semibold ${
@@ -606,7 +631,8 @@ const KOLFeed: React.FC = () => {
                           </span>
                         </td>
                       </tr>
-                    ))
+                      );
+                    })
                   )}
                 </tbody>
               </table>
