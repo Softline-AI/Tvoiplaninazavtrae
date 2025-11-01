@@ -100,13 +100,14 @@ const HomePage: React.FC = () => {
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 w-full">
               <Link
                 to="/app/kol-feed"
-                className="group relative inline-flex items-center justify-center whitespace-nowrap font-bold transition-all h-14 sm:h-16 md:h-18 rounded-xl px-10 sm:px-12 md:px-14 text-lg sm:text-xl md:text-2xl w-full sm:w-auto bg-white text-noir-black hover:bg-gray-100 hover:scale-105 active:scale-100 shadow-2xl shadow-white/20 overflow-hidden"
+                className="group relative inline-flex items-center justify-center whitespace-nowrap font-bold transition-all duration-300 h-14 sm:h-16 md:h-18 rounded-2xl px-10 sm:px-12 md:px-14 text-lg sm:text-xl md:text-2xl w-full sm:w-auto bg-gradient-to-r from-white via-gray-50 to-white hover:from-gray-50 hover:via-white hover:to-gray-50 text-noir-black hover:scale-105 active:scale-100 shadow-2xl shadow-white/30 hover:shadow-white/50 overflow-hidden border border-white/30"
               >
                 <span className="relative z-10 flex items-center gap-3">
                   Start Tracking
-                  <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
                 </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white via-gray-50 to-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity blur-sm"></div>
+                <div className="absolute inset-0 rounded-2xl ring-2 ring-white/20 group-hover:ring-white/40 transition-all"></div>
               </Link>
             </div>
           </div>
@@ -294,10 +295,11 @@ const HomePage: React.FC = () => {
 
             <Link
               to="/app/kol-feed"
-              className="group w-full bg-gradient-to-r from-white to-gray-100 text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:from-gray-100 hover:to-white hover:scale-105 hover:shadow-2xl transition-all duration-300 mb-8 shadow-xl flex items-center justify-center gap-2"
+              className="group w-full bg-gradient-to-r from-white via-gray-50 to-white hover:from-gray-50 hover:via-white hover:to-gray-50 text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:scale-105 hover:shadow-2xl hover:shadow-white/20 transition-all duration-300 mb-8 shadow-xl flex items-center justify-center gap-2 border border-white/20 relative overflow-hidden"
             >
-              <span>Get Pro</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span className="relative z-10">Get Pro</span>
+              <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
             </Link>
 
             <ul className="space-y-4 text-left">
@@ -338,11 +340,12 @@ const HomePage: React.FC = () => {
 
             <Link
               to="/app/kol-feed"
-              className="group w-full bg-gradient-to-r from-white via-gray-50 to-white text-noir-black py-5 px-8 rounded-xl font-bold text-xl hover:shadow-3xl hover:scale-105 transition-all duration-300 mb-8 shadow-2xl flex items-center justify-center gap-3 border-2 border-white/50"
+              className="group w-full bg-gradient-to-r from-white via-gray-50 to-white hover:from-gray-50 hover:via-white hover:to-gray-50 text-noir-black py-5 px-8 rounded-xl font-bold text-xl hover:shadow-3xl hover:shadow-white/40 hover:scale-105 transition-all duration-300 mb-8 shadow-2xl flex items-center justify-center gap-3 border-2 border-white/50 hover:border-white/70 relative overflow-hidden"
             >
-              <Crown className="w-6 h-6" />
-              <span>Go Legend</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              <Crown className="w-6 h-6 relative z-10" />
+              <span className="relative z-10">Go Legend</span>
+              <ArrowRight className="w-6 h-6 relative z-10 group-hover:translate-x-2 transition-transform" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity blur-sm"></div>
             </Link>
 
             <ul className="space-y-4 text-left">
