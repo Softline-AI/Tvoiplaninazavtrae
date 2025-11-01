@@ -132,6 +132,7 @@ const KOLFeed: React.FC = () => {
           const profile = profileMap.get(tx.from_address);
           const twitterHandle = wallet?.twitter_handle || profile?.twitter_handle || null;
           const label = wallet?.label || profile?.name || tx.from_address.substring(0, 8);
+          const avatarUrl = profile?.avatar_url || null;
 
           aggregated.set(key, {
             walletAddress: tx.from_address,
@@ -139,11 +140,15 @@ const KOLFeed: React.FC = () => {
             tokenSymbol: tx.token_symbol,
             kolName: label,
             twitterHandle: twitterHandle,
+            avatarUrl: avatarUrl,
             lastTx: null,
             lastTimestamp: null,
             lastSignature: null,
             totalBought: 0,
             totalSold: 0,
+            totalBoughtAmount: 0,
+            totalSoldAmount: 0,
+            avgBuyPrice: 0,
             holding: 0,
             marketCap: 0,
             currentPrice: 0,
@@ -158,8 +163,10 @@ const KOLFeed: React.FC = () => {
 
         if (tx.transaction_type === 'BUY') {
           agg.totalBought += amount * price;
+          agg.totalBoughtAmount += amount;
         } else if (tx.transaction_type === 'SELL') {
           agg.totalSold += amount * price;
+          agg.totalSoldAmount += amount;
         }
 
         if (!agg.lastTimestamp || new Date(tx.block_time) > new Date(agg.lastTimestamp)) {
@@ -179,12 +186,16 @@ const KOLFeed: React.FC = () => {
           const txTime = new Date(agg.lastTimestamp);
           const ageHours = (now.getTime() - txTime.getTime()) / (1000 * 60 * 60);
 
+          const avgBuyPrice = agg.totalBoughtAmount > 0 ? agg.totalBought / agg.totalBoughtAmount : 0;
+          const realPnl = agg.totalSold - agg.totalBought;
+          const realPnlPercentage = agg.totalBought > 0 ? (realPnl / agg.totalBought) * 100 : 0;
+
           return {
             id: `${agg.walletAddress}-${agg.tokenMint}`,
             lastTx: agg.lastTx,
             timestamp: agg.lastTimestamp,
             kolName: agg.kolName,
-            kolAvatar: getTwitterAvatarUrl(agg.twitterHandle),
+            kolAvatar: agg.avatarUrl || getTwitterAvatarUrl(agg.twitterHandle),
             walletAddress: agg.walletAddress,
             twitterHandle: agg.twitterHandle,
             token: agg.tokenSymbol || 'Unknown',
@@ -194,12 +205,12 @@ const KOLFeed: React.FC = () => {
             bought: agg.totalBought,
             sold: agg.totalSold,
             holding: agg.totalBought > agg.totalSold ? agg.totalBought - agg.totalSold : 0,
-            pnl: agg.pnl,
-            pnlSol: agg.pnl / 150,
-            pnlPercentage: agg.pnlPercentage,
+            pnl: realPnl,
+            pnlSol: realPnl / 150,
+            pnlPercentage: realPnlPercentage,
             aht: ageHours,
             currentPrice: agg.currentPrice,
-            entryPrice: 0,
+            entryPrice: avgBuyPrice,
             transactionSignature: agg.lastSignature || ''
           };
         })
@@ -555,9 +566,16 @@ const KOLFeed: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <span className="text-sm font-medium text-red-500">
-                            {trade.sold > 0 ? formatCurrency(trade.sold) : '$0.00'}
-                          </span>
+                          <div className="flex flex-col gap-0.5">
+                            <span className="text-sm font-medium text-red-500">
+                              {trade.sold > 0 ? formatCurrency(trade.sold) : '$0.00'}
+                            </span>
+                            {trade.sold > 0 && trade.entryPrice > 0 && (
+                              <span className="text-xs text-white/40">
+                                bought @ {formatCurrency(trade.entryPrice)}
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className="text-sm text-white/80">
