@@ -521,7 +521,10 @@ const KOLFeed: React.FC = () => {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-2 px-2 py-1.5 border border-white/10 rounded-lg bg-white/5">
+                            <div
+                              onClick={() => navigate(`/kol/${trade.walletAddress}`)}
+                              className="flex items-center gap-2 px-2 py-1.5 border border-white/10 rounded-lg bg-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                            >
                               <img
                                 alt={trade.kolName}
                                 className="w-6 h-6 rounded-full object-cover border border-white/20"
