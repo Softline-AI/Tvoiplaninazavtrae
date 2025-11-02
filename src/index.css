@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -85,18 +85,18 @@ body {
 }
 
 .btn-white {
-  background: linear-gradient(135deg, #ffffff 0%, #e0e0e0 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
   color: #000000;
-  padding: 11px 26px;
-  border-radius: 10px;
-  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: 12px;
+  font-weight: 700;
   font-size: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: none;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: none;
-  letter-spacing: -0.01em;
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  letter-spacing: -0.02em;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
   will-change: transform;
@@ -120,9 +120,9 @@ body {
 }
 
 .btn-white:hover {
-  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  background: linear-gradient(135deg, #ffffff 0%, #e8e8e8 100%);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .btn-dark {
@@ -655,19 +655,5 @@ input:focus, textarea:focus, select:focus {
   .btn-white, .btn-dark {
     padding: 12px 24px;
     font-size: 14px;
-  }
-}
-
-/* Premium Logo Styles */
-.logo-glow {
-  animation: logoGlow 3s ease-in-out infinite alternate;
-}
-
-@keyframes logoGlow {
-  0% {
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-  }
-  100% {
-    filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.5));
   }
 }

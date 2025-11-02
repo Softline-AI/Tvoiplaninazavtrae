@@ -70,13 +70,8 @@ const Navigation: React.FC = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
-            <Link to="/" className="group flex items-center gap-2">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 blur-xl rounded-full group-hover:blur-2xl transition-all duration-300"></div>
-                <span className="relative text-2xl font-bold text-white tracking-tighter" style={{ fontFamily: 'Space Grotesk, sans-serif', textShadow: '0 0 20px rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.5)' }}>
-                  SMARTCHAIN
-                </span>
-              </div>
+            <Link to="/" className="text-lg font-bold text-white tracking-tight">
+              SMARTCHAIN
             </Link>
 
             <div className="hidden md:flex items-center gap-6">
@@ -88,18 +83,18 @@ const Navigation: React.FC = () => {
                       setIsProductsOpen(!isProductsOpen);
                       setIsToolsOpen(false);
                     }}
-                    className="flex items-center gap-1 text-white/90 hover:text-white transition-all duration-200 font-medium text-[15px]"
+                    className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors font-medium"
                   >
                     Products
                     <ChevronDown className={`w-4 h-4 transition-transform ${isProductsOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {isProductsOpen && (
-                    <div className="absolute top-full left-0 mt-3 w-[800px] noir-card border border-white/10 rounded-2xl shadow-2xl p-6 backdrop-blur-xl" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', background: 'rgba(10, 10, 10, 0.95)' }}>
+                    <div className="absolute top-full left-0 mt-2 w-[800px] noir-card border border-white/10 rounded-lg shadow-xl p-6" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
                       <div className="grid grid-cols-3 gap-6">
                         {Object.entries(products).map(([category, items]) => (
                           <div key={category} className="space-y-3">
-                            <h3 className="font-semibold text-sm text-white/60 uppercase tracking-wider mb-3 text-xs">{category}</h3>
+                            <h3 className="font-semibold text-sm text-white mb-3">{category}</h3>
                             <div className="space-y-2">
                               {items.map((product) => (
                                 <Link
@@ -133,14 +128,14 @@ const Navigation: React.FC = () => {
                       setIsToolsOpen(!isToolsOpen);
                       setIsProductsOpen(false);
                     }}
-                    className="flex items-center gap-1 text-white/90 hover:text-white transition-all duration-200 font-medium text-[15px]"
+                    className="flex items-center gap-1 text-white hover:text-gray-300 transition-colors font-medium"
                   >
                     Tools
                     <ChevronDown className={`w-4 h-4 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
                   </button>
 
                   {isToolsOpen && (
-                    <div className="absolute top-full left-0 mt-3 w-64 noir-card border border-white/10 rounded-2xl shadow-2xl py-2 backdrop-blur-xl" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden', background: 'rgba(10, 10, 10, 0.95)' }}>
+                    <div className="absolute top-full left-0 mt-2 w-64 noir-card border border-white/10 rounded-lg shadow-xl py-2" style={{ transform: 'translateZ(0)', backfaceVisibility: 'hidden' }}>
                       {tools.map((tool) => (
                         <Link
                           key={tool.path}
@@ -160,10 +155,10 @@ const Navigation: React.FC = () => {
 
               {isAppRoute && !isKOLProfile && (
                 <>
-                  <a href="/futures" className="text-white/90 hover:text-white transition-all duration-200 font-medium text-[15px]">
+                  <a href="/futures" className="text-white hover:text-gray-300 transition-colors font-medium">
                     Futures
                   </a>
-                  <a href="/#plans" onClick={(e) => { e.preventDefault(); window.location.href = '/#plans'; }} className="text-white/90 hover:text-white transition-all duration-200 font-medium text-[15px]">
+                  <a href="/#plans" onClick={(e) => { e.preventDefault(); window.location.href = '/#plans'; }} className="text-white hover:text-gray-300 transition-colors font-medium">
                     Pricing
                   </a>
                 </>
@@ -171,10 +166,10 @@ const Navigation: React.FC = () => {
 
               {isKOLProfile && (
                 <>
-                  <a href="/#support" className="text-white/90 hover:text-white transition-all duration-200 font-medium text-[15px]">
+                  <a href="/#support" className="text-white hover:text-gray-300 transition-colors font-medium">
                     Support
                   </a>
-                  <a href="/#docs" className="text-white/90 hover:text-white transition-all duration-200 font-medium text-[15px]">
+                  <a href="/#docs" className="text-white hover:text-gray-300 transition-colors font-medium">
                     Docs
                   </a>
                 </>
@@ -184,12 +179,8 @@ const Navigation: React.FC = () => {
 
           {!isAppRoute && (
             <div className="hidden md:flex items-center gap-4">
-              <Link to="/app/kol-feed" className="group relative inline-flex items-center gap-2 bg-gradient-to-r from-white via-gray-50 to-white hover:from-gray-50 hover:via-white hover:to-gray-50 text-black font-semibold px-6 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:shadow-white/30 hover:scale-105 border border-white/20">
-                <span className="relative z-10">Open App</span>
-                <svg className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/50 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl"></div>
+              <Link to="/app/kol-feed" className="btn-white">
+                Open App
               </Link>
             </div>
           )}
@@ -265,13 +256,10 @@ const Navigation: React.FC = () => {
 
             <Link
               to="/app/kol-feed"
-              className="group relative inline-flex items-center justify-center gap-2 bg-gradient-to-r from-white via-gray-50 to-white hover:from-gray-50 hover:via-white hover:to-gray-50 text-black font-semibold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl border border-white/20 w-full"
+              className="btn-white inline-block w-full text-center"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              <span className="relative z-10">Open App</span>
-              <svg className="w-4 h-4 relative z-10 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+              Open App
             </Link>
           </div>
         </div>
