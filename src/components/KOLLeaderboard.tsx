@@ -365,7 +365,7 @@ const KOLLeaderboard: React.FC = () => {
                               rel="noopener noreferrer"
                               className="text-xs text-white/50 hover:text-white/80 transition-colors"
                             >
-                              @{trader.twitterHandle}
+                              @{trader.twitterHandle.replace('@', '')}
                             </a>
                           </div>
                         </div>

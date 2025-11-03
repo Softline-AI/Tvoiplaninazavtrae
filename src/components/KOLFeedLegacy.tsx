@@ -297,7 +297,7 @@ const KOLFeedLegacy: React.FC = () => {
                           />
                           <div>
                             <div className="text-sm font-bold text-white">{trade.trader}</div>
-                            <div className="text-xs text-white/70">@{trade.twitterHandle}</div>
+                            <div className="text-xs text-white/70">@{typeof trade.twitterHandle === 'string' ? trade.twitterHandle.replace('@', '') : trade.twitterHandle}</div>
                           </div>
                         </div>
                       </td>

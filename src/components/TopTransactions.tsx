@@ -97,7 +97,7 @@ export default function TopTransactions() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
                       <span className="font-bold text-white">{trade.kolName}</span>
-                      <span className="text-xs text-gray-500">@{trade.twitterHandle}</span>
+                      <span className="text-xs text-gray-500">@{trade.twitterHandle.replace('@', '')}</span>
                     </div>
 
                     <div className="flex items-center gap-2 text-sm">
