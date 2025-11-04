@@ -106,10 +106,7 @@ const KOLFeed: React.FC = () => {
         alt={symbol}
         className="w-6 h-6 rounded-full border border-white/20 object-cover"
         onError={(e) => {
-          const target = e.currentTarget;
-          target.style.display = 'none';
-          const fallback = target.nextElementSibling as HTMLElement;
-          if (fallback) fallback.style.display = 'flex';
+          e.currentTarget.src = 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
         }}
       />
     );
@@ -577,11 +574,6 @@ const KOLFeed: React.FC = () => {
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-2">
                             <TokenLogo mint={trade.tokenContract} symbol={trade.token} />
-                            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-white/20 to-white/5 items-center justify-center border border-white/20" style={{ display: 'none' }}>
-                              <span className="text-white font-bold text-xs">
-                                {trade.token.substring(0, 2).toUpperCase()}
-                              </span>
-                            </div>
                             <span className="text-sm font-medium text-white">{trade.token}</span>
                             <button
                               onClick={() => copyToClipboard(trade.tokenContract)}
