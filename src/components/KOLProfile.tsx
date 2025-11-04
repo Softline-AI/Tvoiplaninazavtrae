@@ -87,6 +87,12 @@ const KOLProfile: React.FC = () => {
 
     setLoading(true);
     try {
+      const { data: walletData } = await supabase
+        .from('monitored_wallets')
+        .select('wallet_address, label, twitter_handle, twitter_avatar')
+        .eq('wallet_address', walletAddress)
+        .maybeSingle();
+
       const { data: profileData } = await supabase
         .from('kol_profiles')
         .select('*')
@@ -165,7 +171,7 @@ const KOLProfile: React.FC = () => {
       const profile: KOLProfile = {
         wallet_address: walletAddress,
         name: profileData?.name || walletAddress.substring(0, 8),
-        avatar_url: profileData?.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+        avatar_url: walletData?.twitter_avatar || profileData?.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
         twitter_handle: profileData?.twitter_handle || '',
         twitter_followers: profileData?.twitter_followers || 0,
         total_pnl: totalPnl,

@@ -9,6 +9,8 @@ interface MonitoredWallet {
   is_active: boolean;
   created_at: string;
   updated_at: string;
+  twitter_handle: string | null;
+  twitter_avatar: string | null;
 }
 
 interface Stalk {
@@ -43,7 +45,7 @@ const MyStalks: React.FC = () => {
     try {
       const { data, error } = await supabase
         .from('monitored_wallets')
-        .select('*')
+        .select('id, wallet_address, label, is_active, created_at, updated_at, twitter_handle, twitter_avatar')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -195,7 +197,15 @@ const MyStalks: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="text-2xl">👛</div>
+                      {wallet.twitter_avatar ? (
+                        <img
+                          src={wallet.twitter_avatar}
+                          alt={wallet.label || 'Trader'}
+                          className="w-10 h-10 rounded-full object-cover border border-white/20"
+                        />
+                      ) : (
+                        <div className="text-2xl">👛</div>
+                      )}
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-lg font-bold text-white">

@@ -99,7 +99,7 @@ const KOLFeed: React.FC = () => {
     try {
       const { data: wallets } = await supabase
         .from('monitored_wallets')
-        .select('*');
+        .select('wallet_address, label, twitter_handle, twitter_avatar');
 
       const walletMap = new Map();
       wallets?.forEach((wallet: any) => {
@@ -146,7 +146,7 @@ const KOLFeed: React.FC = () => {
           const profile = profileMap.get(tx.from_address);
           const twitterHandle = wallet?.twitter_handle || profile?.twitter_handle || null;
           const label = wallet?.label || profile?.name || tx.from_address.substring(0, 8);
-          const avatarUrl = profile?.avatar_url || null;
+          const avatarUrl = wallet?.twitter_avatar || profile?.avatar_url || null;
 
           aggregated.set(key, {
             walletAddress: tx.from_address,

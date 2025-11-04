@@ -87,6 +87,16 @@ export const kolFeedService = {
           timeFilter = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       }
 
+      // Fetch monitored wallets
+      const { data: wallets } = await supabase
+        .from('monitored_wallets')
+        .select('wallet_address, label, twitter_handle, twitter_avatar');
+
+      const walletMap = new Map();
+      wallets?.forEach((wallet: any) => {
+        walletMap.set(wallet.wallet_address, wallet);
+      });
+
       // Fetch KOL profiles
       const { data: profiles, error: profilesError } = await supabase
         .from('kol_profiles')
@@ -149,6 +159,9 @@ export const kolFeedService = {
           const profile = profileMap.get(tx.from_address);
           if (!profile) return null;
 
+          const wallet = walletMap.get(tx.from_address);
+          const avatarUrl = wallet?.twitter_avatar || profile.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg';
+
           const txType = ['SWAP', 'BUY'].includes(tx.transaction_type) ? 'buy' : 'sell';
 
           // Filter by type if needed
@@ -165,7 +178,7 @@ export const kolFeedService = {
             lastTx: txType,
             timeAgo: formatTimeAgo(tx.block_time),
             kolName: profile.name,
-            kolAvatar: profile.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+            kolAvatar: avatarUrl,
             walletAddress: tx.from_address,
             twitterHandle: profile.twitter_handle || tx.from_address.substring(0, 8),
             token: tx.token_symbol || 'Unknown',

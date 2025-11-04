@@ -60,6 +60,15 @@ const KOLLeaderboard: React.FC = () => {
           break;
       }
 
+      const { data: wallets } = await supabase
+        .from('monitored_wallets')
+        .select('wallet_address, label, twitter_handle, twitter_avatar');
+
+      const walletMap = new Map();
+      wallets?.forEach((wallet: any) => {
+        walletMap.set(wallet.wallet_address, wallet);
+      });
+
       const { data: profiles, error: profilesError } = await supabase
         .from('kol_profiles')
         .select('*');
@@ -112,10 +121,13 @@ const KOLLeaderboard: React.FC = () => {
 
           const winRate = totalTrades > 0 ? (profitableTrades / totalTrades) * 100 : 0;
 
+          const wallet = walletMap.get(profile.wallet_address);
+          const avatarUrl = wallet?.twitter_avatar || profile.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg';
+
           return {
             id: profile.id,
             name: profile.name,
-            avatar: profile.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+            avatar: avatarUrl,
             totalPnl,
             winRate,
             totalTrades,
