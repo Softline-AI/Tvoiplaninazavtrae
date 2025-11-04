@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Copy, ExternalLink, Clock, ChevronUp, ChevronDown, Twitter } from 'lucide-react';
+import { Copy, ExternalLink, Clock, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 interface KOLTrade {
   id: string;
@@ -540,11 +546,11 @@ const KOLFeed: React.FC = () => {
                                 href={getTwitterUrl(trade.twitterHandle)!}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-blue-400"
-                                title="View on Twitter"
+                                className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-white"
+                                title="View on X"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Twitter className="w-3.5 h-3.5" />
+                                <XIcon className="w-3.5 h-3.5" />
                               </a>
                             )}
                           </div>

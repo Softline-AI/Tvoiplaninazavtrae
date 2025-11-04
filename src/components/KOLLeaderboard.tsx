@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Crown, ExternalLink, RefreshCw, ChevronDown, TrendingUp, DollarSign, Twitter } from 'lucide-react';
+import { Crown, ExternalLink, RefreshCw, ChevronDown, TrendingUp, DollarSign } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+
+const XIcon = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 interface KOLTrader {
   id: string;
@@ -378,9 +384,9 @@ const KOLLeaderboard: React.FC = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
-                            title="View Twitter Profile"
+                            title="View on X"
                           >
-                            <Twitter className="w-4 h-4 text-white/70 hover:text-white transition-colors" />
+                            <XIcon className="w-4 h-4 text-white/70 hover:text-white transition-colors" />
                           </a>
                         </div>
                       </td>
