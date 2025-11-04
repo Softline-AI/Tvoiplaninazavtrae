@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Crown, ExternalLink, RefreshCw, ChevronDown, TrendingUp, DollarSign } from 'lucide-react';
+import { Crown, ExternalLink, RefreshCw, ChevronDown, TrendingUp, DollarSign, Twitter } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 
 interface KOLTrader {
@@ -369,17 +369,19 @@ const KOLLeaderboard: React.FC = () => {
                             src={trader.avatar}
                             loading="lazy"
                           />
-                          <div className="flex flex-col">
+                          <div className="flex-1 flex flex-col">
                             <span className="text-sm font-semibold text-white">{trader.name}</span>
-                            <a
-                              href={`https://twitter.com/${trader.twitterHandle}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-xs text-white/50 hover:text-white/80 transition-colors"
-                            >
-                              @{trader.twitterHandle.replace('@', '')}
-                            </a>
+                            <span className="text-xs text-white/50">@{trader.twitterHandle.replace('@', '')}</span>
                           </div>
+                          <a
+                            href={`https://twitter.com/${trader.twitterHandle}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                            title="View Twitter Profile"
+                          >
+                            <Twitter className="w-4 h-4 text-white/70 hover:text-white transition-colors" />
+                          </a>
                         </div>
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">

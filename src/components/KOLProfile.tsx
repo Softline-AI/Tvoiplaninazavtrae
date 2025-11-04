@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import {
   Copy, ExternalLink, TrendingUp, TrendingDown, Activity, DollarSign,
   Target, Wallet, BarChart3, Clock, ArrowUpRight, ArrowDownRight,
-  Calendar, Zap, Users
+  Calendar, Zap, Users, Twitter
 } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 
@@ -396,15 +396,15 @@ const KOLProfile: React.FC = () => {
                   href={`https://twitter.com/${profile.twitter_handle.replace('@', '')}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-white/60 hover:text-white text-sm mb-3 inline-flex items-center gap-2 transition-colors"
+                  className="text-white/60 hover:text-white text-sm mb-3 inline-flex items-center gap-2 transition-colors group"
                 >
+                  <Twitter className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
                   @{profile.twitter_handle.replace('@', '')}
                   {profile.twitter_followers > 0 && (
                     <span className="text-white/40">
                       • {(profile.twitter_followers / 1000).toFixed(1)}K followers
                     </span>
                   )}
-                  <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               )}
 

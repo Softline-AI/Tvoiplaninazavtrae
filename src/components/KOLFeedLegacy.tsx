@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download } from 'lucide-react';
+import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download, Twitter } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
 
@@ -335,10 +335,19 @@ const KOLFeedLegacy: React.FC = () => {
                             alt={trade.trader}
                             className="w-8 h-8 rounded-full border border-white/30"
                           />
-                          <div>
+                          <div className="flex-1">
                             <div className="text-sm font-bold text-white">{trade.trader}</div>
                             <div className="text-xs text-white/70">@{typeof trade.twitterHandle === 'string' ? trade.twitterHandle.replace('@', '') : trade.twitterHandle}</div>
                           </div>
+                          <a
+                            href={`https://twitter.com/${typeof trade.twitterHandle === 'string' ? trade.twitterHandle.replace('@', '') : trade.twitterHandle}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                            title="View Twitter Profile"
+                          >
+                            <Twitter className="w-4 h-4 text-white/70 hover:text-white transition-colors" />
+                          </a>
                         </div>
                       </td>
 
