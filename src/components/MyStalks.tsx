@@ -407,7 +407,11 @@ const MyStalks: React.FC = () => {
             </div>
           ) : monitoredWallets.length > 0 ? (
             monitoredWallets.map((wallet) => (
-              <div key={wallet.id} className="noir-card rounded-xl p-6">
+              <div
+                key={wallet.id}
+                className="noir-card rounded-xl p-6 cursor-pointer hover:bg-white/5 transition-all"
+                onClick={() => window.open(`https://solscan.io/account/${wallet.wallet_address}`, '_blank')}
+              >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-4">
@@ -451,19 +455,23 @@ const MyStalks: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <button
-                            onClick={() => navigator.clipboard.writeText(wallet.wallet_address)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigator.clipboard.writeText(wallet.wallet_address);
+                            }}
                             className="hover:opacity-70 transition-all p-1 text-white/70"
                           >
                             <Copy className="w-4 h-4" />
                           </button>
-                          <a
-                            href={`https://solscan.io/account/${wallet.wallet_address}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(`https://solscan.io/account/${wallet.wallet_address}`, '_blank');
+                            }}
                             className="hover:opacity-70 transition-all p-1 text-white/70"
                           >
                             <ExternalLink className="w-4 h-4" />
-                          </a>
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -491,12 +499,18 @@ const MyStalks: React.FC = () => {
                   </div>
 
                   <div className="flex flex-col gap-2 ml-4">
-                    <button className="hover:opacity-70 transition-all p-2 text-white/70">
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className="hover:opacity-70 transition-all p-2 text-white/70"
+                    >
                       <Settings className="w-5 h-5" />
                     </button>
-                    <button className={`hover:opacity-70 transition-all p-2 ${
-                      wallet.is_active ? 'text-green-600' : 'text-white/70'
-                    }`}>
+                    <button
+                      onClick={(e) => e.stopPropagation()}
+                      className={`hover:opacity-70 transition-all p-2 ${
+                        wallet.is_active ? 'text-green-600' : 'text-white/70'
+                      }`}
+                    >
                       <Bell className="w-5 h-5" />
                     </button>
                   </div>
@@ -515,7 +529,11 @@ const MyStalks: React.FC = () => {
 
           {/* Example Stalks */}
           {stalks.map((stalk) => (
-            <div key={stalk.id} className="noir-card rounded-xl p-6">
+            <div
+              key={stalk.id}
+              className="noir-card rounded-xl p-6 cursor-pointer hover:bg-white/5 transition-all"
+              onClick={() => window.open(`https://solscan.io/account/${stalk.target}`, '_blank')}
+            >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   {/* Stalk Header */}
@@ -550,17 +568,24 @@ const MyStalks: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <button className="hover:opacity-70 transition-all p-1 text-white/70">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigator.clipboard.writeText(stalk.target);
+                          }}
+                          className="hover:opacity-70 transition-all p-1 text-white/70"
+                        >
                           <Copy className="w-4 h-4" />
                         </button>
-                        <a
-                          href={`https://solscan.io/account/${stalk.target}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(`https://solscan.io/account/${stalk.target}`, '_blank');
+                          }}
                           className="hover:opacity-70 transition-all p-1 text-white/70"
                         >
                           <ExternalLink className="w-4 h-4" />
-                        </a>
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -611,12 +636,18 @@ const MyStalks: React.FC = () => {
 
                 {/* Actions */}
                 <div className="flex flex-col gap-2 ml-4">
-                  <button className="hover:opacity-70 transition-all p-2 text-white/70">
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className="hover:opacity-70 transition-all p-2 text-white/70"
+                  >
                     <Settings className="w-5 h-5" />
                   </button>
-                  <button className={`hover:opacity-70 transition-all p-2 ${
-                    stalk.alertsEnabled ? 'text-green-600' : 'text-white/70'
-                  }`}>
+                  <button
+                    onClick={(e) => e.stopPropagation()}
+                    className={`hover:opacity-70 transition-all p-2 ${
+                      stalk.alertsEnabled ? 'text-green-600' : 'text-white/70'
+                    }`}
+                  >
                     <Bell className="w-5 h-5" />
                   </button>
                 </div>
@@ -687,7 +718,11 @@ const MyStalks: React.FC = () => {
                   </div>
                 ) : (
                   smartMoneyWallets.map((wallet) => (
-                    <div key={wallet.id} className="bg-noir-dark rounded-lg p-4">
+                    <div
+                      key={wallet.id}
+                      className="bg-noir-dark rounded-lg p-4 cursor-pointer hover:bg-white/5 transition-all"
+                      onClick={() => window.open(`https://solscan.io/account/${wallet.wallet_address}`, '_blank')}
+                    >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -708,23 +743,30 @@ const MyStalks: React.FC = () => {
                               {wallet.wallet_address.slice(0, 4)}...{wallet.wallet_address.slice(-4)}
                             </span>
                             <button
-                              onClick={() => navigator.clipboard.writeText(wallet.wallet_address)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigator.clipboard.writeText(wallet.wallet_address);
+                              }}
                               className="text-white/40 hover:text-white transition-colors"
                             >
                               <Copy className="w-3 h-3" />
                             </button>
-                            <a
-                              href={`https://solscan.io/account/${wallet.wallet_address}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`https://solscan.io/account/${wallet.wallet_address}`, '_blank');
+                              }}
                               className="text-white/40 hover:text-white transition-colors"
                             >
                               <ExternalLink className="w-3 h-3" />
-                            </a>
+                            </button>
                           </div>
                         </div>
                         <button
-                          onClick={() => removeSmartMoneyWallet(wallet.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeSmartMoneyWallet(wallet.id);
+                          }}
                           className="p-2 text-red-400 hover:bg-red-400/10 rounded transition-colors"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -747,7 +789,11 @@ const MyStalks: React.FC = () => {
                   </div>
                 ) : (
                   recentTransactions.map((tx) => (
-                    <div key={tx.id} className="bg-noir-dark rounded-lg p-4">
+                    <div
+                      key={tx.id}
+                      className="bg-noir-dark rounded-lg p-4 cursor-pointer hover:bg-white/5 transition-all"
+                      onClick={() => window.open(`https://solscan.io/token/${tx.token_address}`, '_blank')}
+                    >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-1">
@@ -774,14 +820,15 @@ const MyStalks: React.FC = () => {
                             {formatTimeAgo(tx.timestamp)}
                           </div>
                         </div>
-                        <a
-                          href={`https://solscan.io/token/${tx.token_address}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.open(`https://solscan.io/token/${tx.token_address}`, '_blank');
+                          }}
                           className="text-white/40 hover:text-white transition-colors"
                         >
                           <ExternalLink className="w-4 h-4" />
-                        </a>
+                        </button>
                       </div>
                     </div>
                   ))
