@@ -46,7 +46,7 @@ interface SolanaTokenList {
   tokens: SolanaTokenListToken[];
 }
 
-const DEFAULT_TOKEN_LOGO = 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg?auto=compress&cs=tinysrgb&w=100';
+const DEFAULT_TOKEN_LOGO = 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
 
 let solanaTokenListCache: SolanaTokenList | null = null;
 let solanaTokenListCacheTime: number = 0;

@@ -34,7 +34,7 @@ const LegendCommunity: React.FC = () => {
     {
       id: '1',
       username: 'SolanaWhaleKing',
-      avatar: 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=56&h=56&dpr=1',
+      avatar: 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg',
       tier: 'legend',
       reputation: 9850,
       totalReturn: '+456.7%',

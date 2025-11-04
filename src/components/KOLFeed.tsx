@@ -78,7 +78,7 @@ const KOLFeed: React.FC = () => {
   }, []);
 
   const getTwitterAvatarUrl = (twitterHandle: string | null): string => {
-    if (!twitterHandle) return 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg';
+    if (!twitterHandle) return 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
 
     const username = twitterHandle.replace('https://x.com/', '').replace('https://twitter.com/', '').replace('@', '');
     return `https://unavatar.io/twitter/${username}`;

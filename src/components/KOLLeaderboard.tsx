@@ -122,7 +122,7 @@ const KOLLeaderboard: React.FC = () => {
           const winRate = totalTrades > 0 ? (profitableTrades / totalTrades) * 100 : 0;
 
           const wallet = walletMap.get(profile.wallet_address);
-          const avatarUrl = wallet?.twitter_avatar || profile.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg';
+          const avatarUrl = wallet?.twitter_avatar || profile.avatar_url || 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
 
           return {
             id: profile.id,
