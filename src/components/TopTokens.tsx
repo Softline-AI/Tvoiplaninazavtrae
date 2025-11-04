@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star, TrendingUp, Filter, ExternalLink, Copy } from 'lucide-react';
 import { birdeyeService, type BirdeyeTrendingToken } from '../services/birdeyeApi';
+import { useTokenLogo } from '../hooks/useTokenLogo';
 
 interface TopToken {
   id: string;
@@ -162,6 +163,21 @@ const TopTokens: React.FC = () => {
         return 0;
     }
   });
+
+  const TokenLogo: React.FC<{ contractAddress: string; symbol: string }> = ({ contractAddress, symbol }) => {
+    const logoUrl = useTokenLogo(contractAddress);
+
+    return (
+      <img
+        src={logoUrl}
+        alt={symbol}
+        className="w-8 h-8 rounded-full border-2 border-white/30 mr-3"
+        onError={(e) => {
+          e.currentTarget.src = 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
+        }}
+      />
+    );
+  };
 
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
@@ -339,11 +355,7 @@ const TopTokens: React.FC = () => {
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border-2 border-white/30 mr-3">
-                        <span className="text-white font-bold text-sm">
-                          {token.symbol.substring(0, 2)}
-                        </span>
-                      </div>
+                      <TokenLogo contractAddress={token.contractAddress} symbol={token.symbol} />
                       <div>
                         <div className="text-sm font-bold text-white">{token.symbol}</div>
                         <div className="text-xs text-white/70">{token.token}</div>

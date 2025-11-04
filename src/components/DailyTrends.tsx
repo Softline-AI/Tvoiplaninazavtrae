@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Clock, Filter, ExternalLink, Copy } from 'lucide-react';
 import { birdeyeService, type BirdeyeTrendingToken } from '../services/birdeyeApi';
+import { useTokenLogo } from '../hooks/useTokenLogo';
 
 interface TrendData {
   id: string;
@@ -137,6 +138,21 @@ const DailyTrends: React.FC = () => {
     if (filterType === 'losers') return !trend.isPositive;
     return true;
   });
+
+  const TokenLogo: React.FC<{ contractAddress: string; symbol: string }> = ({ contractAddress, symbol }) => {
+    const logoUrl = useTokenLogo(contractAddress);
+
+    return (
+      <img
+        src={logoUrl}
+        alt={symbol}
+        className="w-8 h-8 rounded-full border-2 border-white/30 mr-3"
+        onError={(e) => {
+          e.currentTarget.src = 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
+        }}
+      />
+    );
+  };
 
   const sortedTrends = [...filteredTrends].sort((a, b) => {
     switch(sortBy) {
@@ -322,11 +338,7 @@ const DailyTrends: React.FC = () => {
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border-2 border-white/30 mr-3">
-                        <span className="text-white font-bold text-sm">
-                          {trend.symbol.substring(0, 2)}
-                        </span>
-                      </div>
+                      <TokenLogo contractAddress={trend.contractAddress} symbol={trend.symbol} />
                       <div>
                         <div className="text-sm font-bold text-white">{trend.symbol}</div>
                         <div className="text-xs text-white/70">{trend.token}</div>

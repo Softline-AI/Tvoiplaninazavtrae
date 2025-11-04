@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronUp, ChevronDown, Copy, ExternalLink, Search, X, Users, RefreshCw, TrendingUp } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { birdeyeService } from '../services/birdeyeApi';
+import { useTokenLogo } from '../hooks/useTokenLogo';
 
 interface TokenStats {
   id: string;
@@ -233,6 +234,21 @@ const TopKOLTokens: React.FC = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const TokenLogo: React.FC<{ mint: string; symbol: string }> = ({ mint, symbol }) => {
+    const logoUrl = useTokenLogo(mint);
+
+    return (
+      <img
+        src={logoUrl}
+        alt={symbol}
+        className="w-10 h-10 rounded-full border border-white/20"
+        onError={(e) => {
+          e.currentTarget.src = 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
+        }}
+      />
+    );
   };
 
   const handleSort = (column: string) => {
@@ -519,11 +535,7 @@ const TopKOLTokens: React.FC = () => {
                       </td>
                       <td className="px-6 py-5 whitespace-nowrap">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-white/20 to-white/5 flex items-center justify-center border border-white/20">
-                            <span className="text-white font-bold text-xs">
-                              {token.symbol.substring(0, 2).toUpperCase()}
-                            </span>
-                          </div>
+                          <TokenLogo mint={token.mint} symbol={token.symbol} />
                           <div className="flex flex-col">
                             <span className="text-sm font-semibold text-white">{token.symbol}</span>
                             <div className="flex items-center gap-2">

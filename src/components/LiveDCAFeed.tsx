@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Repeat, TrendingUp, Clock, ExternalLink, Copy, BarChart3 } from 'lucide-react';
+import { useTokenLogo } from '../hooks/useTokenLogo';
 
 interface DCAActivity {
   id: string;
@@ -88,9 +89,24 @@ const LiveDCAFeed: React.FC = () => {
   };
 
   const getStatusColor = (isActive: boolean) => {
-    return isActive 
-      ? 'text-green-600 bg-green-600/10' 
+    return isActive
+      ? 'text-green-600 bg-green-600/10'
       : 'text-white/70 bg-white/10';
+  };
+
+  const TokenLogo: React.FC<{ contractAddress: string; symbol: string }> = ({ contractAddress, symbol }) => {
+    const logoUrl = useTokenLogo(contractAddress);
+
+    return (
+      <img
+        src={logoUrl}
+        alt={symbol}
+        className="w-8 h-8 rounded-full border border-white/30"
+        onError={(e) => {
+          e.currentTarget.src = 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
+        }}
+      />
+    );
   };
 
   return (
@@ -179,11 +195,7 @@ const LiveDCAFeed: React.FC = () => {
 
                 {/* Token Info */}
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border border-white/30">
-                    <span className="text-white font-bold text-sm">
-                      {activity.tokenSymbol.substring(0, 2)}
-                    </span>
-                  </div>
+                  <TokenLogo contractAddress={activity.contractAddress} symbol={activity.tokenSymbol} />
                   <div>
                     <div className="text-sm font-bold text-white">{activity.tokenSymbol}</div>
                     <div className="text-xs text-white/70">{activity.token}</div>
