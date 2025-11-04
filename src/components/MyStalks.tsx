@@ -254,12 +254,10 @@ const MyStalks: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="bg-noir-dark rounded-lg p-3">
                         <div className="text-xs text-white/70 mb-1">Status</div>
-                        <div className="text-sm font-bold text-white">
-                          {wallet.is_active ? 'Monitoring' : 'Paused'}
-                        </div>
+                        <div className="text-sm font-bold text-white">Monitoring</div>
                       </div>
 
                       <div className="bg-noir-dark rounded-lg p-3">
@@ -267,11 +265,6 @@ const MyStalks: React.FC = () => {
                         <div className="text-sm font-bold text-white">
                           {new Date(wallet.created_at).toLocaleDateString()}
                         </div>
-                      </div>
-
-                      <div className="bg-noir-dark rounded-lg p-3">
-                        <div className="text-xs text-white/70 mb-1">Type</div>
-                        <div className="text-sm font-bold text-white">Wallet</div>
                       </div>
                     </div>
                   </div>
