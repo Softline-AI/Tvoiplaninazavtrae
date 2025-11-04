@@ -7,8 +7,8 @@ const HomePage: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const kols = [
-    { handle: '@valueandtime', followers: '958.87K', twitter: 'https://x.com/valueandtime', avatar: 'https://pbs.twimg.com/profile_images/1874585004077875200/UwK9FNvy_400x400.jpg' },
-    { handle: '@solanashaka', followers: '119.52K', twitter: 'https://x.com/solanashaka', avatar: 'https://pbs.twimg.com/profile_images/1906943959185698816/NicXkxug_400x400.jpg' },
+    { handle: '@valueandtime', followers: '91.8K', twitter: 'https://x.com/valueandtime', avatar: 'https://pbs.twimg.com/profile_images/1874585004077875200/UwK9FNvy_400x400.jpg' },
+    { handle: '@solanashaka', followers: '20.9K', twitter: 'https://x.com/solanashaka', avatar: 'https://pbs.twimg.com/profile_images/1906943959185698816/NicXkxug_400x400.jpg' },
     { handle: '@tier1haterr', followers: '10.20K', twitter: 'https://twitter.com/tier1haterr', avatar: 'https://pbs.twimg.com/profile_images/1985686649188012032/OeDVL6xB_400x400.jpg' },
     { handle: '@eth_ancarter', followers: '1.3K', twitter: 'https://x.com/eth_ancarter?s=21', avatar: 'https://pbs.twimg.com/profile_images/1961738830769229824/60LCaGAY_400x400.jpg' }
   ];
