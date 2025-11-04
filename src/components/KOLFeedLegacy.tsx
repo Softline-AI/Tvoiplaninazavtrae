@@ -57,6 +57,15 @@ const KOLFeedLegacy: React.FC = () => {
           timeFilter_date = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       }
 
+      const { data: wallets } = await supabase
+        .from('monitored_wallets')
+        .select('wallet_address, label, twitter_handle, twitter_avatar');
+
+      const walletMap = new Map();
+      wallets?.forEach((wallet: any) => {
+        walletMap.set(wallet.wallet_address, wallet);
+      });
+
       const { data: profiles } = await supabase
         .from('kol_profiles')
         .select('*');
@@ -96,7 +105,10 @@ const KOLFeedLegacy: React.FC = () => {
       setTotalCount(count || 0);
 
       const formattedTrades: LegacyTrade[] = transactions.map((tx: any) => {
+        const wallet = walletMap.get(tx.from_address);
         const profile = profileMap.get(tx.from_address);
+        const avatarUrl = wallet?.twitter_avatar || profile?.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg';
+
         const txType = ['BUY', 'SWAP'].includes(tx.transaction_type) ? 'buy' : 'sell';
         const amount = parseFloat(tx.amount || '0');
         const price = parseFloat(tx.current_token_price || '0');
@@ -115,7 +127,7 @@ const KOLFeedLegacy: React.FC = () => {
             hour12: false
           }),
           trader: profile?.name || tx.from_address.substring(0, 8),
-          traderAvatar: profile?.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg',
+          traderAvatar: avatarUrl,
           action: txType,
           token: tx.token_symbol || 'Unknown',
           tokenSymbol: tx.token_symbol || 'UNK',
