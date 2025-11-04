@@ -520,10 +520,12 @@ const KOLFeed: React.FC = () => {
                           </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
+                          <div
+                            className="flex items-center justify-between gap-2 px-2 py-1.5 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition-colors"
+                          >
                             <div
                               onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
-                              className="flex items-center gap-2 px-2 py-1.5 border border-white/10 rounded-lg bg-white/5 cursor-pointer hover:bg-white/10 transition-colors"
+                              className="flex items-center gap-2 cursor-pointer flex-1"
                             >
                               <img
                                 alt={trade.kolName}
@@ -538,11 +540,11 @@ const KOLFeed: React.FC = () => {
                                 href={getTwitterUrl(trade.twitterHandle)!}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1.5 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-blue-400"
+                                className="p-1 hover:bg-white/10 rounded transition-colors text-white/60 hover:text-blue-400"
                                 title="View on Twitter"
                                 onClick={(e) => e.stopPropagation()}
                               >
-                                <Twitter className="w-4 h-4" />
+                                <Twitter className="w-3.5 h-3.5" />
                               </a>
                             )}
                           </div>
