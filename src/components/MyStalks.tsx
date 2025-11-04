@@ -380,7 +380,6 @@ const MyStalks: React.FC = () => {
       <div className="flex items-center gap-1 mb-6 bg-noir-dark border border-white/20 rounded-xl p-1">
         {[
           { id: 'active', label: 'Active Stalks' },
-          { id: 'smart-money', label: 'Smart Money' },
           { id: 'alerts', label: 'Recent Alerts' }
         ].map((tab) => (
           <button
@@ -399,7 +398,168 @@ const MyStalks: React.FC = () => {
 
       {/* Active Stalks */}
       {activeTab === 'active' && (
-        <div className="space-y-4">
+        <div className="space-y-6">
+          {/* Add Smart Money Wallet Form */}
+          <div className="noir-card rounded-xl p-6">
+            <h2 className="text-lg font-bold text-white mb-4">Track Smart Money Wallets</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="Wallet Address"
+                value={newWalletAddress}
+                onChange={(e) => setNewWalletAddress(e.target.value)}
+                className="px-4 py-3 bg-noir-dark border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/30"
+              />
+              <input
+                type="text"
+                placeholder="Trader Name"
+                value={newNickname}
+                onChange={(e) => setNewNickname(e.target.value)}
+                className="px-4 py-3 bg-noir-dark border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/30"
+              />
+              <input
+                type="text"
+                placeholder="Twitter handle (optional)"
+                value={newTwitterHandle}
+                onChange={(e) => setNewTwitterHandle(e.target.value)}
+                className="px-4 py-3 bg-noir-dark border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/30"
+              />
+            </div>
+
+            {error && (
+              <div className="flex items-center gap-2 mb-4 text-red-400 text-sm">
+                <AlertCircle className="w-4 h-4" />
+                {error}
+              </div>
+            )}
+
+            <button
+              onClick={addSmartMoneyWallet}
+              disabled={isAdding}
+              className="bg-white text-noir-black px-6 py-3 rounded-lg font-medium hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              {isAdding ? 'Adding...' : 'Add Wallet'}
+            </button>
+          </div>
+
+          {/* Tracked Smart Money Wallets & Recent Transactions Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Tracked Wallets */}
+            <div className="noir-card rounded-xl p-6">
+              <h2 className="text-lg font-bold text-white mb-4">Tracked Wallets ({smartMoneyWallets.length})</h2>
+
+              <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                {smartMoneyWallets.length === 0 ? (
+                  <div className="text-center py-8 text-white/40">
+                    No tracked wallets yet
+                  </div>
+                ) : (
+                  smartMoneyWallets.map((wallet) => (
+                    <div key={wallet.id} className="bg-noir-dark rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-white font-semibold">{wallet.nickname}</span>
+                            {wallet.twitter_handle && (
+                              <a
+                                href={`https://twitter.com/${wallet.twitter_handle.replace('@', '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-white/60 hover:text-white transition-colors text-xs"
+                              >
+                                @{wallet.twitter_handle.replace('@', '')}
+                              </a>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-white/60 text-sm font-mono">
+                              {wallet.wallet_address.slice(0, 4)}...{wallet.wallet_address.slice(-4)}
+                            </span>
+                            <button
+                              onClick={() => navigator.clipboard.writeText(wallet.wallet_address)}
+                              className="text-white/40 hover:text-white transition-colors"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </button>
+                            <a
+                              href={`https://solscan.io/account/${wallet.wallet_address}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-white/40 hover:text-white transition-colors"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeSmartMoneyWallet(wallet.id)}
+                          className="p-2 text-red-400 hover:bg-red-400/10 rounded transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Recent Transactions */}
+            <div className="noir-card rounded-xl p-6">
+              <h2 className="text-lg font-bold text-white mb-4">Recent Transactions</h2>
+
+              <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                {recentTransactions.length === 0 ? (
+                  <div className="text-center py-8 text-white/40">
+                    No transactions yet
+                  </div>
+                ) : (
+                  recentTransactions.map((tx) => (
+                    <div key={tx.id} className="bg-noir-dark rounded-lg p-4">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-white font-semibold">{tx.nickname}</span>
+                            <span className={`px-2 py-0.5 text-xs font-semibold rounded ${
+                              tx.transaction_type === 'buy'
+                                ? 'bg-green-600/20 text-green-400'
+                                : 'bg-red-600/20 text-red-400'
+                            }`}>
+                              {tx.transaction_type.toUpperCase()}
+                            </span>
+                          </div>
+                          <div className="text-white/60 text-sm mb-1">
+                            {tx.token_symbol} • ${tx.usd_value.toFixed(2)}
+                            {tx.token_pnl && (
+                              <span className={`ml-2 ${
+                                tx.token_pnl > 0 ? 'text-green-400' : 'text-red-400'
+                              }`}>
+                                ({tx.token_pnl > 0 ? '+' : ''}{tx.token_pnl.toFixed(2)}%)
+                              </span>
+                            )}
+                          </div>
+                          <div className="text-white/40 text-xs">
+                            {formatTimeAgo(tx.timestamp)}
+                          </div>
+                        </div>
+                        <a
+                          href={`https://solscan.io/token/${tx.token_address}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-white/40 hover:text-white transition-colors"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Monitored Wallets from Database */}
           {loading ? (
             <div className="noir-card rounded-xl p-12 text-center">
@@ -626,171 +786,6 @@ const MyStalks: React.FC = () => {
         </div>
       )}
 
-      {/* Smart Money Tab */}
-      {activeTab === 'smart-money' && (
-        <div className="space-y-6">
-          {/* Add Wallet Form */}
-          <div className="noir-card rounded-xl p-6">
-            <h2 className="text-lg font-bold text-white mb-4">Track Smart Money Wallets</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-              <input
-                type="text"
-                placeholder="Wallet Address"
-                value={newWalletAddress}
-                onChange={(e) => setNewWalletAddress(e.target.value)}
-                className="px-4 py-3 bg-noir-dark border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/30"
-              />
-              <input
-                type="text"
-                placeholder="Trader Name"
-                value={newNickname}
-                onChange={(e) => setNewNickname(e.target.value)}
-                className="px-4 py-3 bg-noir-dark border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/30"
-              />
-              <input
-                type="text"
-                placeholder="Twitter handle (optional)"
-                value={newTwitterHandle}
-                onChange={(e) => setNewTwitterHandle(e.target.value)}
-                className="px-4 py-3 bg-noir-dark border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/30"
-              />
-            </div>
-
-            {error && (
-              <div className="flex items-center gap-2 mb-4 text-red-400 text-sm">
-                <AlertCircle className="w-4 h-4" />
-                {error}
-              </div>
-            )}
-
-            <button
-              onClick={addSmartMoneyWallet}
-              disabled={isAdding}
-              className="bg-white text-noir-black px-6 py-3 rounded-lg font-medium hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              {isAdding ? 'Adding...' : 'Add Wallet'}
-            </button>
-          </div>
-
-          {/* Tracked Wallets & Recent Transactions Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Tracked Wallets */}
-            <div className="noir-card rounded-xl p-6">
-              <h2 className="text-lg font-bold text-white mb-4">Tracked Wallets ({smartMoneyWallets.length})</h2>
-
-              <div className="space-y-3 max-h-[500px] overflow-y-auto">
-                {smartMoneyWallets.length === 0 ? (
-                  <div className="text-center py-8 text-white/40">
-                    No tracked wallets yet
-                  </div>
-                ) : (
-                  smartMoneyWallets.map((wallet) => (
-                    <div key={wallet.id} className="bg-noir-dark rounded-lg p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-white font-semibold">{wallet.nickname}</span>
-                            {wallet.twitter_handle && (
-                              <a
-                                href={`https://twitter.com/${wallet.twitter_handle.replace('@', '')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-white/60 hover:text-white transition-colors text-xs"
-                              >
-                                @{wallet.twitter_handle.replace('@', '')}
-                              </a>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-white/60 text-sm font-mono">
-                              {wallet.wallet_address.slice(0, 4)}...{wallet.wallet_address.slice(-4)}
-                            </span>
-                            <button
-                              onClick={() => navigator.clipboard.writeText(wallet.wallet_address)}
-                              className="text-white/40 hover:text-white transition-colors"
-                            >
-                              <Copy className="w-3 h-3" />
-                            </button>
-                            <a
-                              href={`https://solscan.io/account/${wallet.wallet_address}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-white/40 hover:text-white transition-colors"
-                            >
-                              <ExternalLink className="w-3 h-3" />
-                            </a>
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => removeSmartMoneyWallet(wallet.id)}
-                          className="p-2 text-red-400 hover:bg-red-400/10 rounded transition-colors"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-
-            {/* Recent Transactions */}
-            <div className="noir-card rounded-xl p-6">
-              <h2 className="text-lg font-bold text-white mb-4">Recent Transactions</h2>
-
-              <div className="space-y-3 max-h-[500px] overflow-y-auto">
-                {recentTransactions.length === 0 ? (
-                  <div className="text-center py-8 text-white/40">
-                    No transactions yet
-                  </div>
-                ) : (
-                  recentTransactions.map((tx) => (
-                    <div key={tx.id} className="bg-noir-dark rounded-lg p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-white font-semibold">{tx.nickname}</span>
-                            <span className={`px-2 py-0.5 text-xs font-semibold rounded ${
-                              tx.transaction_type === 'buy'
-                                ? 'bg-green-600/20 text-green-400'
-                                : 'bg-red-600/20 text-red-400'
-                            }`}>
-                              {tx.transaction_type.toUpperCase()}
-                            </span>
-                          </div>
-                          <div className="text-white/60 text-sm mb-1">
-                            {tx.token_symbol} • ${tx.usd_value.toFixed(2)}
-                            {tx.token_pnl && (
-                              <span className={`ml-2 ${
-                                tx.token_pnl > 0 ? 'text-green-400' : 'text-red-400'
-                              }`}>
-                                ({tx.token_pnl > 0 ? '+' : ''}{tx.token_pnl.toFixed(2)}%)
-                              </span>
-                            )}
-                          </div>
-                          <div className="text-white/40 text-xs">
-                            {formatTimeAgo(tx.timestamp)}
-                          </div>
-                        </div>
-                        <a
-                          href={`https://solscan.io/token/${tx.token_address}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-white/40 hover:text-white transition-colors"
-                        >
-                          <ExternalLink className="w-4 h-4" />
-                        </a>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Recent Alerts Tab */}
       {activeTab === 'alerts' && (
