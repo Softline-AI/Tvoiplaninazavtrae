@@ -747,7 +747,7 @@ const KOLProfile: React.FC = () => {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`text-xs font-bold uppercase ${
-                              ['BUY', 'SWAP'].includes(tx.transaction_type) ? 'text-green-600' : 'text-red-600'
+                              tx.transaction_type === 'BUY' ? 'text-green-600' : 'text-red-600'
                             }`}
                           >
                             {tx.transaction_type}

@@ -98,7 +98,7 @@ const KOLLeaderboard: React.FC = () => {
           const { data: transactions } = await txQuery;
 
           const buyCount = transactions?.filter((tx: any) =>
-            ['BUY', 'SWAP'].includes(tx.transaction_type)
+            tx.transaction_type === 'BUY'
           ).length || 0;
 
           const sellCount = transactions?.filter((tx: any) =>

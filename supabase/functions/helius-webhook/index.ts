@@ -343,7 +343,7 @@ async function calculateTokenPnl(
   }
 }
 
-function determineTransactionType(data: HeliusWebhookData, walletAddress: string): string {
+function determineTransactionType(data: HeliusWebhookData, walletAddress: string): string | null {
   const type = data.type?.toUpperCase() || "UNKNOWN";
 
   if (type === "SWAP") {
@@ -377,7 +377,12 @@ function determineTransactionType(data: HeliusWebhookData, walletAddress: string
         }
       }
     }
+
+    return null;
   }
+
+  if (type === "BUY") return "BUY";
+  if (type === "SELL") return "SELL";
 
   if (type === "TRANSFER" && data.tokenTransfers && data.tokenTransfers.length > 0) {
     const transfer = data.tokenTransfers.find(
@@ -386,9 +391,7 @@ function determineTransactionType(data: HeliusWebhookData, walletAddress: string
     return transfer ? "SELL" : "BUY";
   }
 
-  if (["TOKEN_MINT", "FILL_ORDER", "BUY_ITEM"].includes(type)) return "BUY";
-
-  return type;
+  return null;
 }
 
 function extractTransactionData(
@@ -527,12 +530,23 @@ Deno.serve(async (req: Request) => {
 
     const transactionType = determineTransactionType(data, fromAddress);
 
+    if (!transactionType) {
+      console.log(`Transaction type could not be determined or is not BUY/SELL, skipping`);
+      return new Response(
+        JSON.stringify({ message: "Transaction type not supported" }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const tokenMetadata = await fetchTokenMetadata(supabase, tokenMint);
     const currentPrice = tokenMetadata.price;
     const realTokenSymbol = tokenMetadata.symbol;
     const marketCap = tokenMetadata.marketCap;
 
-    console.log(`Token: ${realTokenSymbol} @ $${currentPrice} | MC: $${marketCap}`);
+    console.log(`Transaction Type: ${transactionType} | Token: ${realTokenSymbol} @ $${currentPrice} | MC: $${marketCap}`);
 
     const { tokenPnl, tokenPnlPercentage, entryPrice } = await calculateTokenPnl(
       supabase,

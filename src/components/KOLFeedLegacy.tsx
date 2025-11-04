@@ -81,7 +81,7 @@ const KOLFeedLegacy: React.FC = () => {
         .gte('block_time', timeFilter_date.toISOString());
 
       if (actionFilter !== 'all') {
-        const txTypes = actionFilter === 'buy' ? ['BUY', 'SWAP'] : ['SELL'];
+        const txTypes = actionFilter === 'buy' ? ['BUY'] : ['SELL'];
         query = query.in('transaction_type', txTypes);
       }
 
@@ -109,7 +109,7 @@ const KOLFeedLegacy: React.FC = () => {
         const profile = profileMap.get(tx.from_address);
         const avatarUrl = wallet?.twitter_avatar || profile?.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg';
 
-        const txType = ['BUY', 'SWAP'].includes(tx.transaction_type) ? 'buy' : 'sell';
+        const txType = tx.transaction_type === 'BUY' ? 'buy' : 'sell';
         const amount = parseFloat(tx.amount || '0');
         const price = parseFloat(tx.current_token_price || '0');
         const tokenPnl = parseFloat(tx.token_pnl || '0');

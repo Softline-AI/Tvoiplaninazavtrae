@@ -125,7 +125,7 @@ const TopKOLTokens: React.FC = () => {
         const amount = parseFloat(tx.amount || '0');
         stats.totalVolume += amount;
 
-        if (['BUY', 'SWAP'].includes(tx.transaction_type)) {
+        if (tx.transaction_type === 'BUY') {
           stats.buyVolume += amount;
         } else if (tx.transaction_type === 'SELL') {
           stats.sellVolume += amount;
