@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copy, ExternalLink, Clock, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
-import { useTokenLogo } from '../hooks/useTokenLogo';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -97,12 +96,14 @@ const KOLFeed: React.FC = () => {
     return `https://x.com/${username}`;
   };
 
-  const TokenLogo: React.FC<{ mint: string; symbol: string }> = ({ mint, symbol }) => {
-    const logoUrl = useTokenLogo(mint);
+  const getDexScreenerUrl = (mint: string): string => {
+    return `https://dd.dexscreener.com/ds-data/tokens/solana/${mint}.png?size=lg`;
+  };
 
+  const TokenLogo: React.FC<{ mint: string; symbol: string }> = ({ mint, symbol }) => {
     return (
       <img
-        src={logoUrl}
+        src={getDexScreenerUrl(mint)}
         alt={symbol}
         className="w-6 h-6 rounded-full border border-white/20 object-cover"
         onError={(e) => {
@@ -145,7 +146,7 @@ const KOLFeed: React.FC = () => {
         .in('transaction_type', ['BUY', 'SELL'])
         .not('token_symbol', 'in', `(${EXCLUDED_TOKENS.join(',')})`)
         .order('block_time', { ascending: false })
-        .limit(3000);
+        .limit(1000);
 
       if (error) {
         console.error('Error loading transactions:', error);
@@ -250,7 +251,8 @@ const KOLFeed: React.FC = () => {
             transactionSignature: agg.lastSignature || ''
           };
         })
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+        .slice(0, 100);
 
       setTrades(formattedTrades);
     } catch (error) {
