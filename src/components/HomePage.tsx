@@ -10,7 +10,7 @@ const HomePage: React.FC = () => {
     { handle: '@cryptomanran', followers: '958.87K', twitter: 'https://twitter.com/cryptomanran', avatar: null },
     { handle: '@nft_cryptogang', followers: '119.52K', twitter: 'https://twitter.com/nft_cryptogang', avatar: null },
     { handle: '@tier1haterr', followers: '10.20K', twitter: 'https://twitter.com/tier1haterr', avatar: null },
-    { handle: '@eth_ancarter', followers: '10.71K', twitter: 'https://x.com/eth_ancarter?s=21', avatar: 'https://pbs.twimg.com/profile_images/1841529806522359808/mV1p0_1C_400x400.jpg' }
+    { handle: '@eth_ancarter', followers: '10.71K', twitter: 'https://x.com/eth_ancarter?s=21', avatar: 'https://pbs.twimg.com/profile_images/1961738830769229824/60LCaGAY_400x400.jpg' }
   ];
 
   const faqs = [
