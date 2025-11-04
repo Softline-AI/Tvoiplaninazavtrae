@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copy, ExternalLink, Clock, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { useTokenLogo } from '../hooks/useTokenLogo';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -94,6 +95,24 @@ const KOLFeed: React.FC = () => {
     if (!twitterHandle) return null;
     const username = twitterHandle.replace('https://x.com/', '').replace('https://twitter.com/', '').replace('@', '');
     return `https://x.com/${username}`;
+  };
+
+  const TokenLogo: React.FC<{ mint: string; symbol: string }> = ({ mint, symbol }) => {
+    const logoUrl = useTokenLogo(mint);
+
+    return (
+      <img
+        src={logoUrl}
+        alt={symbol}
+        className="w-6 h-6 rounded-full border border-white/20 object-cover"
+        onError={(e) => {
+          const target = e.currentTarget;
+          target.style.display = 'none';
+          const fallback = target.nextElementSibling as HTMLElement;
+          if (fallback) fallback.style.display = 'flex';
+        }}
+      />
+    );
   };
 
   const getTokenLogoUrl = (tokenMint: string): string => {
@@ -557,16 +576,7 @@ const KOLFeed: React.FC = () => {
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <div className="flex items-center gap-2">
-                            <img
-                              src={trade.tokenLogoUrl}
-                              alt={trade.token}
-                              className="w-6 h-6 rounded-full object-cover border border-white/20"
-                              onError={(e) => {
-                                e.currentTarget.style.display = 'none';
-                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                                if (fallback) fallback.style.display = 'flex';
-                              }}
-                            />
+                            <TokenLogo mint={trade.tokenContract} symbol={trade.token} />
                             <div className="w-6 h-6 rounded-full bg-gradient-to-br from-white/20 to-white/5 items-center justify-center border border-white/20" style={{ display: 'none' }}>
                               <span className="text-white font-bold text-xs">
                                 {trade.token.substring(0, 2).toUpperCase()}
