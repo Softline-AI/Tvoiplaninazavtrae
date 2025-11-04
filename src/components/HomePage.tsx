@@ -7,10 +7,10 @@ const HomePage: React.FC = () => {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const kols = [
-    { handle: '@cryptomanran', followers: '958.87K', twitter: 'https://twitter.com/cryptomanran', avatar: null },
-    { handle: '@nft_cryptogang', followers: '119.52K', twitter: 'https://twitter.com/nft_cryptogang', avatar: null },
-    { handle: '@tier1haterr', followers: '10.20K', twitter: 'https://twitter.com/tier1haterr', avatar: null },
-    { handle: '@eth_ancarter', followers: '2.3K', twitter: 'https://x.com/eth_ancarter?s=21', avatar: 'https://pbs.twimg.com/profile_images/1961738830769229824/60LCaGAY_400x400.jpg' }
+    { handle: '@cryptomanran', followers: '958.87K', twitter: 'https://x.com/valueandtime', avatar: null },
+    { handle: '@nft_cryptogang', followers: '119.52K', twitter: 'https://x.com/solanashaka', avatar: null },
+    { handle: '@tier1haterr', followers: '10.20K', twitter: 'https://twitter.com/tier1haterr', avatar: 'https://pbs.twimg.com/profile_images/1985686649188012032/OeDVL6xB_400x400.jpg' },
+    { handle: '@eth_ancarter', followers: '1.3K', twitter: 'https://x.com/eth_ancarter?s=21', avatar: 'https://pbs.twimg.com/profile_images/1961738830769229824/60LCaGAY_400x400.jpg' }
   ];
 
   const faqs = [
