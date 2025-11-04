@@ -199,23 +199,6 @@ const Sidebar: React.FC = () => {
         {openSections.smart && (
           <div className="space-y-1 mb-3">
             <Link
-              to="/app/smart-money"
-              className={`flex items-center gap-3 h-10 px-3 rounded-lg transition-all group ${
-                isActive('/app/smart-money')
-                  ? 'text-white shadow-lg'
-                  : 'text-white hover:bg-white/10'
-              }`}
-              style={isActive('/app/smart-money') ? {
-                background: 'rgba(255, 255, 255, 0.08)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                boxShadow: '0 2px 8px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
-              } : {}}
-            >
-              <Bell className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-sm font-medium">Smart Money</span>
-            </Link>
-            <Link
               to="/app/daily-trends"
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
