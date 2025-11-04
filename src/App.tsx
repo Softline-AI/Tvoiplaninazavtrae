@@ -24,6 +24,7 @@ const LegendCommunity = lazy(() => import('./components/LegendCommunity'));
 const KOLFeedLegacy = lazy(() => import('./components/KOLFeedLegacy'));
 const MyStalks = lazy(() => import('./components/MyStalks'));
 const LearningCenter = lazy(() => import('./components/LearningCenter'));
+const SmartMoney = lazy(() => import('./components/SmartMoney'));
 
 const BackgroundWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -109,6 +110,7 @@ const AnimatedRoutes: React.FC = () => {
           <Route path="/fresh-wallet-feed" element={<FreshWalletFeed />} />
           <Route path="/live-dca-feed" element={<LiveDCAFeed />} />
           <Route path="/legend-community" element={<LegendCommunity />} />
+          <Route path="/smart-money" element={<SmartMoney />} />
           <Route path="/upgrade" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Upgrade Your Plan</h2><p className="text-gray-300">Choose PRO or LEGEND to unlock advanced features</p></div>} />
         </Routes>
       </CSSTransition>
