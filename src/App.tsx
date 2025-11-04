@@ -24,7 +24,6 @@ const LegendCommunity = lazy(() => import('./components/LegendCommunity'));
 const KOLFeedLegacy = lazy(() => import('./components/KOLFeedLegacy'));
 const MyStalks = lazy(() => import('./components/MyStalks'));
 const LearningCenter = lazy(() => import('./components/LearningCenter'));
-const SmartMoney = lazy(() => import('./components/SmartMoney'));
 
 const BackgroundWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
