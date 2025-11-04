@@ -7,7 +7,7 @@ import { tokenMetadataService } from '../services/tokenMetadataService';
  * @returns Token logo URL
  */
 export const useTokenLogo = (tokenMint: string | null | undefined): string => {
-  const [logoUrl, setLogoUrl] = useState<string>('');
+  const [logoUrl, setLogoUrl] = useState<string>('https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg');
 
   useEffect(() => {
     if (!tokenMint) {
