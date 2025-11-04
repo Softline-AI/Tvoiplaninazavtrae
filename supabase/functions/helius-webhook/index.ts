@@ -271,6 +271,8 @@ async function calculateTokenPnl(
   tokenPnl: number;
   tokenPnlPercentage: number;
   entryPrice: number;
+  remainingTokens: number;
+  allTokensSold: boolean;
 }> {
   try {
     const { data: previousTransactions, error } = await supabase
@@ -282,11 +284,13 @@ async function calculateTokenPnl(
 
     if (error) {
       console.error("Error fetching previous transactions:", error);
-      return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: currentPrice };
-    }
-
-    if (!previousTransactions || previousTransactions.length === 0) {
-      return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: currentPrice };
+      return {
+        tokenPnl: 0,
+        tokenPnlPercentage: 0,
+        entryPrice: currentPrice,
+        remainingTokens: transactionType === "BUY" ? currentAmount : 0,
+        allTokensSold: false
+      };
     }
 
     let totalBought = 0;
@@ -316,30 +320,47 @@ async function calculateTokenPnl(
     }
 
     const currentHolding = totalBought - totalSold;
-    const avgEntryPrice = totalBought > 0 ? totalSpent / totalBought : 0;
+    const avgEntryPrice = totalBought > 0 ? totalSpent / totalBought : currentPrice;
+    const allTokensSold = currentHolding <= 0.000001;
 
-    let unrealizedPnl = 0;
-    let realizedPnl = 0;
+    let pnl = 0;
+    let pnlPercentage = 0;
 
-    if (currentHolding > 0) {
-      unrealizedPnl = currentHolding * currentPrice - currentHolding * avgEntryPrice;
+    if (transactionType === "BUY") {
+      if (currentHolding > 0) {
+        pnl = currentHolding * currentPrice - currentHolding * avgEntryPrice;
+        pnlPercentage = avgEntryPrice > 0 ? ((currentPrice - avgEntryPrice) / avgEntryPrice) * 100 : 0;
+      }
+    } else if (transactionType === "SELL") {
+      const soldValue = currentAmount * currentPrice;
+      const soldCost = currentAmount * avgEntryPrice;
+      pnl = soldValue - soldCost;
+      pnlPercentage = avgEntryPrice > 0 ? ((currentPrice - avgEntryPrice) / avgEntryPrice) * 100 : 0;
+
+      if (currentHolding > 0) {
+        const unrealizedPnl = currentHolding * currentPrice - currentHolding * avgEntryPrice;
+        pnl += unrealizedPnl;
+      }
     }
 
-    if (totalSold > 0) {
-      realizedPnl = totalReceived - (totalSold * avgEntryPrice);
-    }
-
-    const totalPnl = unrealizedPnl + realizedPnl;
-    const pnlPercentage = totalSpent > 0 ? (totalPnl / totalSpent) * 100 : 0;
+    console.log(`P&L Calculation: Entry: $${avgEntryPrice.toFixed(8)}, Current: $${currentPrice.toFixed(8)}, Holding: ${currentHolding}, PnL: $${pnl.toFixed(2)} (${pnlPercentage.toFixed(2)}%), All Sold: ${allTokensSold}`);
 
     return {
-      tokenPnl: totalPnl,
+      tokenPnl: pnl,
       tokenPnlPercentage: pnlPercentage,
       entryPrice: avgEntryPrice,
+      remainingTokens: currentHolding,
+      allTokensSold: allTokensSold,
     };
   } catch (error) {
     console.error("Error calculating token P&L:", error);
-    return { tokenPnl: 0, tokenPnlPercentage: 0, entryPrice: currentPrice };
+    return {
+      tokenPnl: 0,
+      tokenPnlPercentage: 0,
+      entryPrice: currentPrice,
+      remainingTokens: 0,
+      allTokensSold: false
+    };
   }
 }
 
@@ -548,7 +569,7 @@ Deno.serve(async (req: Request) => {
 
     console.log(`Transaction Type: ${transactionType} | Token: ${realTokenSymbol} @ $${currentPrice} | MC: $${marketCap}`);
 
-    const { tokenPnl, tokenPnlPercentage, entryPrice } = await calculateTokenPnl(
+    const { tokenPnl, tokenPnlPercentage, entryPrice, remainingTokens, allTokensSold } = await calculateTokenPnl(
       supabase,
       transactionType,
       fromAddress,
@@ -557,7 +578,7 @@ Deno.serve(async (req: Request) => {
       currentPrice
     );
 
-    console.log(`Calculated P&L: $${tokenPnl} (${tokenPnlPercentage}%)`);
+    console.log(`Calculated P&L: $${tokenPnl} (${tokenPnlPercentage}%) | Remaining: ${remainingTokens} | All Sold: ${allTokensSold}`);
 
     const transactionData = {
       transaction_signature: data.signature || `${data.type}-${Date.now()}`,
@@ -577,6 +598,8 @@ Deno.serve(async (req: Request) => {
       current_token_price: currentPrice.toString(),
       entry_price: entryPrice.toString(),
       market_cap: marketCap.toString(),
+      remaining_tokens: remainingTokens.toString(),
+      all_tokens_sold: allTokensSold,
       raw_data: data,
     };
 

@@ -17,6 +17,8 @@ interface LegacyTrade {
   twitterHandle: string;
   pnl: string;
   pnlPercentage: string;
+  remainingTokens: number;
+  allTokensSold: boolean;
 }
 
 const KOLFeedLegacy: React.FC = () => {
@@ -137,7 +139,9 @@ const KOLFeedLegacy: React.FC = () => {
           walletAddress: tx.from_address,
           twitterHandle: profile?.twitter_handle || tx.from_address.substring(0, 8),
           pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-          pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`
+          pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
+          remainingTokens: parseFloat(tx.remaining_tokens || '0'),
+          allTokensSold: tx.all_tokens_sold || false
         };
       });
 
@@ -357,6 +361,17 @@ const KOLFeedLegacy: React.FC = () => {
                           <div className={`text-xs ${trade.pnl.includes('-') ? 'text-red-400/70' : 'text-green-400/70'}`}>
                             {trade.pnlPercentage}
                           </div>
+                          {trade.action === 'sell' && (
+                            <div className="text-xs mt-1">
+                              {trade.allTokensSold ? (
+                                <span className="text-white/50">All sold</span>
+                              ) : (
+                                <span className="text-yellow-400/70">
+                                  {trade.remainingTokens.toLocaleString()} left
+                                </span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </td>
 
