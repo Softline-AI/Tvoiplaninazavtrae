@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { useTokenLogo } from '../hooks/useTokenLogo';
 
 interface LegacyTrade {
   id: string;
@@ -10,8 +11,10 @@ interface LegacyTrade {
   action: 'buy' | 'sell';
   token: string;
   tokenSymbol: string;
+  tokenMint: string;
   amount: string;
   price: string;
+  entryPrice: string;
   value: string;
   walletAddress: string;
   twitterHandle: string;
@@ -114,6 +117,7 @@ const KOLFeedLegacy: React.FC = () => {
         const txType = tx.transaction_type === 'BUY' ? 'buy' : 'sell';
         const amount = parseFloat(tx.amount || '0');
         const price = parseFloat(tx.current_token_price || '0');
+        const entryPrice = parseFloat(tx.entry_price || '0');
         const tokenPnl = parseFloat(tx.token_pnl || '0');
         const tokenPnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
 
@@ -133,8 +137,10 @@ const KOLFeedLegacy: React.FC = () => {
           action: txType,
           token: tx.token_symbol || 'Unknown',
           tokenSymbol: tx.token_symbol || 'UNK',
+          tokenMint: tx.token_mint || '',
           amount: `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${tx.token_symbol}`,
           price: `$${price.toFixed(price < 0.01 ? 8 : 2)}`,
+          entryPrice: `$${entryPrice.toFixed(entryPrice < 0.01 ? 8 : 2)}`,
           value: `$${(amount * price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
           walletAddress: tx.from_address,
           twitterHandle: profile?.twitter_handle || tx.from_address.substring(0, 8),
@@ -161,6 +167,21 @@ const KOLFeedLegacy: React.FC = () => {
 
   const getActionBg = (action: string) => {
     return action === 'buy' ? 'bg-green-600/10' : 'bg-red-600/10';
+  };
+
+  const TokenLogo: React.FC<{ mint: string; symbol: string }> = ({ mint, symbol }) => {
+    const logoUrl = useTokenLogo(mint);
+
+    return (
+      <img
+        src={logoUrl}
+        alt={symbol}
+        className="w-8 h-8 rounded-full border border-white/30"
+        onError={(e) => {
+          e.currentTarget.src = 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
+        }}
+      />
+    );
   };
 
   const copyToClipboard = (text: string) => {
@@ -284,7 +305,10 @@ const KOLFeedLegacy: React.FC = () => {
                       Amount
                     </th>
                     <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
-                      Price
+                      Entry Price
+                    </th>
+                    <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
+                      Current Price
                     </th>
                     <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                       Total Value
@@ -327,11 +351,7 @@ const KOLFeedLegacy: React.FC = () => {
 
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-white/20 to-white/10 flex items-center justify-center border border-white/30">
-                            <span className="text-white font-bold text-xs">
-                              {trade.tokenSymbol.substring(0, 2)}
-                            </span>
-                          </div>
+                          <TokenLogo mint={trade.tokenMint} symbol={trade.tokenSymbol} />
                           <div>
                             <div className="text-sm font-bold text-white">{trade.tokenSymbol}</div>
                             <div className="text-xs text-white/70">{trade.token}</div>
@@ -341,6 +361,10 @@ const KOLFeedLegacy: React.FC = () => {
 
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="text-sm font-bold text-white">{trade.amount}</div>
+                      </td>
+
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <div className="text-sm text-white/70">{trade.entryPrice}</div>
                       </td>
 
                       <td className="px-4 py-4 whitespace-nowrap">
@@ -355,11 +379,11 @@ const KOLFeedLegacy: React.FC = () => {
 
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="text-sm">
-                          <div className={`font-bold ${trade.pnl.includes('-') ? 'text-red-400' : 'text-green-400'}`}>
-                            {trade.pnl}
+                          <div className={`text-xl font-bold ${trade.pnl.includes('-') ? 'text-red-400' : 'text-green-400'}`}>
+                            {trade.pnlPercentage}
                           </div>
                           <div className={`text-xs ${trade.pnl.includes('-') ? 'text-red-400/70' : 'text-green-400/70'}`}>
-                            {trade.pnlPercentage}
+                            {trade.pnl}
                           </div>
                           {trade.action === 'sell' && (
                             <div className="text-xs mt-1">
