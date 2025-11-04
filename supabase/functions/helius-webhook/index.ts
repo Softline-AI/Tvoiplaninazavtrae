@@ -9,6 +9,11 @@ const corsHeaders = {
 
 const BIRDEYE_API_KEY = "a6296c5f82664e92aadffe9e99773d73";
 const CACHE_DURATION_MINUTES = 5;
+const SOLANA_TOKEN_LIST_URL = "https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json";
+
+let tokenListCache: any = null;
+let tokenListCacheTime = 0;
+const TOKEN_LIST_CACHE_DURATION = 60 * 60 * 1000;
 
 interface HeliusWebhookData {
   type: string;
@@ -83,8 +88,73 @@ async function updateTokenPriceCache(
   }
 }
 
-async function fetchTokenMetadata(tokenMint: string): Promise<{ symbol: string; name: string; price: number; marketCap: number }> {
+async function loadSolanaTokenList(): Promise<any> {
+  const now = Date.now();
+
+  if (tokenListCache && (now - tokenListCacheTime) < TOKEN_LIST_CACHE_DURATION) {
+    return tokenListCache;
+  }
+
   try {
+    const response = await fetch(SOLANA_TOKEN_LIST_URL);
+    if (!response.ok) {
+      console.error("Failed to fetch Solana Token List");
+      return null;
+    }
+
+    const tokenList = await response.json();
+    tokenListCache = tokenList;
+    tokenListCacheTime = now;
+
+    console.log(`Loaded ${tokenList.tokens?.length || 0} tokens from Solana Token List`);
+    return tokenList;
+  } catch (error) {
+    console.error("Error loading Solana Token List:", error);
+    return null;
+  }
+}
+
+async function getTokenLogoFromList(supabase: any, tokenMint: string): Promise<string | null> {
+  try {
+    const { data: cached } = await supabase
+      .from("token_metadata")
+      .select("logo_url")
+      .eq("token_mint", tokenMint)
+      .maybeSingle();
+
+    if (cached?.logo_url) {
+      return cached.logo_url;
+    }
+
+    const tokenList = await loadSolanaTokenList();
+    if (!tokenList || !tokenList.tokens) return null;
+
+    const token = tokenList.tokens.find((t: any) => t.address === tokenMint);
+
+    if (token?.logoURI) {
+      await supabase.from("token_metadata").upsert({
+        token_mint: tokenMint,
+        token_symbol: token.symbol,
+        token_name: token.name,
+        logo_url: token.logoURI,
+        decimals: token.decimals || 0,
+        last_updated: new Date().toISOString(),
+      }, { onConflict: "token_mint" });
+
+      return token.logoURI;
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Error getting token logo from list:", error);
+    return null;
+  }
+}
+
+async function fetchTokenMetadata(supabase: any, tokenMint: string): Promise<{ symbol: string; name: string; price: number; marketCap: number; logoUrl: string | null }> {
+  try {
+    const logoUrl = await getTokenLogoFromList(supabase, tokenMint);
+
     const response = await fetch(
       `https://public-api.birdeye.so/defi/token_overview?address=${tokenMint}`,
       {
@@ -96,7 +166,7 @@ async function fetchTokenMetadata(tokenMint: string): Promise<{ symbol: string; 
 
     if (!response.ok) {
       console.error(`Birdeye API error: ${response.status}`);
-      return { symbol: "UNKNOWN", name: "Unknown Token", price: 0, marketCap: 0 };
+      return { symbol: "UNKNOWN", name: "Unknown Token", price: 0, marketCap: 0, logoUrl };
     }
 
     const data = await response.json();
@@ -107,10 +177,21 @@ async function fetchTokenMetadata(tokenMint: string): Promise<{ symbol: string; 
 
     console.log(`Token: ${symbol} @ $${price} | MC: $${marketCap}`);
 
-    return { symbol, name, price, marketCap };
+    if (!logoUrl && data?.data?.logoURI) {
+      await supabase.from("token_metadata").upsert({
+        token_mint: tokenMint,
+        token_symbol: symbol,
+        token_name: name,
+        logo_url: data.data.logoURI,
+        decimals: data.data.decimals || 0,
+        last_updated: new Date().toISOString(),
+      }, { onConflict: "token_mint" });
+    }
+
+    return { symbol, name, price, marketCap, logoUrl: logoUrl || data?.data?.logoURI || null };
   } catch (error) {
     console.error("Error fetching token metadata:", error);
-    return { symbol: "UNKNOWN", name: "Unknown Token", price: 0, marketCap: 0 };
+    return { symbol: "UNKNOWN", name: "Unknown Token", price: 0, marketCap: 0, logoUrl: null };
   }
 }
 
@@ -446,7 +527,7 @@ Deno.serve(async (req: Request) => {
 
     const transactionType = determineTransactionType(data, fromAddress);
 
-    const tokenMetadata = await fetchTokenMetadata(tokenMint);
+    const tokenMetadata = await fetchTokenMetadata(supabase, tokenMint);
     const currentPrice = tokenMetadata.price;
     const realTokenSymbol = tokenMetadata.symbol;
     const marketCap = tokenMetadata.marketCap;

@@ -1,7 +1,8 @@
 import { supabase } from './supabaseClient';
 
 const BIRDEYE_API_KEY = import.meta.env.VITE_BIRDEYE_API_KEY;
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const CACHE_DURATION = 24 * 60 * 60 * 1000;
+const SOLANA_TOKEN_LIST_URL = 'https://raw.githubusercontent.com/solana-labs/token-list/main/src/tokens/solana.tokenlist.json';
 
 interface TokenMetadata {
   token_mint: string;
@@ -25,26 +26,105 @@ interface BirdeyeTokenResponse {
   };
 }
 
+interface SolanaTokenListToken {
+  address: string;
+  chainId: number;
+  decimals: number;
+  name: string;
+  symbol: string;
+  logoURI?: string;
+  tags?: string[];
+  extensions?: Record<string, any>;
+}
+
+interface SolanaTokenList {
+  name: string;
+  logoURI: string;
+  keywords: string[];
+  tags: Record<string, any>;
+  timestamp: string;
+  tokens: SolanaTokenListToken[];
+}
+
 const DEFAULT_TOKEN_LOGO = 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg?auto=compress&cs=tinysrgb&w=100';
 
+let solanaTokenListCache: SolanaTokenList | null = null;
+let solanaTokenListCacheTime: number = 0;
+const TOKEN_LIST_CACHE_DURATION = 60 * 60 * 1000;
+
 export const tokenMetadataService = {
+  /**
+   * Load Solana Token List with caching
+   */
+  async loadSolanaTokenList(): Promise<SolanaTokenList | null> {
+    const now = Date.now();
+
+    if (solanaTokenListCache && (now - solanaTokenListCacheTime) < TOKEN_LIST_CACHE_DURATION) {
+      return solanaTokenListCache;
+    }
+
+    try {
+      const response = await fetch(SOLANA_TOKEN_LIST_URL);
+      if (!response.ok) {
+        console.error('Failed to fetch Solana Token List');
+        return null;
+      }
+
+      const tokenList: SolanaTokenList = await response.json();
+      solanaTokenListCache = tokenList;
+      solanaTokenListCacheTime = now;
+
+      return tokenList;
+    } catch (error) {
+      console.error('Error loading Solana Token List:', error);
+      return null;
+    }
+  },
+
+  /**
+   * Get token metadata from Solana Token List
+   */
+  async getFromSolanaTokenList(tokenMint: string): Promise<TokenMetadata | null> {
+    try {
+      const tokenList = await this.loadSolanaTokenList();
+      if (!tokenList) return null;
+
+      const token = tokenList.tokens.find(t => t.address === tokenMint);
+      if (!token) return null;
+
+      return {
+        token_mint: tokenMint,
+        token_symbol: token.symbol,
+        token_name: token.name,
+        logo_url: token.logoURI || null,
+        decimals: token.decimals,
+        description: null,
+        last_updated: new Date().toISOString(),
+      };
+    } catch (error) {
+      console.error('Error getting token from Solana Token List:', error);
+      return null;
+    }
+  },
+
   /**
    * Get token logo URL with caching
    */
   async getTokenLogo(tokenMint: string): Promise<string> {
     try {
-      // Check cache first
       const cachedMetadata = await this.getCachedMetadata(tokenMint);
 
       if (cachedMetadata && this.isCacheValid(cachedMetadata.last_updated)) {
         return cachedMetadata.logo_url || DEFAULT_TOKEN_LOGO;
       }
 
-      // Fetch from Birdeye API
-      const metadata = await this.fetchFromBirdeye(tokenMint);
+      let metadata = await this.getFromSolanaTokenList(tokenMint);
+
+      if (!metadata && BIRDEYE_API_KEY) {
+        metadata = await this.fetchFromBirdeye(tokenMint);
+      }
 
       if (metadata) {
-        // Save to cache
         await this.saveMetadata(metadata);
         return metadata.logo_url || DEFAULT_TOKEN_LOGO;
       }
@@ -61,18 +141,19 @@ export const tokenMetadataService = {
    */
   async getTokenMetadata(tokenMint: string): Promise<TokenMetadata | null> {
     try {
-      // Check cache first
       const cachedMetadata = await this.getCachedMetadata(tokenMint);
 
       if (cachedMetadata && this.isCacheValid(cachedMetadata.last_updated)) {
         return cachedMetadata;
       }
 
-      // Fetch from Birdeye API
-      const metadata = await this.fetchFromBirdeye(tokenMint);
+      let metadata = await this.getFromSolanaTokenList(tokenMint);
+
+      if (!metadata && BIRDEYE_API_KEY) {
+        metadata = await this.fetchFromBirdeye(tokenMint);
+      }
 
       if (metadata) {
-        // Save to cache
         await this.saveMetadata(metadata);
         return metadata;
       }
