@@ -156,7 +156,7 @@ class WalletService {
         valueUSD: '$1.44M',
         mcap: '$104.52M',
         verified: true,
-        image: 'https://images.pexels.com/photos/730547/pexels-photo-730547.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&dpr=1'
+        image: 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg'
       },
       {
         mint: 'DitHyRMQiSDhn5cnKMJV2CDDt6sVct96YrECiM49pump',
