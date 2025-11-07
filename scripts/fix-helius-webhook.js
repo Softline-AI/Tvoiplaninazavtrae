@@ -16,8 +16,8 @@ const HELIUS_API_KEY = process.env.VITE_HELIUS_API_KEY_1;
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-// CORRECT webhook URL (new project)
-const CORRECT_WEBHOOK_URL = 'https://mjktfqrcklwpfzgonqmb.supabase.co/functions/v1/helius-webhook';
+// CORRECT webhook URL (use from env)
+const CORRECT_WEBHOOK_URL = `${process.env.VITE_SUPABASE_URL}/functions/v1/helius-webhook`;
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
