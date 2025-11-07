@@ -34,126 +34,92 @@ interface HeliusWebhookData {
   tokenTransfers?: Array<{
     fromUserAccount: string;
     toUserAccount: string;
-    mint: string;
     tokenAmount: number;
-    tokenStandard: string;
+    mint: string;
+    tokenStandard?: string;
   }>;
   accountData?: Array<{
     account: string;
-    nativeBalanceChange: number;
+    nativeBalanceChange?: number;
     tokenBalanceChanges?: Array<{
       mint: string;
       rawTokenAmount: {
         tokenAmount: string;
         decimals: number;
       };
-      userAccount: string;
     }>;
   }>;
-  [key: string]: any;
 }
 
-function validateAmount(value: number): boolean {
-  if (typeof value !== "number") return false;
-  if (!isFinite(value)) return false;
-  if (isNaN(value)) return false;
-  if (value < 0) return false;
-  return true;
-}
-
-async function updateTokenPriceCache(
-  supabase: any,
-  tokenMint: string,
-  price: number,
-  tokenSymbol: string
-): Promise<void> {
-  try {
-    const { error } = await supabase.from("token_price_cache").upsert(
-      {
-        token_mint: tokenMint,
-        token_symbol: tokenSymbol,
-        price: price.toString(),
-        last_updated: new Date().toISOString(),
-      },
-      {
-        onConflict: "token_mint",
-      }
-    );
-
-    if (error) {
-      console.error("Error updating token price cache:", error);
-    }
-  } catch (error) {
-    console.error("Error in updateTokenPriceCache:", error);
+function validateAmount(value: any): boolean {
+  if (value === null || value === undefined) return false;
+  if (typeof value === 'number') {
+    return !isNaN(value) && isFinite(value);
   }
+  if (typeof value === 'string') {
+    const num = parseFloat(value);
+    return !isNaN(num) && isFinite(num);
+  }
+  return false;
 }
 
-async function loadSolanaTokenList(): Promise<any> {
+async function loadTokenList(): Promise<any> {
   const now = Date.now();
-
   if (tokenListCache && (now - tokenListCacheTime) < TOKEN_LIST_CACHE_DURATION) {
     return tokenListCache;
   }
 
   try {
     const response = await fetch(SOLANA_TOKEN_LIST_URL);
-    if (!response.ok) {
-      console.error("Failed to fetch Solana Token List");
-      return null;
+    if (response.ok) {
+      const data = await response.json();
+      tokenListCache = data;
+      tokenListCacheTime = now;
+      console.log(`Loaded token list with ${data.tokens?.length || 0} tokens`);
+      return data;
     }
-
-    const tokenList = await response.json();
-    tokenListCache = tokenList;
-    tokenListCacheTime = now;
-
-    console.log(`Loaded ${tokenList.tokens?.length || 0} tokens from Solana Token List`);
-    return tokenList;
   } catch (error) {
-    console.error("Error loading Solana Token List:", error);
-    return null;
+    console.error("Error loading token list:", error);
   }
+
+  return tokenListCache || { tokens: [] };
 }
 
-async function getTokenLogoFromList(supabase: any, tokenMint: string): Promise<string | null> {
+async function fetchTokenMetadata(
+  supabase: any,
+  tokenMint: string
+): Promise<{ symbol: string; name: string; price: number; marketCap: number; logoUrl: string | null }> {
   try {
-    const { data: cached } = await supabase
+    const { data: cachedMetadata, error: cacheError } = await supabase
       .from("token_metadata")
-      .select("logo_url")
+      .select("*")
       .eq("token_mint", tokenMint)
       .maybeSingle();
 
-    if (cached?.logo_url) {
-      return cached.logo_url;
+    let symbol = "UNKNOWN";
+    let name = "Unknown Token";
+    let logoUrl: string | null = null;
+
+    if (cachedMetadata) {
+      symbol = cachedMetadata.token_symbol || "UNKNOWN";
+      name = cachedMetadata.token_name || "Unknown Token";
+      logoUrl = cachedMetadata.logo_url;
     }
 
-    const tokenList = await loadSolanaTokenList();
-    if (!tokenList || !tokenList.tokens) return null;
+    if (!cachedMetadata || !logoUrl) {
+      const tokenList = await loadTokenList();
+      const tokenInfo = tokenList?.tokens?.find(
+        (t: any) => t.address?.toLowerCase() === tokenMint.toLowerCase()
+      );
 
-    const token = tokenList.tokens.find((t: any) => t.address === tokenMint);
-
-    if (token?.logoURI) {
-      await supabase.from("token_metadata").upsert({
-        token_mint: tokenMint,
-        token_symbol: token.symbol,
-        token_name: token.name,
-        logo_url: token.logoURI,
-        decimals: token.decimals || 0,
-        last_updated: new Date().toISOString(),
-      }, { onConflict: "token_mint" });
-
-      return token.logoURI;
+      if (tokenInfo) {
+        symbol = tokenInfo.symbol || symbol;
+        name = tokenInfo.name || name;
+        logoUrl = tokenInfo.logoURI || logoUrl;
+      }
     }
 
-    return null;
-  } catch (error) {
-    console.error("Error getting token logo from list:", error);
-    return null;
-  }
-}
-
-async function fetchTokenMetadata(supabase: any, tokenMint: string): Promise<{ symbol: string; name: string; price: number; marketCap: number; logoUrl: string | null }> {
-  try {
-    const logoUrl = await getTokenLogoFromList(supabase, tokenMint);
+    const price = await getTokenPriceWithCache(supabase, tokenMint, symbol);
 
     const response = await fetch(
       `https://public-api.birdeye.so/defi/token_overview?address=${tokenMint}`,
@@ -164,18 +130,18 @@ async function fetchTokenMetadata(supabase: any, tokenMint: string): Promise<{ s
       }
     );
 
-    if (!response.ok) {
-      console.error(`Birdeye API error: ${response.status}`);
-      return { symbol: "UNKNOWN", name: "Unknown Token", price: 0, marketCap: 0, logoUrl };
+    let marketCap = 0;
+    if (response.ok) {
+      const data = await response.json();
+      marketCap = data?.data?.mc || 0;
+
+      if (!symbol || symbol === "UNKNOWN") {
+        symbol = data?.data?.symbol || "UNKNOWN";
+      }
+      if (!name || name === "Unknown Token") {
+        name = data?.data?.name || "Unknown Token";
+      }
     }
-
-    const data = await response.json();
-    const symbol = data?.data?.symbol || "UNKNOWN";
-    const name = data?.data?.name || "Unknown Token";
-    const price = data?.data?.price || 0;
-    const marketCap = data?.data?.marketCap || 0;
-
-    console.log(`Token: ${symbol} @ $${price} | MC: $${marketCap}`);
 
     if (!logoUrl && data?.data?.logoURI) {
       await supabase.from("token_metadata").upsert({
@@ -238,28 +204,41 @@ async function getTokenPriceWithCache(
       .eq("token_mint", tokenMint)
       .maybeSingle();
 
-    if (!error && cachedPrice) {
-      const lastUpdated = new Date(cachedPrice.last_updated);
-      const now = new Date();
-      const minutesSinceUpdate =
-        (now.getTime() - lastUpdated.getTime()) / (1000 * 60);
-
-      if (minutesSinceUpdate < CACHE_DURATION_MINUTES) {
-        const price = parseFloat(cachedPrice.price);
-        console.log(`Using cached price for ${tokenMint}: $${price}`);
-        return price;
+    if (cachedPrice && !error) {
+      const cacheAge = Date.now() - new Date(cachedPrice.last_updated).getTime();
+      if (cacheAge < CACHE_DURATION_MINUTES * 60 * 1000) {
+        return cachedPrice.price;
       }
     }
 
     const price = await fetchTokenPrice(tokenMint);
-    await updateTokenPriceCache(supabase, tokenMint, price, tokenSymbol);
+
+    if (price > 0) {
+      await supabase.from("token_price_cache").upsert({
+        token_mint: tokenMint,
+        token_symbol: tokenSymbol,
+        price: price,
+        last_updated: new Date().toISOString(),
+      }, { onConflict: "token_mint" });
+    }
+
     return price;
   } catch (error) {
-    console.error("Error in getTokenPriceWithCache:", error);
+    console.error("Error getting token price with cache:", error);
     return 0;
   }
 }
 
+/**
+ * Calculate P&L for token positions
+ *
+ * Formula:
+ * - BUY: Unrealized P&L = (Current Price - Avg Entry Price) * Holding
+ * - SELL: Realized P&L = (Sell Price - Avg Entry Price) * Amount Sold
+ *
+ * CRITICAL: amount can be negative (when wallet sends tokens)
+ * We use Math.abs() to get absolute values for calculations
+ */
 async function calculateTokenPnl(
   supabase: any,
   transactionType: string,
@@ -288,62 +267,81 @@ async function calculateTokenPnl(
         tokenPnl: 0,
         tokenPnlPercentage: 0,
         entryPrice: currentPrice,
-        remainingTokens: transactionType === "BUY" ? currentAmount : 0,
+        remainingTokens: transactionType === "BUY" ? Math.abs(currentAmount) : 0,
         allTokensSold: false
       };
     }
 
     let totalBought = 0;
-    let totalSpent = 0;
+    let totalSpentOnBuys = 0;
     let totalSold = 0;
-    let totalReceived = 0;
+    let totalReceivedFromSells = 0;
 
+    // Calculate totals from previous transactions
     for (const tx of previousTransactions) {
-      const amount = parseFloat(tx.amount || "0");
+      const amount = Math.abs(parseFloat(tx.amount || "0"));
       const price = parseFloat(tx.current_token_price || "0");
 
       if (tx.transaction_type === "BUY") {
         totalBought += amount;
-        totalSpent += amount * price;
+        totalSpentOnBuys += amount * price;
       } else if (tx.transaction_type === "SELL") {
         totalSold += amount;
-        totalReceived += amount * price;
+        totalReceivedFromSells += amount * price;
       }
     }
 
+    // Add current transaction
+    const absCurrentAmount = Math.abs(currentAmount);
+
     if (transactionType === "BUY") {
-      totalBought += currentAmount;
-      totalSpent += currentAmount * currentPrice;
+      totalBought += absCurrentAmount;
+      totalSpentOnBuys += absCurrentAmount * currentPrice;
     } else if (transactionType === "SELL") {
-      totalSold += currentAmount;
-      totalReceived += currentAmount * currentPrice;
+      totalSold += absCurrentAmount;
+      totalReceivedFromSells += absCurrentAmount * currentPrice;
     }
 
+    // Calculate position metrics
     const currentHolding = totalBought - totalSold;
-    const avgEntryPrice = totalBought > 0 ? totalSpent / totalBought : currentPrice;
+    const avgEntryPrice = totalBought > 0 ? totalSpentOnBuys / totalBought : currentPrice;
     const allTokensSold = currentHolding <= 0.000001;
 
     let pnl = 0;
     let pnlPercentage = 0;
 
     if (transactionType === "BUY") {
-      if (currentHolding > 0) {
-        pnl = currentHolding * currentPrice - currentHolding * avgEntryPrice;
-        pnlPercentage = avgEntryPrice > 0 ? ((currentPrice - avgEntryPrice) / avgEntryPrice) * 100 : 0;
+      // For BUY: Calculate unrealized P&L on current holding
+      if (currentHolding > 0 && avgEntryPrice > 0) {
+        const currentValue = currentHolding * currentPrice;
+        const costBasis = currentHolding * avgEntryPrice;
+        pnl = currentValue - costBasis;
+        pnlPercentage = ((currentPrice - avgEntryPrice) / avgEntryPrice) * 100;
       }
-    } else if (transactionType === "SELL") {
-      const soldValue = currentAmount * currentPrice;
-      const soldCost = currentAmount * avgEntryPrice;
-      pnl = soldValue - soldCost;
-      pnlPercentage = avgEntryPrice > 0 ? ((currentPrice - avgEntryPrice) / avgEntryPrice) * 100 : 0;
 
-      if (currentHolding > 0) {
-        const unrealizedPnl = currentHolding * currentPrice - currentHolding * avgEntryPrice;
-        pnl += unrealizedPnl;
+      console.log(`[BUY P&L] Bought: ${totalBought.toFixed(2)}, Holding: ${currentHolding.toFixed(2)}, Entry: $${avgEntryPrice.toFixed(8)}, Current: $${currentPrice.toFixed(8)}, Unrealized P&L: $${pnl.toFixed(2)} (${pnlPercentage.toFixed(2)}%)`);
+    } else if (transactionType === "SELL") {
+      // For SELL: Calculate realized P&L from this sale
+      if (avgEntryPrice > 0) {
+        const soldValue = absCurrentAmount * currentPrice;
+        const soldCost = absCurrentAmount * avgEntryPrice;
+        const realizedPnl = soldValue - soldCost;
+        const realizedPnlPct = ((currentPrice - avgEntryPrice) / avgEntryPrice) * 100;
+
+        pnl = realizedPnl;
+        pnlPercentage = realizedPnlPct;
+
+        // Add unrealized P&L from remaining holding
+        if (currentHolding > 0) {
+          const unrealizedValue = currentHolding * currentPrice;
+          const unrealizedCost = currentHolding * avgEntryPrice;
+          const unrealizedPnl = unrealizedValue - unrealizedCost;
+          pnl += unrealizedPnl;
+        }
+
+        console.log(`[SELL P&L] Sold: ${absCurrentAmount.toFixed(2)} @ $${currentPrice.toFixed(8)}, Entry: $${avgEntryPrice.toFixed(8)}, Realized: $${realizedPnl.toFixed(2)} (${realizedPnlPct.toFixed(2)}%), Remaining: ${currentHolding.toFixed(2)}, Total P&L: $${pnl.toFixed(2)}`);
       }
     }
-
-    console.log(`P&L Calculation: Entry: $${avgEntryPrice.toFixed(8)}, Current: $${currentPrice.toFixed(8)}, Holding: ${currentHolding}, PnL: $${pnl.toFixed(2)} (${pnlPercentage.toFixed(2)}%), All Sold: ${allTokensSold}`);
 
     return {
       tokenPnl: pnl,
@@ -362,6 +360,67 @@ async function calculateTokenPnl(
       allTokensSold: false
     };
   }
+}
+
+function extractPreliminaryData(
+  data: HeliusWebhookData
+): {
+  fromAddress: string | null;
+  toAddress: string | null;
+  amount: number;
+  tokenMint: string | null;
+  tokenSymbol: string | null;
+} {
+  let fromAddress: string | null = null;
+  let toAddress: string | null = null;
+  let amount = 0;
+  let tokenMint: string | null = null;
+  let tokenSymbol: string | null = null;
+
+  if (data.tokenTransfers && data.tokenTransfers.length > 0) {
+    const tokenTransfer = data.tokenTransfers.find(
+      (t) => t.mint !== "So11111111111111111111111111111111111111112"
+    );
+
+    if (tokenTransfer) {
+      fromAddress = tokenTransfer.fromUserAccount;
+      toAddress = tokenTransfer.toUserAccount;
+      amount = tokenTransfer.tokenAmount || 0;
+      tokenMint = tokenTransfer.mint;
+      tokenSymbol = tokenTransfer.tokenStandard;
+    }
+  }
+
+  if (!fromAddress && data.accountData && data.accountData.length > 0) {
+    for (const account of data.accountData) {
+      if (account.tokenBalanceChanges && account.tokenBalanceChanges.length > 0) {
+        const tokenChange = account.tokenBalanceChanges[0];
+        fromAddress = account.account;
+        tokenMint = tokenChange.mint;
+
+        const rawAmount = tokenChange.rawTokenAmount.tokenAmount;
+        const decimals = tokenChange.rawTokenAmount.decimals;
+        amount = parseFloat(rawAmount) / Math.pow(10, decimals);
+        break;
+      }
+    }
+  }
+
+  if (!fromAddress) {
+    fromAddress = data.feePayer || data.from || null;
+  }
+
+  if (!toAddress) {
+    toAddress = data.to || null;
+  }
+
+  return {
+    fromAddress,
+    toAddress,
+    amount,
+    tokenMint,
+    tokenSymbol,
+  };
 }
 
 /**
@@ -559,15 +618,15 @@ function extractTransactionData(
     toAddress = data.to || null;
   }
 
-  if (!amount && data.amount) {
-    amount = data.amount;
-  }
-
-  if (!tokenMint && data.tokenMint) {
-    tokenMint = data.tokenMint;
-  }
-
-  return { fromAddress, toAddress, amount, tokenMint, tokenSymbol, solAmount, nativeBalanceChange };
+  return {
+    fromAddress,
+    toAddress,
+    amount,
+    tokenMint,
+    tokenSymbol,
+    solAmount,
+    nativeBalanceChange,
+  };
 }
 
 Deno.serve(async (req: Request) => {
@@ -579,44 +638,21 @@ Deno.serve(async (req: Request) => {
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const data: HeliusWebhookData = await req.json();
 
-    if (req.method !== "POST") {
+    console.log(`\n🔔 Webhook received: ${data.type} | Signature: ${data.signature?.substring(0, 16)}...`);
+
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    const preliminaryData = extractPreliminaryData(data);
+
+    if (!preliminaryData.fromAddress) {
+      console.log(`No from_address found, skipping`);
       return new Response(
-        JSON.stringify({ error: "Method not allowed" }),
-        {
-          status: 405,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    const body = await req.json();
-    const data: HeliusWebhookData = Array.isArray(body) ? body[0] : body;
-
-    if (!data || !data.type) {
-      return new Response(
-        JSON.stringify({ error: "Invalid webhook data" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
-    }
-
-    console.log(`Processing ${data.type} transaction`);
-
-    // First extract to get fromAddress
-    const preliminaryData = extractTransactionData(data, data.feePayer || data.from || "");
-
-    if (!preliminaryData.fromAddress || !preliminaryData.tokenMint || preliminaryData.amount <= 0) {
-      console.log(
-        `Skipping transaction: fromAddress=${preliminaryData.fromAddress}, tokenMint=${preliminaryData.tokenMint}, amount=${preliminaryData.amount}`
-      );
-      return new Response(
-        JSON.stringify({ message: "Transaction skipped - insufficient data" }),
+        JSON.stringify({ message: "No from_address found" }),
         {
           status: 200,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -720,16 +756,14 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    console.log(
-      `✅ Transaction processed: ${transactionType} ${amount} ${realTokenSymbol} @ $${currentPrice}`
-    );
+    console.log(`✅ Transaction saved: ${transactionType} ${realTokenSymbol}`);
 
     return new Response(
-      JSON.stringify({ message: "Transaction processed successfully" }),
+      JSON.stringify({ success: true, transactionType, token: realTokenSymbol }),
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
+      }
     );
   } catch (error) {
     console.error("Error processing webhook:", error);
