@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Target, TrendingUp, Bell, Settings, ExternalLink, Copy, Plus, AlertCircle, Trash2 } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { TrackedTokensTab } from './TrackedTokensTab';
 
 interface MonitoredWallet {
   id: string;
@@ -54,7 +55,7 @@ interface Stalk {
 }
 
 const MyStalks: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('active');
+  const [activeTab, setActiveTab] = useState('tokens');
   const [showAddModal, setShowAddModal] = useState(false);
   const [monitoredWallets, setMonitoredWallets] = useState<MonitoredWallet[]>([]);
   const [smartMoneyWallets, setSmartMoneyWallets] = useState<SmartMoneyWallet[]>([]);
@@ -379,6 +380,7 @@ const MyStalks: React.FC = () => {
       {/* Navigation Tabs */}
       <div className="flex items-center gap-1 mb-6 bg-noir-dark border border-white/20 rounded-xl p-1">
         {[
+          { id: 'tokens', label: '🪙 Tokens' },
           { id: 'active', label: 'Active Stalks' },
           { id: 'smart-money', label: 'Smart Money' },
           { id: 'alerts', label: 'Recent Alerts' }
@@ -396,6 +398,9 @@ const MyStalks: React.FC = () => {
           </button>
         ))}
       </div>
+
+      {/* Tokens Tab */}
+      {activeTab === 'tokens' && <TrackedTokensTab />}
 
       {/* Active Stalks */}
       {activeTab === 'active' && (
