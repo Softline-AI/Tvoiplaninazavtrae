@@ -20,17 +20,36 @@ const Transactions: React.FC = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const getTimeRangeDate = (range: string): string => {
+    const now = new Date();
+    switch (range) {
+      case '1h':
+        return new Date(now.getTime() - 60 * 60 * 1000).toISOString();
+      case '6h':
+        return new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString();
+      case '24h':
+        return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+      case '7d':
+        return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+      default:
+        return new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    }
+  };
+
   useEffect(() => {
     const fetchTransactions = async () => {
       setIsLoading(true);
-      console.log('🔄 Fetching transactions from Supabase...');
+      console.log(`🔄 Fetching transactions from Supabase (${timeRange}, ${filter})...`);
 
       try {
+        const timeRangeDate = getTimeRangeDate(timeRange);
+
         let query = supabase
           .from('webhook_transactions')
           .select('*')
+          .gte('block_time', timeRangeDate)
           .order('block_time', { ascending: false })
-          .limit(50);
+          .limit(100);
 
         if (filter !== 'all') {
           query = query.eq('transaction_type', filter);
@@ -54,6 +73,26 @@ const Transactions: React.FC = () => {
     };
 
     fetchTransactions();
+
+    const subscription = supabase
+      .channel('webhook_transactions_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'webhook_transactions'
+        },
+        (payload) => {
+          console.log('🔴 Realtime update:', payload);
+          fetchTransactions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [timeRange, filter]);
 
   const filteredTransactions = transactions;
