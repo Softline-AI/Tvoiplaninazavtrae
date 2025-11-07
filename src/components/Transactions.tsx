@@ -19,6 +19,8 @@ const Transactions: React.FC = () => {
   const [timeRange, setTimeRange] = useState('24h');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   const getTimeRangeDate = (range: string): string => {
     const now = new Date();
@@ -39,10 +41,15 @@ const Transactions: React.FC = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       setIsLoading(true);
-      console.log(`🔄 Fetching transactions from Supabase (${timeRange}, ${filter})...`);
+      setError(null);
+
+      const startTime = Date.now();
+      console.log(`🔄 [${new Date().toISOString()}] Fetching transactions from Supabase...`);
+      console.log(`   Filters: timeRange=${timeRange}, type=${filter}`);
 
       try {
         const timeRangeDate = getTimeRangeDate(timeRange);
+        console.log(`   Date filter: >= ${timeRangeDate}`);
 
         let query = supabase
           .from('webhook_transactions')
@@ -57,17 +64,39 @@ const Transactions: React.FC = () => {
           query = query.eq('transaction_type', filter);
         }
 
-        const { data, error } = await query;
+        const { data, error: queryError, status, statusText } = await query;
+        const duration = Date.now() - startTime;
 
-        if (error) {
-          console.error('Supabase error:', error);
+        if (queryError) {
+          console.error('❌ Supabase query error:', {
+            error: queryError,
+            status,
+            statusText,
+            message: queryError.message,
+            details: queryError.details,
+            hint: queryError.hint,
+            code: queryError.code
+          });
+          setError(`Database error: ${queryError.message}`);
           setTransactions([]);
         } else {
+          console.log(`✅ Transactions loaded successfully in ${duration}ms`);
+          console.log(`   Found: ${data?.length || 0} transactions`);
+          if (data && data.length > 0) {
+            console.log(`   Latest: ${data[0].token_symbol} ${data[0].transaction_type} at ${data[0].block_time}`);
+            console.log(`   Oldest: ${data[data.length-1].token_symbol} ${data[data.length-1].transaction_type} at ${data[data.length-1].block_time}`);
+          }
           setTransactions(data || []);
-          console.log('✅ Transactions loaded:', data?.length || 0);
+          setLastUpdate(new Date());
         }
       } catch (error) {
-        console.error('Error fetching transactions:', error);
+        const duration = Date.now() - startTime;
+        console.error(`❌ Unexpected error after ${duration}ms:`, {
+          error,
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : undefined
+        });
+        setError(error instanceof Error ? error.message : 'Failed to fetch transactions');
         setTransactions([]);
       }
 
@@ -86,11 +115,29 @@ const Transactions: React.FC = () => {
           table: 'webhook_transactions'
         },
         (payload) => {
-          console.log('🔴 Realtime update:', payload);
+          console.log(`🔴 [${new Date().toISOString()}] Realtime update received:`, {
+            eventType: payload.eventType,
+            table: payload.table,
+            schema: payload.schema,
+            new: payload.new,
+            old: payload.old
+          });
           fetchTransactions();
         }
       )
-      .subscribe();
+      .subscribe((status, err) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('✅ Realtime subscription active');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('❌ Realtime subscription error:', err);
+          setError('Realtime connection failed');
+        } else if (status === 'TIMED_OUT') {
+          console.error('⏱️ Realtime subscription timed out');
+          setError('Realtime connection timed out');
+        } else {
+          console.log(`📡 Realtime status: ${status}`);
+        }
+      });
 
     return () => {
       subscription.unsubscribe();
@@ -201,6 +248,23 @@ const Transactions: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Status Bar */}
+      {(error || lastUpdate) && (
+        <div className="mb-4 flex items-center justify-between px-4 py-2 rounded-lg bg-noir-dark border border-white/10">
+          {error ? (
+            <div className="flex items-center gap-2 text-red-500 text-sm">
+              <span>⚠️</span>
+              <span>{error}</span>
+            </div>
+          ) : lastUpdate ? (
+            <div className="flex items-center gap-2 text-white/50 text-xs">
+              <span>🔴 Live</span>
+              <span>Last update: {lastUpdate.toLocaleTimeString()}</span>
+            </div>
+          ) : null}
+        </div>
+      )}
 
       {/* Transactions Table */}
       <div className="noir-card rounded-2xl overflow-hidden">
