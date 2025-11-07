@@ -170,29 +170,20 @@ export const tokenMetadataService = {
    */
   async getCachedMetadata(tokenMint: string): Promise<TokenMetadata | null> {
     try {
-      const { data, error, status, statusText } = await supabase
+      const { data, error } = await supabase
         .from('token_metadata')
         .select('*')
         .eq('token_mint', tokenMint)
         .maybeSingle();
 
       if (error) {
-        console.error(`[TokenMetadata] ❌ Error fetching cached metadata for ${tokenMint.slice(0, 8)}:`, {
-          status,
-          statusText,
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint
-        });
+        console.error('Error fetching cached metadata:', error);
         return null;
       }
 
-      // Removed verbose cache hit logs to reduce console spam
-
       return data;
     } catch (error) {
-      console.error(`[TokenMetadata] ❌ Unexpected error in getCachedMetadata:`, error);
+      console.error('Error in getCachedMetadata:', error);
       return null;
     }
   },
@@ -211,15 +202,11 @@ export const tokenMetadataService = {
    */
   async fetchFromBirdeye(tokenMint: string): Promise<TokenMetadata | null> {
     if (!BIRDEYE_API_KEY) {
-      console.warn('[TokenMetadata] ⚠️ Birdeye API key not configured');
+      console.warn('Birdeye API key not configured');
       return null;
     }
 
-    const startTime = Date.now();
-
     try {
-      console.log(`[TokenMetadata] 🔍 Fetching from Birdeye: ${tokenMint.slice(0, 8)}...`);
-
       const response = await fetch(
         `https://public-api.birdeye.so/defi/token_overview?address=${tokenMint}`,
         {
@@ -229,24 +216,14 @@ export const tokenMetadataService = {
         }
       );
 
-      const duration = Date.now() - startTime;
-
-      if (response.status === 429) {
-        const retryAfter = response.headers.get('Retry-After');
-        console.error(`[TokenMetadata] ⚠️ Rate limited (429). Retry after: ${retryAfter}s`);
-        return null;
-      }
-
       if (!response.ok) {
-        console.error(`[TokenMetadata] ❌ Birdeye API error: ${response.status} ${response.statusText}`);
+        console.error(`Birdeye API error: ${response.status}`);
         return null;
       }
 
       const result: BirdeyeTokenResponse = await response.json();
 
       if (result.success && result.data) {
-        console.log(`[TokenMetadata] ✅ Fetched from Birdeye in ${duration}ms: ${result.data.symbol}`);
-
         return {
           token_mint: tokenMint,
           token_symbol: result.data.symbol || null,
@@ -258,11 +235,9 @@ export const tokenMetadataService = {
         };
       }
 
-      console.warn(`[TokenMetadata] ⚠️ Birdeye returned unsuccessful response in ${duration}ms`);
       return null;
     } catch (error) {
-      const duration = Date.now() - startTime;
-      console.error(`[TokenMetadata] ❌ Error fetching from Birdeye after ${duration}ms:`, error instanceof Error ? error.message : error);
+      console.error('Error fetching from Birdeye:', error);
       return null;
     }
   },
@@ -271,12 +246,8 @@ export const tokenMetadataService = {
    * Save metadata to Supabase cache
    */
   async saveMetadata(metadata: TokenMetadata): Promise<void> {
-    const startTime = Date.now();
-
     try {
-      console.log(`[TokenMetadata] 💾 Saving to cache: ${metadata.token_symbol || metadata.token_mint.slice(0, 8)}`);
-
-      const { error, status, statusText } = await supabase
+      const { error } = await supabase
         .from('token_metadata')
         .upsert({
           token_mint: metadata.token_mint,
@@ -290,23 +261,11 @@ export const tokenMetadataService = {
           onConflict: 'token_mint',
         });
 
-      const duration = Date.now() - startTime;
-
       if (error) {
-        console.error(`[TokenMetadata] ❌ Error saving metadata after ${duration}ms:`, {
-          status,
-          statusText,
-          message: error.message,
-          code: error.code,
-          details: error.details,
-          hint: error.hint
-        });
-      } else {
-        console.log(`[TokenMetadata] ✅ Cached in ${duration}ms`);
+        console.error('Error saving metadata:', error);
       }
     } catch (error) {
-      const duration = Date.now() - startTime;
-      console.error(`[TokenMetadata] ❌ Unexpected error in saveMetadata after ${duration}ms:`, error);
+      console.error('Error in saveMetadata:', error);
     }
   },
 

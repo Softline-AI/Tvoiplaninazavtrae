@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
-import { useTokenLogos } from '../hooks/useTokenLogo';
+import { useTokenLogo } from '../hooks/useTokenLogo';
 import { aggregatedPnlService } from '../services/aggregatedPnlService';
 
 const XIcon = ({ className }: { className?: string }) => (
@@ -43,185 +43,10 @@ const KOLFeedLegacy: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [useAggregated, setUseAggregated] = useState(true);
-  const [realtimeEnabled, setRealtimeEnabled] = useState(true);
-
-  // Batch load token logos
-  const tokenMints = trades.map(t => t.tokenMint).filter(Boolean);
-  const tokenLogos = useTokenLogos(tokenMints);
 
   useEffect(() => {
     loadTransactions();
   }, [timeFilter, actionFilter, useAggregated]);
-
-  useEffect(() => {
-    if (!realtimeEnabled) return;
-
-    console.log('🔴 Setting up Realtime subscription for instant updates...');
-
-    const channel = supabase
-      .channel('webhook_transactions_realtime')
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'webhook_transactions'
-        },
-        (payload) => {
-          console.log('⚡ New transaction received in real-time:', payload.new);
-          handleRealtimeTransaction(payload.new);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'webhook_transactions'
-        },
-        (payload) => {
-          console.log('⚡ Transaction updated in real-time:', payload.new);
-          handleRealtimeUpdate(payload.new);
-        }
-      )
-      .subscribe((status) => {
-        console.log('📡 Realtime subscription status:', status);
-      });
-
-    return () => {
-      console.log('🔌 Cleaning up Realtime subscription');
-      supabase.removeChannel(channel);
-    };
-  }, [realtimeEnabled, actionFilter, timeFilter]);
-
-  const handleRealtimeTransaction = async (newTx: any) => {
-    const now = new Date();
-    let timeFilterDate: Date;
-
-    switch (timeFilter) {
-      case '1h':
-        timeFilterDate = new Date(now.getTime() - 60 * 60 * 1000);
-        break;
-      case '6h':
-        timeFilterDate = new Date(now.getTime() - 6 * 60 * 60 * 1000);
-        break;
-      case '24h':
-        timeFilterDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-        break;
-      case '7d':
-        timeFilterDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        break;
-      case '30d':
-        timeFilterDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-        break;
-      default:
-        timeFilterDate = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    }
-
-    const txTime = new Date(newTx.block_time);
-    if (txTime < timeFilterDate) {
-      return;
-    }
-
-    if (actionFilter !== 'all') {
-      const txTypes = actionFilter === 'buy' ? ['BUY'] : ['SELL'];
-      if (!txTypes.includes(newTx.transaction_type)) {
-        return;
-      }
-    }
-
-    const { data: wallets } = await supabase
-      .from('monitored_wallets')
-      .select('wallet_address, label, twitter_handle, twitter_avatar');
-
-    const walletMap = new Map();
-    wallets?.forEach((wallet: any) => {
-      walletMap.set(wallet.wallet_address, wallet);
-    });
-
-    const { data: profiles } = await supabase
-      .from('kol_profiles')
-      .select('*');
-
-    const profileMap = new Map();
-    profiles?.forEach((profile: any) => {
-      profileMap.set(profile.wallet_address, profile);
-    });
-
-    const wallet = walletMap.get(newTx.from_address);
-    const profile = profileMap.get(newTx.from_address);
-    const avatarUrl = wallet?.twitter_avatar || profile?.avatar_url || 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
-
-    const txType = newTx.transaction_type === 'BUY' ? 'buy' : 'sell';
-    const amount = parseFloat(newTx.amount || '0');
-    const price = parseFloat(newTx.current_token_price || '0');
-    const entryPrice = parseFloat(newTx.entry_price || '0');
-    const tokenPnl = parseFloat(newTx.token_pnl || '0');
-    const tokenPnlPercentage = parseFloat(newTx.token_pnl_percentage || '0');
-
-    const formattedTrade: LegacyTrade = {
-      id: newTx.id,
-      timestamp: new Date(newTx.block_time).toLocaleString('en-US', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-      }),
-      trader: profile?.name || newTx.from_address.substring(0, 8),
-      traderAvatar: avatarUrl,
-      action: txType,
-      token: newTx.token_symbol || 'Unknown',
-      tokenSymbol: newTx.token_symbol || 'UNK',
-      tokenMint: newTx.token_mint || '',
-      amount: `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${newTx.token_symbol}`,
-      price: `$${price.toFixed(price < 0.01 ? 8 : 2)}`,
-      entryPrice: `$${entryPrice.toFixed(entryPrice < 0.01 ? 8 : 2)}`,
-      value: `$${(amount * price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      walletAddress: newTx.from_address,
-      twitterHandle: profile?.twitter_handle || newTx.from_address.substring(0, 8),
-      pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-      pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
-      remainingTokens: parseFloat(newTx.remaining_tokens || '0'),
-      allTokensSold: newTx.all_tokens_sold || false
-    };
-
-    setTrades(prevTrades => [formattedTrade, ...prevTrades]);
-    setTotalCount(prevCount => prevCount + 1);
-
-    console.log(`✅ Added new ${txType.toUpperCase()} transaction to feed:`, formattedTrade.token);
-  };
-
-  const handleRealtimeUpdate = async (updatedTx: any) => {
-    setTrades(prevTrades => {
-      const index = prevTrades.findIndex(t => t.id === updatedTx.id);
-      if (index === -1) return prevTrades;
-
-      const txType = updatedTx.transaction_type === 'BUY' ? 'buy' : 'sell';
-      const amount = parseFloat(updatedTx.amount || '0');
-      const price = parseFloat(updatedTx.current_token_price || '0');
-      const entryPrice = parseFloat(updatedTx.entry_price || '0');
-      const tokenPnl = parseFloat(updatedTx.token_pnl || '0');
-      const tokenPnlPercentage = parseFloat(updatedTx.token_pnl_percentage || '0');
-
-      const updatedTrades = [...prevTrades];
-      updatedTrades[index] = {
-        ...updatedTrades[index],
-        action: txType,
-        amount: `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${updatedTx.token_symbol}`,
-        price: `$${price.toFixed(price < 0.01 ? 8 : 2)}`,
-        entryPrice: `$${entryPrice.toFixed(entryPrice < 0.01 ? 8 : 2)}`,
-        value: `$${(amount * price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-        pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-        pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
-      };
-
-      console.log(`✅ Updated transaction in feed:`, updatedTrades[index].token);
-      return updatedTrades;
-    });
-  };
 
   const loadTransactions = async () => {
     setLoading(true);
@@ -358,7 +183,7 @@ const KOLFeedLegacy: React.FC = () => {
   };
 
   const TokenLogo: React.FC<{ mint: string; symbol: string }> = ({ mint, symbol }) => {
-    const logoUrl = tokenLogos[mint] || 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
+    const logoUrl = useTokenLogo(mint);
 
     return (
       <img
@@ -418,18 +243,9 @@ const KOLFeedLegacy: React.FC = () => {
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
       <div className="relative z-10">
         <div className="mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <h1 className="text-xl font-semibold text-white">KOL Feed Legacy</h1>
-            {realtimeEnabled && (
-              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 border border-green-500/30">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                <span className="text-xs font-medium text-green-400">Live</span>
-              </div>
-            )}
-          </div>
+          <h1 className="text-xl mb-1 font-semibold text-white">KOL Feed Legacy</h1>
           <p className="text-sm text-gray-400">
             {loading ? 'Loading...' : `${totalCount} transactions found`}
-            {realtimeEnabled && ' • Real-time updates enabled'}
           </p>
         </div>
 
