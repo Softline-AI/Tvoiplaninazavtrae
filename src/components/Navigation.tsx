@@ -181,12 +181,10 @@ const Navigation: React.FC = () => {
             <div className="hidden md:flex items-center gap-4">
               <Link
                 to="/app/kol-feed"
-                className="relative px-6 py-2.5 font-semibold text-black bg-white rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-white/20"
+                className="relative px-6 py-2.5 font-semibold text-black bg-white rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-gray-500/30"
               >
-                <span className="relative z-10">Launch App</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 bg-white group-hover:bg-transparent transition-colors duration-300"></div>
-                <span className="absolute inset-0 z-10 flex items-center justify-center text-black group-hover:text-white transition-colors duration-300 font-semibold">Launch App</span>
+                <span className="relative z-10 group-hover:text-white transition-colors duration-300">Launch App</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-700 via-gray-600 to-gray-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </Link>
             </div>
           )}
