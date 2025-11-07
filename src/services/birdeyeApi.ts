@@ -62,7 +62,10 @@ interface BirdeyeTrendingToken {
 class BirdeyeService {
   private headers: HeadersInit;
   private cache: Map<string, { data: any; timestamp: number }> = new Map();
-  private readonly CACHE_DURATION = 30000;
+  private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutes instead of 30 seconds
+  private requestQueue: Promise<any>[] = [];
+  private lastRequestTime = 0;
+  private readonly MIN_REQUEST_INTERVAL = 200; // Minimum 200ms between requests
 
   constructor() {
     this.headers = {
@@ -91,27 +94,82 @@ class BirdeyeService {
     }
   }
 
+  private async throttleRequest(): Promise<void> {
+    const now = Date.now();
+    const timeSinceLastRequest = now - this.lastRequestTime;
+
+    if (timeSinceLastRequest < this.MIN_REQUEST_INTERVAL) {
+      await new Promise(resolve => setTimeout(resolve, this.MIN_REQUEST_INTERVAL - timeSinceLastRequest));
+    }
+
+    this.lastRequestTime = Date.now();
+  }
+
+  private async fetchWithRetry(url: string, maxRetries = 3): Promise<Response> {
+    await this.throttleRequest();
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await fetch(url, { headers: this.headers });
+
+        if (response.status === 429) {
+          const retryAfter = parseInt(response.headers.get('Retry-After') || '5');
+          const waitTime = Math.min(retryAfter * 1000, 30000); // Max 30 seconds
+
+          console.warn(`[Birdeye] ⚠️ Rate limited (429). Waiting ${waitTime/1000}s before retry ${attempt}/${maxRetries}`);
+
+          if (attempt < maxRetries) {
+            await new Promise(resolve => setTimeout(resolve, waitTime));
+            continue;
+          }
+        }
+
+        return response;
+      } catch (error) {
+        if (attempt === maxRetries) throw error;
+
+        const backoffTime = Math.min(1000 * Math.pow(2, attempt), 10000);
+        console.warn(`[Birdeye] ⚠️ Request failed. Retrying in ${backoffTime/1000}s (attempt ${attempt}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, backoffTime));
+      }
+    }
+
+    throw new Error('Max retries exceeded');
+  }
+
   async getTokenPrice(address: string): Promise<BirdeyeTokenPrice | null> {
     const startTime = Date.now();
+    const url = `${BIRDEYE_BASE_URL}/defi/price?address=${address}`;
+    const cacheKey = this.getCacheKey(url);
+
+    // Check cache first
+    const cached = this.getFromCache(cacheKey);
+    if (cached) {
+      console.log(`[Birdeye] 📦 Using cached price for ${address.slice(0, 8)}`);
+      return cached;
+    }
+
     try {
       console.log(`[Birdeye] 🔍 Fetching price for token: ${address.slice(0, 8)}...`);
-      const response = await fetch(
-        `${BIRDEYE_BASE_URL}/defi/price?address=${address}`,
-        { headers: this.headers }
-      );
+      const response = await this.fetchWithRetry(url);
 
       if (!response.ok) {
-        console.error(`[Birdeye] ❌ API error fetching token price: ${response.status}`);
+        console.error(`[Birdeye] ❌ API error: ${response.status} ${response.statusText}`);
         return null;
       }
 
       const data = await response.json();
       const duration = Date.now() - startTime;
       console.log(`[Birdeye] ✅ Token price fetched in ${duration}ms:`, data.data?.value);
+
+      if (data.data) {
+        this.setCache(cacheKey, data.data);
+      }
+
       return data.data;
     } catch (error) {
       const duration = Date.now() - startTime;
-      console.error(`[Birdeye] ❌ Error fetching token price after ${duration}ms:`, error);
+      console.error(`[Birdeye] ❌ Error after ${duration}ms:`, error instanceof Error ? error.message : error);
       return null;
     }
   }
@@ -151,21 +209,38 @@ class BirdeyeService {
   }
 
   async getTokenOverview(address: string): Promise<BirdeyeTokenOverview | null> {
+    const startTime = Date.now();
+    const url = `${BIRDEYE_BASE_URL}/defi/token_overview?address=${address}`;
+    const cacheKey = this.getCacheKey(url);
+
+    // Check cache first
+    const cached = this.getFromCache(cacheKey);
+    if (cached) {
+      console.log(`[Birdeye] 📦 Using cached overview for ${address.slice(0, 8)}`);
+      return cached;
+    }
+
     try {
-      const response = await fetch(
-        `${BIRDEYE_BASE_URL}/defi/token_overview?address=${address}`,
-        { headers: this.headers }
-      );
+      console.log(`[Birdeye] 🔍 Fetching overview for: ${address.slice(0, 8)}...`);
+      const response = await this.fetchWithRetry(url);
 
       if (!response.ok) {
-        console.error('Birdeye API error:', response.status);
+        console.error(`[Birdeye] ❌ API error: ${response.status} ${response.statusText}`);
         return null;
       }
 
       const data = await response.json();
+      const duration = Date.now() - startTime;
+      console.log(`[Birdeye] ✅ Overview fetched in ${duration}ms`);
+
+      if (data.data) {
+        this.setCache(cacheKey, data.data);
+      }
+
       return data.data;
     } catch (error) {
-      console.error('Error fetching token overview from Birdeye:', error);
+      const duration = Date.now() - startTime;
+      console.error(`[Birdeye] ❌ Error after ${duration}ms:`, error instanceof Error ? error.message : error);
       return null;
     }
   }
