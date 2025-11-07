@@ -365,145 +365,102 @@ async function calculateTokenPnl(
 }
 
 /**
- * Determine transaction type using comprehensive analysis
+ * Determine transaction type using SOL-first classification
+ *
+ * GOLDEN RULE:
+ * - SOL spent (negative) = BUY (buying tokens with SOL)
+ * - SOL received (positive) = SELL (selling tokens for SOL)
  *
  * Priority:
- * 1. Analyze SOL transfers (most reliable)
- * 2. Analyze token transfers
- * 3. Check account balance changes
- *
- * Logic:
- * - SWAP SOL -> Token = BUY (wallet sends SOL, receives token)
- * - SWAP Token -> SOL = SELL (wallet sends token, receives SOL)
+ * 1. Check native SOL transfers (HIGHEST PRIORITY - most reliable)
+ * 2. Check token transfer direction (fallback)
  */
 function determineTransactionType(data: HeliusWebhookData, walletAddress: string): string | null {
   const type = data.type?.toUpperCase() || "UNKNOWN";
 
   console.log(`[Type Detection] Processing ${type} transaction for ${walletAddress.substring(0, 8)}...`);
 
-  if (type === "SWAP") {
-    // PRIORITY 1: Analyze SOL transfers
-    if (data.tokenTransfers && data.tokenTransfers.length >= 2) {
-      const solTransfer = data.tokenTransfers.find(
-        (t) => t.mint === "So11111111111111111111111111111111111111112"
-      );
-
-      if (solTransfer) {
-        // Wallet SENDS SOL = BUY (spending SOL to get tokens)
-        if (solTransfer.fromUserAccount === walletAddress) {
-          console.log(`[Type Detection] ✓ BUY: Wallet sent SOL`);
-          return "BUY";
-        }
-        // Wallet RECEIVES SOL = SELL (selling tokens for SOL)
-        if (solTransfer.toUserAccount === walletAddress) {
-          console.log(`[Type Detection] ✓ SELL: Wallet received SOL`);
-          return "SELL";
-        }
+  // PRIORITY 1: ALWAYS check native SOL transfers first (most reliable)
+  if (data.nativeTransfers && data.nativeTransfers.length > 0) {
+    for (const transfer of data.nativeTransfers) {
+      // Wallet SENDS SOL = BUY (spending SOL to buy tokens)
+      if (transfer.fromUserAccount === walletAddress) {
+        console.log(`[Type Detection] ✓ BUY: Wallet spent ${transfer.amount / 1_000_000_000} SOL (SOL-first rule)`);
+        return "BUY";
       }
+      // Wallet RECEIVES SOL = SELL (selling tokens for SOL)
+      if (transfer.toUserAccount === walletAddress) {
+        console.log(`[Type Detection] ✓ SELL: Wallet received ${transfer.amount / 1_000_000_000} SOL (SOL-first rule)`);
+        return "SELL";
+      }
+    }
+  }
 
-      // PRIORITY 2: Analyze non-SOL token transfers
-      const nonSolTransfer = data.tokenTransfers.find(
-        (t) => t.mint !== "So11111111111111111111111111111111111111112"
-      );
+  // PRIORITY 2: Check token transfers for SWAP type
+  if (type === "SWAP" && data.tokenTransfers && data.tokenTransfers.length >= 2) {
+    const solTransfer = data.tokenTransfers.find(
+      (t) => t.mint === "So11111111111111111111111111111111111111112"
+    );
 
-      if (nonSolTransfer) {
-        // Wallet RECEIVES token = BUY
-        if (nonSolTransfer.toUserAccount === walletAddress) {
-          console.log(`[Type Detection] ✓ BUY: Wallet received token`);
-          return "BUY";
-        }
-        // Wallet SENDS token = SELL
-        if (nonSolTransfer.fromUserAccount === walletAddress) {
-          console.log(`[Type Detection] ✓ SELL: Wallet sent token`);
-          return "SELL";
-        }
+    if (solTransfer) {
+      // Wallet SENDS SOL = BUY
+      if (solTransfer.fromUserAccount === walletAddress) {
+        console.log(`[Type Detection] ✓ BUY: Wallet sent wrapped SOL`);
+        return "BUY";
+      }
+      // Wallet RECEIVES SOL = SELL
+      if (solTransfer.toUserAccount === walletAddress) {
+        console.log(`[Type Detection] ✓ SELL: Wallet received wrapped SOL`);
+        return "SELL";
       }
     }
 
-    // PRIORITY 3: Check native balance changes
-    if (data.nativeTransfers && data.nativeTransfers.length > 0) {
-      for (const transfer of data.nativeTransfers) {
-        // Wallet sends native SOL = BUY
-        if (transfer.fromUserAccount === walletAddress) {
-          console.log(`[Type Detection] ✓ BUY: Native SOL sent (${transfer.amount / 1_000_000_000} SOL)`);
-          return "BUY";
-        }
-        // Wallet receives native SOL = SELL
-        if (transfer.toUserAccount === walletAddress) {
-          console.log(`[Type Detection] ✓ SELL: Native SOL received (${transfer.amount / 1_000_000_000} SOL)`);
-          return "SELL";
-        }
+    // Check non-SOL token direction
+    const nonSolTransfer = data.tokenTransfers.find(
+      (t) => t.mint !== "So11111111111111111111111111111111111111112"
+    );
+
+    if (nonSolTransfer) {
+      // Wallet RECEIVES token = BUY
+      if (nonSolTransfer.toUserAccount === walletAddress) {
+        console.log(`[Type Detection] ✓ BUY: Wallet received token`);
+        return "BUY";
+      }
+      // Wallet SENDS token = SELL
+      if (nonSolTransfer.fromUserAccount === walletAddress) {
+        console.log(`[Type Detection] ✓ SELL: Wallet sent token`);
+        return "SELL";
       }
     }
-
-    // PRIORITY 4: Check account data for balance changes
-    if (data.accountData && data.accountData.length > 0) {
-      const walletAccount = data.accountData.find(acc => acc.account === walletAddress);
-      if (walletAccount && walletAccount.tokenBalanceChanges) {
-        for (const balanceChange of walletAccount.tokenBalanceChanges) {
-          const amount = parseFloat(balanceChange.rawTokenAmount.tokenAmount);
-          if (amount > 0) {
-            console.log(`[Type Detection] ✓ BUY: Token balance increased`);
-            return "BUY";
-          }
-          if (amount < 0) {
-            console.log(`[Type Detection] ✓ SELL: Token balance decreased`);
-            return "SELL";
-          }
-        }
-      }
-    }
-
-    console.warn(`[Type Detection] ✗ Unable to determine SWAP type`);
-    return null;
   }
 
-  // Direct type labels
-  if (type === "BUY") {
-    console.log(`[Type Detection] ✓ Direct BUY type`);
-    return "BUY";
-  }
-
-  if (type === "SELL") {
-    console.log(`[Type Detection] ✓ Direct SELL type`);
-    return "SELL";
-  }
-
-  // Handle TRANSFER - similar logic to SWAP
+  // Handle TRANSFER type
   if (type === "TRANSFER" && data.tokenTransfers && data.tokenTransfers.length > 0) {
-    console.log(`[Type Detection] TRANSFER detected, analyzing...`);
-
-    // PRIORITY 1: Check if SOL was involved in native transfers
-    if (data.nativeTransfers && data.nativeTransfers.length > 0) {
-      for (const nativeTransfer of data.nativeTransfers) {
-        // Wallet sends SOL = BUY (paying for tokens)
-        if (nativeTransfer.fromUserAccount === walletAddress) {
-          console.log(`[Type Detection] ✓ TRANSFER as BUY: Wallet spent ${nativeTransfer.amount / 1_000_000_000} SOL`);
-          return "BUY";
-        }
-        // Wallet receives SOL = SELL (selling tokens for SOL)
-        if (nativeTransfer.toUserAccount === walletAddress) {
-          console.log(`[Type Detection] ✓ TRANSFER as SELL: Wallet received ${nativeTransfer.amount / 1_000_000_000} SOL`);
-          return "SELL";
-        }
-      }
-    }
-
-    // PRIORITY 2: Check token transfer direction
     const transfer = data.tokenTransfers.find(
       (t) => t.fromUserAccount === walletAddress
     );
 
     if (transfer) {
-      console.log(`[Type Detection] ✓ TRANSFER as SELL: Wallet sent tokens`);
+      console.log(`[Type Detection] ✓ SELL: TRANSFER - wallet sent tokens`);
       return "SELL";
     } else {
-      console.log(`[Type Detection] ✓ TRANSFER as BUY: Wallet received tokens`);
+      console.log(`[Type Detection] ✓ BUY: TRANSFER - wallet received tokens`);
       return "BUY";
     }
   }
 
-  console.warn(`[Type Detection] ✗ Unknown type: ${type}`);
+  // Direct type labels
+  if (type === "BUY") {
+    console.log(`[Type Detection] ✓ BUY: Direct type`);
+    return "BUY";
+  }
+
+  if (type === "SELL") {
+    console.log(`[Type Detection] ✓ SELL: Direct type`);
+    return "SELL";
+  }
+
+  console.warn(`[Type Detection] ✗ Unable to classify ${type}`);
   return null;
 }
 
@@ -535,7 +492,19 @@ function extractTransactionData(
     if (tokenTransfer) {
       fromAddress = tokenTransfer.fromUserAccount;
       toAddress = tokenTransfer.toUserAccount;
-      amount = tokenTransfer.tokenAmount || 0;
+
+      // CRITICAL: Set amount sign based on direction
+      // If wallet is sending tokens, amount should be negative
+      // If wallet is receiving tokens, amount should be positive
+      const baseAmount = tokenTransfer.tokenAmount || 0;
+      if (tokenTransfer.fromUserAccount === walletAddress) {
+        amount = -Math.abs(baseAmount);  // Wallet sends = negative
+      } else if (tokenTransfer.toUserAccount === walletAddress) {
+        amount = Math.abs(baseAmount);   // Wallet receives = positive
+      } else {
+        amount = baseAmount;
+      }
+
       tokenMint = tokenTransfer.mint;
       tokenSymbol = tokenTransfer.tokenStandard;
     }
