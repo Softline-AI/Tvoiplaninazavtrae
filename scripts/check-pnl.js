@@ -17,13 +17,38 @@ async function fetchTransactions() {
   try {
     console.log('🔍 Fetching transactions from Supabase...\n');
 
-    // Получаем последние 50 транзакций
+    // Сначала проверим статистику по типам транзакций
+    const { data: allTx } = await supabase
+      .from('webhook_transactions')
+      .select('transaction_type, block_time')
+      .in('transaction_type', ['BUY', 'SELL'])
+      .order('block_time', { ascending: false })
+      .limit(500);
+
+    const stats = { BUY: 0, SELL: 0 };
+    let latestBuy = null;
+    allTx?.forEach(tx => {
+      stats[tx.transaction_type]++;
+      if (tx.transaction_type === 'BUY' && !latestBuy) {
+        latestBuy = tx.block_time;
+      }
+    });
+
+    console.log('📈 Transaction Statistics (last 500):');
+    console.log(`   BUY:  ${stats.BUY} (${((stats.BUY / (stats.BUY + stats.SELL)) * 100).toFixed(1)}%)`);
+    console.log(`   SELL: ${stats.SELL} (${((stats.SELL / (stats.BUY + stats.SELL)) * 100).toFixed(1)}%)`);
+    if (latestBuy) {
+      console.log(`   Latest BUY: ${new Date(latestBuy).toLocaleString()}`);
+    }
+    console.log('');
+
+    // Получаем последние 100 транзакций для детального отображения
     const { data: transactions, error } = await supabase
       .from('webhook_transactions')
       .select('*')
       .in('transaction_type', ['BUY', 'SELL'])
       .order('block_time', { ascending: false })
-      .limit(50);
+      .limit(100);
 
     if (error) {
       console.error('❌ Error fetching transactions:', error);
@@ -35,7 +60,12 @@ async function fetchTransactions() {
       return;
     }
 
-    console.log(`✅ Found ${transactions.length} transactions\n`);
+    console.log(`✅ Found ${transactions.length} transactions to display\n`);
+
+    // Подсчитываем BUY и SELL в выборке
+    const displayStats = { BUY: 0, SELL: 0 };
+    transactions.forEach(tx => displayStats[tx.transaction_type]++);
+    console.log(`📊 Displaying: ${displayStats.BUY} BUY + ${displayStats.SELL} SELL transactions\n`);
     console.log('━'.repeat(120));
 
     // Группируем транзакции по кошелькам
@@ -120,12 +150,21 @@ async function fetchTransactions() {
     console.log(`   Profitable Trades:  ${profitableTx}/${transactions.length} (${((profitableTx/transactions.length)*100).toFixed(1)}%)`);
 
     // BUY vs SELL статистика
-    const buyTx = transactions.filter(tx => tx.transaction_type === 'BUY').length;
-    const sellTx = transactions.filter(tx => tx.transaction_type === 'SELL').length;
+    const buyTx = transactions.filter(tx => tx.transaction_type === 'BUY');
+    const sellTx = transactions.filter(tx => tx.transaction_type === 'SELL');
 
-    console.log('\n📈 Transaction Type Distribution:');
-    console.log(`   BUY transactions:   ${buyTx} (${((buyTx/transactions.length)*100).toFixed(1)}%)`);
-    console.log(`   SELL transactions:  ${sellTx} (${((sellTx/transactions.length)*100).toFixed(1)}%)`);
+    console.log('\n📈 Transaction Type Distribution (displayed):');
+    console.log(`   BUY transactions:   ${buyTx.length} (${((buyTx.length/transactions.length)*100).toFixed(1)}%)`);
+    console.log(`   SELL transactions:  ${sellTx.length} (${((sellTx.length/transactions.length)*100).toFixed(1)}%)`);
+
+    // P&L по типу транзакции
+    const buyPnl = buyTx.reduce((sum, tx) => sum + parseFloat(tx.token_pnl || '0'), 0);
+    const sellPnl = sellTx.reduce((sum, tx) => sum + parseFloat(tx.token_pnl || '0'), 0);
+
+    console.log('\n💵 P&L by Transaction Type:');
+    console.log(`   BUY P&L (unrealized):  $${buyPnl.toFixed(2)}`);
+    console.log(`   SELL P&L (realized):   $${sellPnl.toFixed(2)}`);
+    console.log(`   Combined P&L:          $${(buyPnl + sellPnl).toFixed(2)}`);
 
     console.log('\n✅ P&L Check Complete!\n');
 
