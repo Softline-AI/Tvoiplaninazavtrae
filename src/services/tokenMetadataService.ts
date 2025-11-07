@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { apiRequestHandler } from './apiRequestHandler';
 
 const BIRDEYE_API_KEY = import.meta.env.VITE_BIRDEYE_API_KEY;
 const CACHE_DURATION = 24 * 60 * 60 * 1000;
@@ -60,25 +61,23 @@ export const tokenMetadataService = {
     const now = Date.now();
 
     if (solanaTokenListCache && (now - solanaTokenListCacheTime) < TOKEN_LIST_CACHE_DURATION) {
+      console.log('[TokenList] 📦 Using cached Solana Token List');
       return solanaTokenListCache;
     }
 
-    try {
-      const response = await fetch(SOLANA_TOKEN_LIST_URL);
-      if (!response.ok) {
-        console.error('Failed to fetch Solana Token List');
-        return null;
-      }
+    const tokenList = await apiRequestHandler.request<SolanaTokenList>(
+      SOLANA_TOKEN_LIST_URL,
+      {},
+      { cacheDuration: TOKEN_LIST_CACHE_DURATION, maxRetries: 5, timeout: 60000 }
+    );
 
-      const tokenList: SolanaTokenList = await response.json();
+    if (tokenList) {
       solanaTokenListCache = tokenList;
       solanaTokenListCacheTime = now;
-
-      return tokenList;
-    } catch (error) {
-      console.error('Error loading Solana Token List:', error);
-      return null;
+      console.log(`[TokenList] ✅ Loaded ${tokenList.tokens.length} tokens`);
     }
+
+    return tokenList;
   },
 
   /**
@@ -206,40 +205,29 @@ export const tokenMetadataService = {
       return null;
     }
 
-    try {
-      const response = await fetch(
-        `https://public-api.birdeye.so/defi/token_overview?address=${tokenMint}`,
-        {
-          headers: {
-            'X-API-KEY': BIRDEYE_API_KEY,
-          },
-        }
-      );
+    const result = await apiRequestHandler.request<BirdeyeTokenResponse>(
+      `https://public-api.birdeye.so/defi/token_overview?address=${tokenMint}`,
+      {
+        headers: {
+          'X-API-KEY': BIRDEYE_API_KEY,
+        },
+      },
+      { cacheDuration: CACHE_DURATION, maxRetries: 3 }
+    );
 
-      if (!response.ok) {
-        console.error(`Birdeye API error: ${response.status}`);
-        return null;
-      }
-
-      const result: BirdeyeTokenResponse = await response.json();
-
-      if (result.success && result.data) {
-        return {
-          token_mint: tokenMint,
-          token_symbol: result.data.symbol || null,
-          token_name: result.data.name || null,
-          logo_url: result.data.logoURI || null,
-          decimals: result.data.decimals || 0,
-          description: result.data.description || null,
-          last_updated: new Date().toISOString(),
-        };
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Error fetching from Birdeye:', error);
-      return null;
+    if (result?.success && result.data) {
+      return {
+        token_mint: tokenMint,
+        token_symbol: result.data.symbol || null,
+        token_name: result.data.name || null,
+        logo_url: result.data.logoURI || null,
+        decimals: result.data.decimals || 0,
+        description: result.data.description || null,
+        last_updated: new Date().toISOString(),
+      };
     }
+
+    return null;
   },
 
   /**
@@ -275,13 +263,15 @@ export const tokenMetadataService = {
   async getBatchTokenLogos(tokenMints: string[]): Promise<Record<string, string>> {
     const logos: Record<string, string> = {};
 
-    // Fetch all in parallel
-    const promises = tokenMints.map(async (mint) => {
-      const logo = await this.getTokenLogo(mint);
-      logos[mint] = logo;
-    });
-
-    await Promise.all(promises);
+    const batchSize = 10;
+    for (let i = 0; i < tokenMints.length; i += batchSize) {
+      const batch = tokenMints.slice(i, i + batchSize);
+      const promises = batch.map(async (mint) => {
+        const logo = await this.getTokenLogo(mint);
+        logos[mint] = logo;
+      });
+      await Promise.all(promises);
+    }
 
     return logos;
   },
@@ -290,7 +280,11 @@ export const tokenMetadataService = {
    * Prefetch and cache token metadata for multiple tokens
    */
   async prefetchMetadata(tokenMints: string[]): Promise<void> {
-    const promises = tokenMints.map((mint) => this.getTokenMetadata(mint));
-    await Promise.all(promises);
+    const batchSize = 10;
+    for (let i = 0; i < tokenMints.length; i += batchSize) {
+      const batch = tokenMints.slice(i, i + batchSize);
+      const promises = batch.map((mint) => this.getTokenMetadata(mint));
+      await Promise.all(promises);
+    }
   },
 };

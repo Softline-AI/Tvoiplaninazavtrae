@@ -1,3 +1,5 @@
+import { apiRequestHandler } from './apiRequestHandler';
+
 const HELIUS_API_KEYS = [
   import.meta.env.VITE_HELIUS_API_KEY_1 || '23820805-b04f-45a2-9d4b-e70d588bd406',
   import.meta.env.VITE_HELIUS_API_KEY_2 || 'e8716d73-d001-4b9a-9370-0a4ef7ac8d28',
@@ -63,56 +65,42 @@ export interface ParsedTransaction {
 
 export const heliusTransactionService = {
   async getRecentTransactions(limit: number = 100): Promise<HeliusTransactionResponse[]> {
-    try {
-      const apiKey = getNextApiKey();
-      const url = `https://api.helius.xyz/v0/transactions/?api-key=${apiKey}`;
+    const apiKey = getNextApiKey();
+    const url = `https://api.helius.xyz/v0/transactions/?api-key=${apiKey}`;
 
-      const response = await fetch(url, {
+    const data = await apiRequestHandler.request<HeliusTransactionResponse[]>(
+      url,
+      {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      },
+      { cacheDuration: 10000, maxRetries: 3 }
+    );
 
-      if (!response.ok) {
-        console.error('Helius API error:', response.status, response.statusText);
-        return [];
-      }
-
-      const data = await response.json();
-      return Array.isArray(data) ? data.slice(0, limit) : [];
-    } catch (error) {
-      console.error('Error fetching transactions from Helius:', error);
-      return [];
-    }
+    return Array.isArray(data) ? data.slice(0, limit) : [];
   },
 
   async getAddressTransactions(
     address: string,
     limit: number = 100
   ): Promise<HeliusTransactionResponse[]> {
-    try {
-      const apiKey = getNextApiKey();
-      const url = `https://api.helius.xyz/v0/addresses/${address}/transactions/?api-key=${apiKey}`;
+    const apiKey = getNextApiKey();
+    const url = `https://api.helius.xyz/v0/addresses/${address}/transactions/?api-key=${apiKey}`;
 
-      const response = await fetch(url, {
+    const data = await apiRequestHandler.request<HeliusTransactionResponse[]>(
+      url,
+      {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-      });
+      },
+      { cacheDuration: 30000, maxRetries: 3 }
+    );
 
-      if (!response.ok) {
-        console.error('Helius API error for address:', response.status, response.statusText);
-        return [];
-      }
-
-      const data = await response.json();
-      return Array.isArray(data) ? data.slice(0, limit) : [];
-    } catch (error) {
-      console.error('Error fetching address transactions from Helius:', error);
-      return [];
-    }
+    return Array.isArray(data) ? data.slice(0, limit) : [];
   },
 
   async parseTransactions(rawTransactions: HeliusTransactionResponse[]): Promise<ParsedTransaction[]> {
