@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { classifyTransactionWithContext, type TransactionAction } from './transactionTypeMapper';
 
 export interface TokenPosition {
   walletAddress: string;
@@ -70,7 +71,6 @@ class AggregatedPnlService {
         .from('webhook_transactions')
         .select('*')
         .eq('from_address', walletAddress)
-        .in('transaction_type', ['BUY', 'SELL'])
         .order('block_time', { ascending: true });
 
       if (error) {
@@ -86,6 +86,15 @@ class AggregatedPnlService {
       const tokenMap = new Map<string, TokenPosition>();
 
       for (const tx of transactions) {
+        // Classify transaction type using the mapper
+        const action = classifyTransactionWithContext(tx);
+
+        // Skip UNKNOWN transactions
+        if (action === 'UNKNOWN') {
+          console.warn(`Unknown transaction type: ${tx.transaction_type} for ${tx.transaction_signature}`);
+          continue;
+        }
+
         const tokenMint = tx.token_mint;
 
         if (!tokenMap.has(tokenMint)) {
@@ -122,9 +131,9 @@ class AggregatedPnlService {
         const price = parseFloat(tx.current_token_price || '0');
         const value = amount * price;
 
-        // Add to trade history
+        // Add to trade history with classified action
         position.allTrades.push({
-          type: tx.transaction_type as 'BUY' | 'SELL',
+          type: action,
           amount,
           price,
           value,
@@ -132,7 +141,7 @@ class AggregatedPnlService {
           signature: tx.transaction_signature
         });
 
-        if (tx.transaction_type === 'BUY') {
+        if (action === 'BUY') {
           position.totalBought += amount;
           position.totalBuyValue += value;
           position.buyCount++;
@@ -140,7 +149,7 @@ class AggregatedPnlService {
 
           // Update average entry price (weighted average)
           position.averageEntryPrice = position.totalBuyValue / position.totalBought;
-        } else if (tx.transaction_type === 'SELL') {
+        } else if (action === 'SELL') {
           position.totalSold += amount;
           position.totalSellValue += value;
           position.sellCount++;
