@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Clock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { TrendingUp, Clock, DollarSign } from 'lucide-react';
 import { kolFeedServiceV2, type KOLFeedItem } from '../services/kolFeedServiceV2';
 
 export default function TopTransactions() {
-  const navigate = useNavigate();
   const [topTrades, setTopTrades] = useState<KOLFeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
@@ -15,11 +13,10 @@ export default function TopTransactions() {
 
   const loadTopTransactions = async () => {
     setLoading(true);
-    const result = await kolFeedServiceV2.getKOLFeed({
+    const result = await kolFeedServiceV2.getTopTransactions({
       timeRange,
-      type: 'all',
-      sortBy: 'time',
-      limit: 10
+      limit: 10,
+      minPnl: 100
     });
 
     if (result.success) {
@@ -36,8 +33,8 @@ export default function TopTransactions() {
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Recent Trades</h2>
-            <p className="text-sm text-gray-400">Latest transactions</p>
+            <h2 className="text-xl font-bold text-white">Top P&L Trades</h2>
+            <p className="text-sm text-gray-400">Most profitable transactions</p>
           </div>
         </div>
 
@@ -69,7 +66,7 @@ export default function TopTransactions() {
       ) : topTrades.length === 0 ? (
         <div className="text-center py-12">
           <TrendingUp className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-400">No trades found</p>
+          <p className="text-gray-400">No profitable trades found</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -91,25 +88,15 @@ export default function TopTransactions() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
-                    className="hover:opacity-70 transition-all cursor-pointer"
-                  >
-                    <img
-                      src={trade.kolAvatar}
-                      alt={trade.kolName}
-                      className="w-10 h-10 rounded-full"
-                    />
-                  </button>
+                  <img
+                    src={trade.kolAvatar}
+                    alt={trade.kolName}
+                    className="w-10 h-10 rounded-full"
+                  />
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <button
-                        onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
-                        className="font-bold text-white hover:underline hover:opacity-70 transition-all cursor-pointer"
-                      >
-                        {trade.kolName}
-                      </button>
+                      <span className="font-bold text-white">{trade.kolName}</span>
                       <span className="text-xs text-gray-500">@{trade.twitterHandle.replace('@', '')}</span>
                     </div>
 
@@ -135,9 +122,22 @@ export default function TopTransactions() {
                 </div>
 
                 <div className="flex flex-col items-end gap-1">
-                  <span className="text-xs text-gray-500">
-                    {trade.lastTx === 'buy' ? trade.bought : trade.sold}
-                  </span>
+                  <div className={`text-lg font-bold ${
+                    trade.pnlValue >= 0 ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {trade.pnl}
+                  </div>
+                  <div className={`text-sm font-medium ${
+                    trade.pnlValue >= 0 ? 'text-green-400' : 'text-red-400'
+                  }`}>
+                    {trade.pnlPercentage}
+                  </div>
+                  {trade.pnlValue >= 1000 && (
+                    <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-medium mt-1">
+                      <DollarSign className="w-3 h-3" />
+                      <span>Big Win</span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
