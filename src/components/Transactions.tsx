@@ -48,6 +48,8 @@ const Transactions: React.FC = () => {
           .from('webhook_transactions')
           .select('*')
           .gte('block_time', timeRangeDate)
+          .neq('token_symbol', 'UNKNOWN')
+          .not('token_symbol', 'is', null)
           .order('block_time', { ascending: false })
           .limit(100);
 
