@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { kolFeedServiceV2, type KOLFeedItem } from '../services/kolFeedServiceV2';
 
 export default function TopTransactions() {
+  const navigate = useNavigate();
   const [topTrades, setTopTrades] = useState<KOLFeedItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'1h' | '24h' | '7d' | '30d'>('24h');
@@ -89,15 +91,25 @@ export default function TopTransactions() {
                     </div>
                   </div>
 
-                  <img
-                    src={trade.kolAvatar}
-                    alt={trade.kolName}
-                    className="w-10 h-10 rounded-full"
-                  />
+                  <button
+                    onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
+                    className="hover:opacity-70 transition-all cursor-pointer"
+                  >
+                    <img
+                      src={trade.kolAvatar}
+                      alt={trade.kolName}
+                      className="w-10 h-10 rounded-full"
+                    />
+                  </button>
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-white">{trade.kolName}</span>
+                      <button
+                        onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
+                        className="font-bold text-white hover:underline hover:opacity-70 transition-all cursor-pointer"
+                      >
+                        {trade.kolName}
+                      </button>
                       <span className="text-xs text-gray-500">@{trade.twitterHandle.replace('@', '')}</span>
                     </div>
 

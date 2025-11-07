@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, TrendingUp, ExternalLink, Copy, Download } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
 
@@ -32,6 +33,7 @@ interface LegacyTrade {
 }
 
 const KOLFeedLegacy: React.FC = () => {
+  const navigate = useNavigate();
   const [timeFilter, setTimeFilter] = useState('7d');
   const [actionFilter, setActionFilter] = useState('all');
   const [trades, setTrades] = useState<LegacyTrade[]>([]);
@@ -329,14 +331,17 @@ const KOLFeedLegacy: React.FC = () => {
                       </td>
 
                       <td className="px-3 py-2 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
+                          className="flex items-center gap-2 hover:opacity-70 transition-all cursor-pointer"
+                        >
                           <img
                             src={trade.traderAvatar}
                             alt={trade.trader}
                             className="w-6 h-6 rounded-full border border-white/30"
                           />
-                          <div className="text-xs font-semibold text-white">{trade.trader}</div>
-                        </div>
+                          <div className="text-xs font-semibold text-white hover:underline">{trade.trader}</div>
+                        </button>
                       </td>
 
                       <td className="px-3 py-2 whitespace-nowrap">
