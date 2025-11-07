@@ -188,9 +188,7 @@ export const tokenMetadataService = {
         return null;
       }
 
-      if (data) {
-        console.log(`[TokenMetadata] 📦 Cache hit for ${tokenMint.slice(0, 8)}`);
-      }
+      // Removed verbose cache hit logs to reduce console spam
 
       return data;
     } catch (error) {

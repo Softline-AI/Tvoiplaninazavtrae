@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
-import { useTokenLogo } from '../hooks/useTokenLogo';
+import { useTokenLogos } from '../hooks/useTokenLogo';
 import { aggregatedPnlService } from '../services/aggregatedPnlService';
 
 const XIcon = ({ className }: { className?: string }) => (
@@ -44,6 +44,10 @@ const KOLFeedLegacy: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
   const [useAggregated, setUseAggregated] = useState(true);
   const [realtimeEnabled, setRealtimeEnabled] = useState(true);
+
+  // Batch load token logos
+  const tokenMints = trades.map(t => t.tokenMint).filter(Boolean);
+  const tokenLogos = useTokenLogos(tokenMints);
 
   useEffect(() => {
     loadTransactions();
@@ -354,7 +358,7 @@ const KOLFeedLegacy: React.FC = () => {
   };
 
   const TokenLogo: React.FC<{ mint: string; symbol: string }> = ({ mint, symbol }) => {
-    const logoUrl = useTokenLogo(mint);
+    const logoUrl = tokenLogos[mint] || 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
 
     return (
       <img
