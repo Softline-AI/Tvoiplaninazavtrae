@@ -89,19 +89,19 @@ body {
   color: #000000;
   padding: 12px 28px;
   border-radius: 12px;
-  font-weight: 700;
+  font-weight: 600;
   font-size: 14px;
   border: none;
   cursor: pointer;
   transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   text-transform: none;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   box-shadow: 0 2px 8px rgba(255, 255, 255, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
   position: relative;
   overflow: hidden;
   will-change: transform;
   transform: translateZ(0);
-  backfaceVisibility: hidden;
+  backface-visibility: hidden;
 }
 
 .btn-white::before {
@@ -130,14 +130,15 @@ body {
   color: #ffffff;
   padding: 14px 32px;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 15px;
   border: 1px solid #1a1a1a;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  letter-spacing: -0.01em;
   will-change: transform;
   transform: translateZ(0);
-  backfaceVisibility: hidden;
+  backface-visibility: hidden;
 }
 
 .btn-dark:hover {
@@ -354,13 +355,13 @@ input:focus, textarea:focus, select:focus {
   color: #000000;
   padding: 14px 32px;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 15px;
   border: none;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
   text-transform: none;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.005em;
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -377,11 +378,12 @@ input:focus, textarea:focus, select:focus {
   color: #ffffff;
   padding: 14px 32px;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 15px;
   border: 1px solid #1a1a1a;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  letter-spacing: -0.005em;
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
