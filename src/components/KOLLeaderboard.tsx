@@ -95,7 +95,8 @@ const KOLLeaderboard: React.FC = () => {
           let txQuery = supabase
             .from('webhook_transactions')
             .select('transaction_type, amount, token_pnl')
-            .eq('from_address', profile.wallet_address);
+            .eq('from_address', profile.wallet_address)
+            .neq('token_symbol', 'UNKNOWN');
 
           if (timeFilter) {
             txQuery = txQuery.gte('block_time', timeFilter.toISOString());

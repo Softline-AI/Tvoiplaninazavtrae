@@ -65,7 +65,8 @@ const TopKOLTokens: React.FC = () => {
 
       let query = supabase
         .from('webhook_transactions')
-        .select('token_symbol, token_mint, from_address, transaction_type, amount, token_pnl, token_pnl_percentage, current_token_price');
+        .select('token_symbol, token_mint, from_address, transaction_type, amount, token_pnl, token_pnl_percentage, current_token_price')
+        .neq('token_symbol', 'UNKNOWN');
 
       if (timeFilter) {
         query = query.gte('block_time', timeFilter.toISOString());

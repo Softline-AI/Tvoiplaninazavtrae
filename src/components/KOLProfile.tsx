@@ -109,6 +109,7 @@ const KOLProfile: React.FC = () => {
         .from('webhook_transactions')
         .select('*')
         .eq('from_address', walletAddress)
+        .neq('token_symbol', 'UNKNOWN')
         .order('block_time', { ascending: false })
         .limit(500);
 

@@ -96,7 +96,8 @@ const KOLFeedLegacy: React.FC = () => {
       let query = supabase
         .from('webhook_transactions')
         .select('*', { count: 'exact' })
-        .gte('block_time', timeFilter_date.toISOString());
+        .gte('block_time', timeFilter_date.toISOString())
+        .neq('token_symbol', 'UNKNOWN');
 
       if (actionFilter !== 'all') {
         const txTypes = actionFilter === 'buy' ? ['BUY'] : ['SELL'];

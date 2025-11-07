@@ -105,6 +105,7 @@ const SmartMoney: React.FC = () => {
       .select('*')
       .in('wallet_address', walletAddresses)
       .in('transaction_type', ['buy', 'sell'])
+      .neq('token_symbol', 'UNKNOWN')
       .order('timestamp', { ascending: false })
       .limit(50);
 
