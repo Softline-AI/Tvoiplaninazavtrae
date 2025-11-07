@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowUpRight, ArrowDownLeft, Clock, Filter, ExternalLink, Copy } from 'lucide-react';
-import { flaskService } from '../services/flaskApi';
+import { supabase } from '../services/supabaseClient';
 
 interface Transaction {
   id: string;
-  signature: string;
-  type: 'buy' | 'sell' | 'swap';
-  wallet: string;
-  timestamp: string;
+  transaction_signature: string;
+  transaction_type: string;
+  from_address: string;
+  token_symbol: string;
+  amount: string;
+  block_time: string;
+  token_pnl: string;
+  token_pnl_percentage: string;
 }
 
 const Transactions: React.FC = () => {
-  const [filter, setFilter] = useState<'all' | 'buy' | 'sell' | 'swap'>('all');
+  const [filter, setFilter] = useState<'all' | 'BUY' | 'SELL'>('all');
   const [timeRange, setTimeRange] = useState('24h');
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -19,42 +23,60 @@ const Transactions: React.FC = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       setIsLoading(true);
-      console.log('🔄 Fetching transactions from Flask API...');
-      const data = await flaskService.getTransactions(timeRange, filter);
-      setTransactions(data);
+      console.log('🔄 Fetching transactions from Supabase...');
+
+      try {
+        let query = supabase
+          .from('webhook_transactions')
+          .select('*')
+          .order('block_time', { ascending: false })
+          .limit(50);
+
+        if (filter !== 'all') {
+          query = query.eq('transaction_type', filter);
+        }
+
+        const { data, error } = await query;
+
+        if (error) {
+          console.error('Supabase error:', error);
+          setTransactions([]);
+        } else {
+          setTransactions(data || []);
+          console.log('✅ Transactions loaded:', data?.length || 0);
+        }
+      } catch (error) {
+        console.error('Error fetching transactions:', error);
+        setTransactions([]);
+      }
+
       setIsLoading(false);
-      console.log('✅ Transactions loaded:', data.length);
     };
 
     fetchTransactions();
   }, [timeRange, filter]);
 
-  const filteredTransactions = transactions.filter(tx => {
-    if (filter === 'all') return true;
-    return tx.type === filter;
-  });
+  const filteredTransactions = transactions;
 
   const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'buy':
+    const upperType = type?.toUpperCase();
+    switch (upperType) {
+      case 'BUY':
         return <ArrowDownLeft className="w-4 h-4 text-green-600" />;
-      case 'sell':
+      case 'SELL':
         return <ArrowUpRight className="w-4 h-4 text-red-600" />;
-      case 'swap':
-        return <ArrowUpRight className="w-4 h-4 text-blue-600 rotate-90" />;
       default:
         return <ArrowUpRight className="w-4 h-4 text-white/70" />;
     }
   };
 
   const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'buy':
+    const upperType = type?.toUpperCase();
+    switch (upperType) {
+      case 'BUY':
         return 'text-green-600 bg-green-600/10';
-      case 'sell':
+      case 'SELL':
         return 'text-red-600 bg-red-600/10';
-      case 'swap':
-        return 'text-blue-600 bg-blue-600/10';
       default:
         return 'text-white/70 bg-white/10';
     }
@@ -116,9 +138,9 @@ const Transactions: React.FC = () => {
               All
             </button>
             <button
-              onClick={() => setFilter('buy')}
+              onClick={() => setFilter('BUY')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filter === 'buy'
+                filter === 'BUY'
                   ? 'bg-green-600 text-white'
                   : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
               }`}
@@ -126,24 +148,14 @@ const Transactions: React.FC = () => {
               Buy
             </button>
             <button
-              onClick={() => setFilter('sell')}
+              onClick={() => setFilter('SELL')}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filter === 'sell'
+                filter === 'SELL'
                   ? 'bg-red-600 text-white'
                   : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
               }`}
             >
               Sell
-            </button>
-            <button
-              onClick={() => setFilter('swap')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                filter === 'swap'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
-            >
-              Swap
             </button>
           </div>
         </div>
@@ -162,6 +174,12 @@ const Transactions: React.FC = () => {
                   Wallet
                 </th>
                 <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
+                  Token & Amount
+                </th>
+                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
+                  P&L %
+                </th>
+                <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
                   Time
                 </th>
                 <th className="px-4 py-4 text-left text-sm font-bold text-white tracking-wider">
@@ -172,13 +190,13 @@ const Transactions: React.FC = () => {
             <tbody className="divide-y divide-white/10">
               {isLoading ? (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-white/70">
+                  <td colSpan={6} className="px-4 py-8 text-center text-white/70">
                     Loading transactions...
                   </td>
                 </tr>
               ) : filteredTransactions.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-white/70">
+                  <td colSpan={6} className="px-4 py-8 text-center text-white/70">
                     No transactions found
                   </td>
                 </tr>
@@ -186,35 +204,47 @@ const Transactions: React.FC = () => {
                 filteredTransactions.map((tx) => (
                 <tr key={tx.id} className="transition-all duration-300 hover:bg-white/5">
                   <td className="px-4 py-4 whitespace-nowrap">
-                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(tx.type)}`}>
-                      {getTypeIcon(tx.type)}
-                      {tx.type.toUpperCase()}
+                    <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(tx.transaction_type)}`}>
+                      {getTypeIcon(tx.transaction_type)}
+                      {tx.transaction_type}
                     </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="text-sm font-mono text-white">
-                      {tx.wallet.slice(0, 8)}...{tx.wallet.slice(-4)}
+                      {tx.from_address?.slice(0, 8)}...{tx.from_address?.slice(-4)}
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className="text-sm text-white">
+                      {tx.token_symbol} {parseFloat(tx.amount || '0').toFixed(2)}
+                    </div>
+                  </td>
+                  <td className="px-4 py-4 whitespace-nowrap">
+                    <div className={`text-sm font-medium ${parseFloat(tx.token_pnl_percentage || '0') >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      {parseFloat(tx.token_pnl_percentage || '0').toFixed(2)}%
                     </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-1 text-sm text-white/70">
                       <Clock className="w-3 h-3" />
-                      {tx.timestamp}
+                      {new Date(tx.block_time).toLocaleString()}
                     </div>
                   </td>
                   <td className="px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <button
-                        onClick={() => navigator.clipboard.writeText(tx.signature)}
+                        onClick={() => navigator.clipboard.writeText(tx.transaction_signature)}
                         className="hover:opacity-70 hover:scale-110 transition-all cursor-pointer p-1 text-white/70"
+                        title="Copy signature"
                       >
                         <Copy className="w-4 h-4" />
                       </button>
                       <a
-                        href={`https://solscan.io/tx/${tx.signature}`}
+                        href={`https://solscan.io/tx/${tx.transaction_signature}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:opacity-70 hover:scale-110 transition-all p-1 text-white/70"
+                        title="View on Solscan"
                       >
                         <ExternalLink className="w-4 h-4" />
                       </a>
