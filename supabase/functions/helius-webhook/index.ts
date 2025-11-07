@@ -469,8 +469,27 @@ function determineTransactionType(data: HeliusWebhookData, walletAddress: string
     return "SELL";
   }
 
-  // Handle TRANSFER
+  // Handle TRANSFER - similar logic to SWAP
   if (type === "TRANSFER" && data.tokenTransfers && data.tokenTransfers.length > 0) {
+    console.log(`[Type Detection] TRANSFER detected, analyzing...`);
+
+    // PRIORITY 1: Check if SOL was involved in native transfers
+    if (data.nativeTransfers && data.nativeTransfers.length > 0) {
+      for (const nativeTransfer of data.nativeTransfers) {
+        // Wallet sends SOL = BUY (paying for tokens)
+        if (nativeTransfer.fromUserAccount === walletAddress) {
+          console.log(`[Type Detection] ✓ TRANSFER as BUY: Wallet spent ${nativeTransfer.amount / 1_000_000_000} SOL`);
+          return "BUY";
+        }
+        // Wallet receives SOL = SELL (selling tokens for SOL)
+        if (nativeTransfer.toUserAccount === walletAddress) {
+          console.log(`[Type Detection] ✓ TRANSFER as SELL: Wallet received ${nativeTransfer.amount / 1_000_000_000} SOL`);
+          return "SELL";
+        }
+      }
+    }
+
+    // PRIORITY 2: Check token transfer direction
     const transfer = data.tokenTransfers.find(
       (t) => t.fromUserAccount === walletAddress
     );
