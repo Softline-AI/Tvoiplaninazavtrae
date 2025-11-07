@@ -172,6 +172,77 @@ CREATE TABLE monitored_wallets (
 
 ---
 
+## check-pnl.js
+
+Проверяет транзакции и корректность расчета P&L.
+
+### Features
+
+- Получает последние 50 транзакций из базы данных
+- Отображает детальную информацию о каждой транзакции
+- Группирует транзакции по трейдерам
+- Показывает статистику P&L
+- Проверяет Entry Price, Current Price, P&L %
+
+### Usage
+
+```bash
+node scripts/check-pnl.js
+```
+
+### Output Example
+
+```
+🔍 Fetching transactions from Supabase...
+
+✅ Found 50 transactions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+👤 Trader: cupseyy
+   Twitter: @cupseyy
+   Wallet: 2fg5QD1eD7rzNNCsvnhmXFm5hqNgwTTG8p7kQ6f3rx6f
+   ──────────────────────────────────────────────────────────────────────
+
+   1. 🟢 BUY  | TRUMP | 2025-01-07 14:30:22
+      Token:          TRUMP (HaP8r3ks...)
+      Amount:         1250.0000 tokens
+      Entry Price:    $0.12500000
+      Current Price:  $0.15000000
+      Market Cap:     $150M
+      Remaining:      1250.0000 tokens
+      🟢 P&L:            $31.25 (+20.00%)
+      TX Signature:   5Qi7Tq8hPxNwE...
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Total Transactions Displayed: 50
+📈 Total Unique Traders: 15
+
+💰 P&L Statistics:
+   Total P&L:          $4,523.45
+   Average P&L:        $90.47
+   Profitable Trades:  32/50 (64.0%)
+
+📈 Transaction Type Distribution:
+   BUY transactions:   28 (56.0%)
+   SELL transactions:  22 (44.0%)
+
+✅ P&L Check Complete!
+```
+
+### What It Checks
+
+- ✅ Entry Price calculation
+- ✅ Current Price from database
+- ✅ P&L calculation (USD)
+- ✅ P&L Percentage calculation
+- ✅ Remaining tokens tracking
+- ✅ BUY vs SELL logic
+- ✅ Market cap data
+
+---
+
 ## Future Improvements
 
 - [ ] Add batch processing for multiple wallets
