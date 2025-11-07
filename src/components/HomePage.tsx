@@ -2,6 +2,38 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Check, ArrowRight, CheckCircle, Crown, ChevronDown, Users } from 'lucide-react';
 
+const useScrollAnimation = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true);
+        }
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '50px'
+      }
+    );
+
+    const currentRef = ref.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+    };
+  }, []);
+
+  return { ref, isVisible };
+};
+
 const HomePage: React.FC = () => {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('yearly');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
@@ -43,6 +75,24 @@ const HomePage: React.FC = () => {
       answer: 'SmartChain combines real-time data analysis, whale tracking, and pattern recognition to give you an edge in the crypto market. Our platform helps you identify opportunities before they go viral, backed by actual on-chain data and sophisticated tracking algorithms.'
     }
   ];
+
+  const FadeInSection: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => {
+    const { ref, isVisible } = useScrollAnimation();
+
+    return (
+      <div
+        ref={ref}
+        className={`transition-all duration-1000 ${
+          isVisible
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-10'
+        }`}
+        style={{ transitionDelay: `${delay}ms` }}
+      >
+        {children}
+      </div>
+    );
+  };
 
   return (
     <main className="noir-bg min-h-screen relative" style={{ willChange: 'scroll-position' }}>
@@ -97,24 +147,13 @@ const HomePage: React.FC = () => {
               ))}
             </ul>
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-8 w-full">
-              <Link
-                to="/app/kol-feed"
-                className="group relative inline-flex items-center justify-center whitespace-nowrap font-bold transition-all h-14 sm:h-16 md:h-18 rounded-xl px-10 sm:px-12 md:px-14 text-lg sm:text-xl md:text-2xl w-full sm:w-auto bg-white text-noir-black hover:bg-gray-100 hover:scale-105 active:scale-100 shadow-2xl shadow-white/20 overflow-hidden"
-              >
-                <span className="relative z-10 flex items-center gap-3">
-                  Start Tracking
-                  <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-white via-gray-50 to-white opacity-0 group-hover:opacity-100 transition-opacity"></div>
-              </Link>
-            </div>
           </div>
         </div>
       </section>
 
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32 relative z-10">
-        <div className="flex flex-col items-center mb-16 lg:mb-20 max-w-4xl mx-auto noir-fade-in revealed">
+        <FadeInSection>
+        <div className="flex flex-col items-center mb-16 lg:mb-20 max-w-4xl mx-auto">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-center font-bold mb-4 sm:mb-6 noir-text-secondary">
             Your Edge in the Fastest-Moving Market
           </h2>
@@ -122,6 +161,7 @@ const HomePage: React.FC = () => {
             While others rely on Twitter rumors and gut feelings, you'll trade with institutional-grade intelligence.
           </p>
         </div>
+        </FadeInSection>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 my-8 sm:my-12">
           {[
@@ -141,7 +181,8 @@ const HomePage: React.FC = () => {
               description: 'Track massive wallets in real-time. Get alerts when big players make moves that could signal major market shifts.'
             }
           ].map((feature, index) => (
-            <div key={index} className="group noir-card noir-spotlight rounded-2xl p-6 sm:p-8 md:p-10 noir-fade-in revealed">
+            <FadeInSection key={index} delay={index * 100}>
+            <div className="group noir-card noir-spotlight rounded-2xl p-6 sm:p-8 md:p-10">
               <div className="flex flex-col items-center text-center h-full">
                 <div className="w-full aspect-video bg-noir-gray rounded-xl overflow-hidden mb-6">
                   <img
@@ -162,12 +203,14 @@ const HomePage: React.FC = () => {
                 <p className="noir-text-secondary text-base sm:text-lg leading-relaxed">{feature.description}</p>
               </div>
             </div>
+            </FadeInSection>
           ))}
         </div>
       </div>
 
       <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 lg:py-32 relative z-10">
-        <div className="text-center mb-16 lg:mb-20 noir-fade-in revealed">
+        <FadeInSection>
+        <div className="text-center mb-16 lg:mb-20">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold noir-text-secondary mb-6 sm:mb-8">
             Traders Using SmartChain
           </h2>
@@ -175,14 +218,12 @@ const HomePage: React.FC = () => {
             Join thousands of professional traders who trust SmartChain to track smart money movements and discover the next big opportunities.
           </p>
         </div>
+        </FadeInSection>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6">
           {kols.map((kol, index) => (
-            <div
-              key={index}
-              className="noir-fade-in revealed"
-              style={{ transform: 'translateZ(0)' }}
-            >
+            <FadeInSection key={index} delay={index * 50}>
+            <div style={{ transform: 'translateZ(0)' }}>
               <a href={kol.twitter} target="_blank" rel="noopener noreferrer" className="group block">
                 <div className="noir-card noir-shimmer rounded-2xl p-4 sm:p-6 md:p-8">
                   <div className="flex flex-col items-center text-center">
@@ -217,13 +258,15 @@ const HomePage: React.FC = () => {
                 </div>
               </a>
             </div>
+            </FadeInSection>
           ))}
         </div>
 
       </section>
 
       <section id="plans" className="w-full max-w-7xl mx-auto px-4 py-20 lg:py-32 relative z-10">
-        <div className="text-center mb-16 noir-fade-in revealed">
+        <FadeInSection>
+        <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold noir-text-secondary mb-4">Choose Your Plan</h2>
           <p className="text-base sm:text-lg md:text-xl noir-text-secondary max-w-2xl mx-auto mb-6 sm:mb-8">
             Start free or unlock premium features to dominate the market
@@ -251,9 +294,11 @@ const HomePage: React.FC = () => {
             )}
           </div>
         </div>
+        </FadeInSection>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-6xl mx-auto">
-          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
+          <FadeInSection delay={0}>
+          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500">
             <div className="mb-8">
               <h3 className="text-2xl sm:text-3xl font-bold noir-text-secondary mb-3">Free</h3>
               <div className="flex items-baseline gap-2">
@@ -281,8 +326,10 @@ const HomePage: React.FC = () => {
               ))}
             </ul>
           </div>
+          </FadeInSection>
 
-          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500 noir-fade-in revealed">
+          <FadeInSection delay={100}>
+          <div className="group bg-gradient-to-b from-white/5 to-transparent backdrop-blur-sm border border-white/10 rounded-3xl p-6 sm:p-8 hover:border-white/30 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500">
             <div className="mb-8">
               <h3 className="text-2xl sm:text-3xl font-bold noir-text-secondary mb-3">Pro</h3>
               <div className="flex items-baseline gap-2">
@@ -315,8 +362,10 @@ const HomePage: React.FC = () => {
               ))}
             </ul>
           </div>
+          </FadeInSection>
 
-          <div className="group bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border-2 border-white/30 rounded-3xl p-6 sm:p-8 hover:border-white/50 hover:shadow-2xl hover:shadow-white/10 transition-all duration-500 relative noir-fade-in revealed transform hover:scale-105">
+          <FadeInSection delay={200}>
+          <div className="group bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-sm border-2 border-white/30 rounded-3xl p-6 sm:p-8 hover:border-white/50 hover:shadow-2xl hover:shadow-white/10 transition-all duration-500 relative transform hover:scale-105">
             <div className="absolute -top-4 left-1/2 -translate-x-1/2">
               <div className="bg-white text-noir-black px-6 py-2 rounded-full text-sm font-bold shadow-xl flex items-center gap-2">
                 <Crown className="w-4 h-4" />
@@ -360,15 +409,19 @@ const HomePage: React.FC = () => {
               ))}
             </ul>
           </div>
+          </FadeInSection>
         </div>
       </section>
 
       <section className="w-full max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-20 relative z-10">
+        <FadeInSection>
         <div className="text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-bold noir-text-secondary mb-4">Frequently Asked Questions</h2>
           <p className="text-xl noir-text-secondary">Everything you need to know about SmartChain</p>
         </div>
+        </FadeInSection>
 
+        <FadeInSection delay={100}>
         <div className="border border-white/20 rounded-2xl overflow-hidden bg-noir-dark/50 backdrop-blur-sm">
           {faqs.map((faq, index) => (
             <React.Fragment key={index}>
@@ -401,6 +454,7 @@ const HomePage: React.FC = () => {
             </React.Fragment>
           ))}
         </div>
+        </FadeInSection>
       </section>
     </main>
   );
