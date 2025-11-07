@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Copy, ExternalLink, Clock, ChevronUp, ChevronDown } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { aggregatedPnlService } from '../services/aggregatedPnlService';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -31,6 +32,12 @@ interface KOLTrade {
   currentPrice: number;
   entryPrice: number;
   transactionSignature: string;
+  // Aggregated P&L fields
+  buyCount?: number;
+  sellCount?: number;
+  realizedPnl?: number;
+  unrealizedPnl?: number;
+  totalPnl?: number;
 }
 
 type SortField = 'timestamp' | 'pnl' | 'pnlSol' | 'aht' | 'amount' | 'token';
@@ -44,6 +51,7 @@ const KOLFeed: React.FC = () => {
   const [sortField, setSortField] = useState<SortField>('timestamp');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [newTradeIds, setNewTradeIds] = useState<Set<string>>(new Set());
+  const [useAggregated, setUseAggregated] = useState(true);
 
   useEffect(() => {
     loadTrades();
@@ -81,7 +89,7 @@ const KOLFeed: React.FC = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, []);
+  }, [useAggregated]);
 
   const getTwitterAvatarUrl = (twitterHandle: string | null): string => {
     if (!twitterHandle) return 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
@@ -124,135 +132,195 @@ const KOLFeed: React.FC = () => {
         .from('monitored_wallets')
         .select('wallet_address, label, twitter_handle, twitter_avatar');
 
+      if (!wallets || wallets.length === 0) {
+        setTrades([]);
+        setLoading(false);
+        return;
+      }
+
       const walletMap = new Map();
-      wallets?.forEach((wallet: any) => {
+      wallets.forEach((wallet: any) => {
         walletMap.set(wallet.wallet_address, wallet);
       });
 
-      const { data: profiles } = await supabase
-        .from('kol_profiles')
-        .select('*');
+      if (useAggregated) {
+        const allPositions: KOLTrade[] = [];
 
-      const profileMap = new Map();
-      profiles?.forEach((profile: any) => {
-        profileMap.set(profile.wallet_address, profile);
-      });
+        for (const wallet of wallets) {
+          const positions = await aggregatedPnlService.getWalletPositions(wallet.wallet_address);
 
-      const EXCLUDED_TOKENS = ['SOL', 'USDC', 'USDT', 'USDS', 'DAI', 'WBTC', 'WETH', 'BTC', 'ETH'];
+          for (const position of positions) {
+            const walletInfo = walletMap.get(wallet.wallet_address);
+            const lastTrade = position.allTrades[position.allTrades.length - 1];
 
-      const { data: transactions, error } = await supabase
-        .from('webhook_transactions')
-        .select('*')
-        .in('transaction_type', ['BUY', 'SELL'])
-        .not('token_symbol', 'in', `(${EXCLUDED_TOKENS.join(',')})`)
-        .order('block_time', { ascending: false })
-        .limit(1000);
+            if (!lastTrade) continue;
 
-      if (error) {
-        console.error('Error loading transactions:', error);
-        setTrades([]);
-        return;
-      }
+            const now = new Date();
+            const txTime = new Date(lastTrade.timestamp);
+            const ageHours = (now.getTime() - txTime.getTime()) / (1000 * 60 * 60);
 
-      if (!transactions || transactions.length === 0) {
-        setTrades([]);
-        return;
-      }
-
-      const aggregated = new Map<string, any>();
-
-      for (const tx of transactions) {
-        const key = `${tx.from_address}-${tx.token_mint}`;
-
-        if (!aggregated.has(key)) {
-          const wallet = walletMap.get(tx.from_address);
-          const profile = profileMap.get(tx.from_address);
-          const twitterHandle = wallet?.twitter_handle || profile?.twitter_handle || null;
-          const label = wallet?.label || profile?.name || tx.from_address.substring(0, 8);
-          const avatarUrl = wallet?.twitter_avatar || profile?.avatar_url || null;
-
-          aggregated.set(key, {
-            walletAddress: tx.from_address,
-            tokenMint: tx.token_mint,
-            tokenSymbol: tx.token_symbol,
-            kolName: label,
-            twitterHandle: twitterHandle,
-            avatarUrl: avatarUrl,
-            lastTx: null,
-            lastTimestamp: null,
-            lastSignature: null,
-            totalBought: 0,
-            totalSold: 0,
-            totalBoughtAmount: 0,
-            totalSoldAmount: 0,
-            avgBuyPrice: 0,
-            holding: 0,
-            marketCap: 0,
-            currentPrice: 0,
-            pnl: 0,
-            pnlPercentage: 0
-          });
+            allPositions.push({
+              id: `${wallet.wallet_address}-${position.tokenMint}`,
+              lastTx: lastTrade.type.toLowerCase() as 'buy' | 'sell',
+              timestamp: lastTrade.timestamp,
+              kolName: walletInfo?.label || wallet.wallet_address.substring(0, 8),
+              kolAvatar: walletInfo?.twitter_avatar || getTwitterAvatarUrl(walletInfo?.twitter_handle),
+              walletAddress: wallet.wallet_address,
+              twitterHandle: walletInfo?.twitter_handle || null,
+              token: position.tokenSymbol,
+              tokenContract: position.tokenMint,
+              tokenLogoUrl: getTokenLogoUrl(position.tokenMint),
+              marketCap: position.marketCap,
+              bought: position.totalBuyValue,
+              sold: position.totalSellValue,
+              holding: position.remainingTokens,
+              pnl: position.totalPnl,
+              pnlSol: position.totalPnl / 150,
+              pnlPercentage: position.totalPnlPercentage,
+              aht: ageHours,
+              currentPrice: position.currentPrice,
+              entryPrice: position.averageEntryPrice,
+              transactionSignature: lastTrade.signature,
+              buyCount: position.buyCount,
+              sellCount: position.sellCount,
+              realizedPnl: position.realizedPnl,
+              unrealizedPnl: position.unrealizedPnl,
+              totalPnl: position.totalPnl
+            });
+          }
         }
 
-        const agg = aggregated.get(key);
-        const amount = parseFloat(tx.amount || '0');
-        const price = parseFloat(tx.current_token_price || '0');
+        const sortedPositions = allPositions
+          .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .slice(0, 100);
 
-        if (tx.transaction_type === 'BUY') {
-          agg.totalBought += amount * price;
-          agg.totalBoughtAmount += amount;
-        } else if (tx.transaction_type === 'SELL') {
-          agg.totalSold += amount * price;
-          agg.totalSoldAmount += amount;
+        setTrades(sortedPositions);
+      } else {
+        const { data: profiles } = await supabase
+          .from('kol_profiles')
+          .select('*');
+
+        const profileMap = new Map();
+        profiles?.forEach((profile: any) => {
+          profileMap.set(profile.wallet_address, profile);
+        });
+
+        const EXCLUDED_TOKENS = ['SOL', 'USDC', 'USDT', 'USDS', 'DAI', 'WBTC', 'WETH', 'BTC', 'ETH'];
+
+        const { data: transactions, error } = await supabase
+          .from('webhook_transactions')
+          .select('*')
+          .in('transaction_type', ['BUY', 'SELL'])
+          .not('token_symbol', 'in', `(${EXCLUDED_TOKENS.join(',')})`)
+          .order('block_time', { ascending: false })
+          .limit(1000);
+
+        if (error) {
+          console.error('Error loading transactions:', error);
+          setTrades([]);
+          return;
         }
 
-        if (!agg.lastTimestamp || new Date(tx.block_time) > new Date(agg.lastTimestamp)) {
-          agg.lastTx = tx.transaction_type === 'BUY' ? 'buy' : 'sell';
-          agg.lastTimestamp = tx.block_time;
-          agg.lastSignature = tx.transaction_signature;
-          agg.currentPrice = price;
-          agg.marketCap = parseFloat(tx.market_cap || '0');
-          agg.pnl = parseFloat(tx.token_pnl || '0');
-          agg.pnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
+        if (!transactions || transactions.length === 0) {
+          setTrades([]);
+          return;
         }
+
+        const aggregated = new Map<string, any>();
+
+        for (const tx of transactions) {
+          const key = `${tx.from_address}-${tx.token_mint}`;
+
+          if (!aggregated.has(key)) {
+            const wallet = walletMap.get(tx.from_address);
+            const profile = profileMap.get(tx.from_address);
+            const twitterHandle = wallet?.twitter_handle || profile?.twitter_handle || null;
+            const label = wallet?.label || profile?.name || tx.from_address.substring(0, 8);
+            const avatarUrl = wallet?.twitter_avatar || profile?.avatar_url || null;
+
+            aggregated.set(key, {
+              walletAddress: tx.from_address,
+              tokenMint: tx.token_mint,
+              tokenSymbol: tx.token_symbol,
+              kolName: label,
+              twitterHandle: twitterHandle,
+              avatarUrl: avatarUrl,
+              lastTx: null,
+              lastTimestamp: null,
+              lastSignature: null,
+              totalBought: 0,
+              totalSold: 0,
+              totalBoughtAmount: 0,
+              totalSoldAmount: 0,
+              avgBuyPrice: 0,
+              holding: 0,
+              marketCap: 0,
+              currentPrice: 0,
+              pnl: 0,
+              pnlPercentage: 0
+            });
+          }
+
+          const agg = aggregated.get(key);
+          const amount = parseFloat(tx.amount || '0');
+          const price = parseFloat(tx.current_token_price || '0');
+
+          if (tx.transaction_type === 'BUY') {
+            agg.totalBought += amount * price;
+            agg.totalBoughtAmount += amount;
+          } else if (tx.transaction_type === 'SELL') {
+            agg.totalSold += amount * price;
+            agg.totalSoldAmount += amount;
+          }
+
+          if (!agg.lastTimestamp || new Date(tx.block_time) > new Date(agg.lastTimestamp)) {
+            agg.lastTx = tx.transaction_type === 'BUY' ? 'buy' : 'sell';
+            agg.lastTimestamp = tx.block_time;
+            agg.lastSignature = tx.transaction_signature;
+            agg.currentPrice = price;
+            agg.marketCap = parseFloat(tx.market_cap || '0');
+            agg.pnl = parseFloat(tx.token_pnl || '0');
+            agg.pnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
+          }
+        }
+
+        const formattedTrades: KOLTrade[] = Array.from(aggregated.values())
+          .map((agg) => {
+            const now = new Date();
+            const txTime = new Date(agg.lastTimestamp);
+            const ageHours = (now.getTime() - txTime.getTime()) / (1000 * 60 * 60);
+
+            const avgBuyPrice = agg.totalBoughtAmount > 0 ? agg.totalBought / agg.totalBoughtAmount : 0;
+
+            return {
+              id: `${agg.walletAddress}-${agg.tokenMint}`,
+              lastTx: agg.lastTx,
+              timestamp: agg.lastTimestamp,
+              kolName: agg.kolName,
+              kolAvatar: agg.avatarUrl || getTwitterAvatarUrl(agg.twitterHandle),
+              walletAddress: agg.walletAddress,
+              twitterHandle: agg.twitterHandle,
+              token: agg.tokenSymbol || 'Unknown',
+              tokenContract: agg.tokenMint || '',
+              tokenLogoUrl: getTokenLogoUrl(agg.tokenMint || ''),
+              marketCap: agg.marketCap,
+              bought: agg.totalBought,
+              sold: agg.totalSold,
+              holding: agg.totalBought > agg.totalSold ? agg.totalBought - agg.totalSold : 0,
+              pnl: agg.pnl,
+              pnlSol: agg.pnl / 150,
+              pnlPercentage: agg.pnlPercentage,
+              aht: ageHours,
+              currentPrice: agg.currentPrice,
+              entryPrice: avgBuyPrice,
+              transactionSignature: agg.lastSignature || ''
+            };
+          })
+          .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+          .slice(0, 100);
+
+        setTrades(formattedTrades);
       }
-
-      const formattedTrades: KOLTrade[] = Array.from(aggregated.values())
-        .map((agg) => {
-          const now = new Date();
-          const txTime = new Date(agg.lastTimestamp);
-          const ageHours = (now.getTime() - txTime.getTime()) / (1000 * 60 * 60);
-
-          const avgBuyPrice = agg.totalBoughtAmount > 0 ? agg.totalBought / agg.totalBoughtAmount : 0;
-
-          return {
-            id: `${agg.walletAddress}-${agg.tokenMint}`,
-            lastTx: agg.lastTx,
-            timestamp: agg.lastTimestamp,
-            kolName: agg.kolName,
-            kolAvatar: agg.avatarUrl || getTwitterAvatarUrl(agg.twitterHandle),
-            walletAddress: agg.walletAddress,
-            twitterHandle: agg.twitterHandle,
-            token: agg.tokenSymbol || 'Unknown',
-            tokenContract: agg.tokenMint || '',
-            tokenLogoUrl: getTokenLogoUrl(agg.tokenMint || ''),
-            marketCap: agg.marketCap,
-            bought: agg.totalBought,
-            sold: agg.totalSold,
-            holding: agg.totalBought > agg.totalSold ? agg.totalBought - agg.totalSold : 0,
-            pnl: agg.pnl,
-            pnlSol: agg.pnl / 150,
-            pnlPercentage: agg.pnlPercentage,
-            aht: ageHours,
-            currentPrice: agg.currentPrice,
-            entryPrice: avgBuyPrice,
-            transactionSignature: agg.lastSignature || ''
-          };
-        })
-        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-        .slice(0, 100);
-
-      setTrades(formattedTrades);
     } catch (error) {
       console.error('Error in loadTrades:', error);
       setTrades([]);
@@ -364,36 +432,64 @@ const KOLFeed: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex gap-2">
+              <button
+                onClick={() => setFilter('all')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  filter === 'all'
+                    ? 'bg-white text-noir-black'
+                    : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                All
+              </button>
+              <button
+                onClick={() => setFilter('buy')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  filter === 'buy'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                Buy
+              </button>
+              <button
+                onClick={() => setFilter('sell')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  filter === 'sell'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
+                }`}
+              >
+                Sell
+              </button>
+            </div>
+
             <button
-              onClick={() => setFilter('all')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'all'
-                  ? 'bg-white text-noir-black'
+              onClick={() => setUseAggregated(!useAggregated)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center gap-2 ${
+                useAggregated
+                  ? 'bg-purple-600 text-white'
                   : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
               }`}
+              title={useAggregated ? 'Showing aggregated P&L' : 'Showing individual trades'}
             >
-              All
-            </button>
-            <button
-              onClick={() => setFilter('buy')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'buy'
-                  ? 'bg-green-600 text-white'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
-            >
-              Buy
-            </button>
-            <button
-              onClick={() => setFilter('sell')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                filter === 'sell'
-                  ? 'bg-red-600 text-white'
-                  : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white border border-white/10'
-              }`}
-            >
-              Sell
+              {useAggregated ? (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Aggregated P&L
+                </>
+              ) : (
+                <>
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                  Individual Trades
+                </>
+              )}
             </button>
           </div>
         </div>
@@ -621,22 +717,36 @@ const KOLFeed: React.FC = () => {
                           </span>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <span
-                            className={`text-sm font-semibold ${
-                              trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
-                            }`}
-                          >
-                            {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
-                          </span>
+                          <div>
+                            <span
+                              className={`text-sm font-semibold ${
+                                trade.pnl >= 0 ? 'text-green-500' : 'text-red-500'
+                              }`}
+                            >
+                              {trade.pnl >= 0 ? '+' : ''}{formatCurrency(trade.pnl)}
+                            </span>
+                            {useAggregated && trade.buyCount && trade.sellCount && (
+                              <div className="text-xs text-white/50 mt-1">
+                                {trade.buyCount}B / {trade.sellCount}S
+                              </div>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
-                          <span
-                            className={`text-sm font-semibold ${
-                              trade.pnlPercentage >= 0 ? 'text-green-500' : 'text-red-500'
-                            }`}
-                          >
-                            {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(1)}%
-                          </span>
+                          <div>
+                            <span
+                              className={`text-sm font-semibold ${
+                                trade.pnlPercentage >= 0 ? 'text-green-500' : 'text-red-500'
+                              }`}
+                            >
+                              {trade.pnlPercentage >= 0 ? '+' : ''}{trade.pnlPercentage.toFixed(1)}%
+                            </span>
+                            {useAggregated && trade.realizedPnl !== undefined && (
+                              <div className="text-xs text-white/50 mt-1">
+                                R: {formatCurrency(trade.realizedPnl)}
+                              </div>
+                            )}
+                          </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span className="text-sm text-white/70">

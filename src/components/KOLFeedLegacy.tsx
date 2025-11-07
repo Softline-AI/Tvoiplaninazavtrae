@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
+import { aggregatedPnlService } from '../services/aggregatedPnlService';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -28,6 +29,11 @@ interface LegacyTrade {
   pnlPercentage: string;
   remainingTokens: number;
   allTokensSold: boolean;
+  // Aggregated fields
+  buyCount?: number;
+  sellCount?: number;
+  realizedPnl?: number;
+  unrealizedPnl?: number;
 }
 
 const KOLFeedLegacy: React.FC = () => {
@@ -36,10 +42,11 @@ const KOLFeedLegacy: React.FC = () => {
   const [trades, setTrades] = useState<LegacyTrade[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
+  const [useAggregated, setUseAggregated] = useState(true);
 
   useEffect(() => {
     loadTransactions();
-  }, [timeFilter, actionFilter]);
+  }, [timeFilter, actionFilter, useAggregated]);
 
   const loadTransactions = async () => {
     setLoading(true);
