@@ -21,6 +21,7 @@ const FreshWalletFeed = lazy(() => import('./components/FreshWalletFeed'));
 const LiveDCAFeed = lazy(() => import('./components/LiveDCAFeed'));
 const LegendCommunity = lazy(() => import('./components/LegendCommunity'));
 const KOLFeedLegacy = lazy(() => import('./components/KOLFeedLegacy'));
+const AggregatedKOLFeed = lazy(() => import('./components/AggregatedKOLFeed'));
 const MyStalks = lazy(() => import('./components/MyStalks'));
 const LearningCenter = lazy(() => import('./components/LearningCenter'));
 
@@ -84,8 +85,9 @@ const AnimatedRoutes: React.FC = () => {
         classNames="page"
       >
         <Routes location={location}>
-          <Route path="/" element={<KOLFeedLegacy />} />
-          <Route path="/kol-feed" element={<KOLFeedLegacy />} />
+          <Route path="/" element={<AggregatedKOLFeed />} />
+          <Route path="/kol-feed" element={<AggregatedKOLFeed />} />
+          <Route path="/kol-feed-legacy" element={<KOLFeedLegacy />} />
           <Route path="/kol-profile/:walletAddress" element={<KOLProfile />} />
           <Route path="/kol-leaderboard" element={<KOLLeaderboard />} />
           <Route path="/top-kol-tokens" element={<TopKOLTokens />} />
@@ -96,7 +98,6 @@ const AnimatedRoutes: React.FC = () => {
           <Route path="/wallet-finder" element={<WalletFinder />} />
           <Route path="/cabal-finder" element={<CabalFinder />} />
           <Route path="/copy-traders" element={<CopyTraders />} />
-          <Route path="/kol-feed-legacy" element={<KOLFeedLegacy />} />
 
           <Route path="/live-market-feed" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Live Market Feed</h2><p className="text-gray-300">Real-time market data streaming...</p></div>} />
           <Route path="/transaction-stream" element={<div className="p-8 text-center"><h2 className="text-2xl font-bold mb-4 text-white">Transaction Stream</h2><p className="text-gray-300">Live transaction monitoring...</p></div>} />
