@@ -224,8 +224,6 @@ const KOLFeed: React.FC = () => {
           const ageHours = (now.getTime() - txTime.getTime()) / (1000 * 60 * 60);
 
           const avgBuyPrice = agg.totalBoughtAmount > 0 ? agg.totalBought / agg.totalBoughtAmount : 0;
-          const realPnl = agg.totalSold - agg.totalBought;
-          const realPnlPercentage = agg.totalBought > 0 ? (realPnl / agg.totalBought) * 100 : 0;
 
           return {
             id: `${agg.walletAddress}-${agg.tokenMint}`,
@@ -242,9 +240,9 @@ const KOLFeed: React.FC = () => {
             bought: agg.totalBought,
             sold: agg.totalSold,
             holding: agg.totalBought > agg.totalSold ? agg.totalBought - agg.totalSold : 0,
-            pnl: realPnl,
-            pnlSol: realPnl / 150,
-            pnlPercentage: realPnlPercentage,
+            pnl: agg.pnl,
+            pnlSol: agg.pnl / 150,
+            pnlPercentage: agg.pnlPercentage,
             aht: ageHours,
             currentPrice: agg.currentPrice,
             entryPrice: avgBuyPrice,
