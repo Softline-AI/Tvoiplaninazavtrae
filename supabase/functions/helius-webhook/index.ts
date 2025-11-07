@@ -464,28 +464,22 @@ function extractTransactionData(
     }
   }
 
-  // Extract SOL amount from native transfers
   if (data.nativeTransfers && data.nativeTransfers.length > 0) {
     for (const transfer of data.nativeTransfers) {
-      // Convert lamports to SOL (1 SOL = 1,000,000,000 lamports)
       const solValue = transfer.amount / 1_000_000_000;
 
-      // If wallet is sender (fromUserAccount), SOL is negative (spent)
       if (transfer.fromUserAccount === walletAddress) {
         solAmount -= solValue;
       }
-      // If wallet is receiver (toUserAccount), SOL is positive (received)
       if (transfer.toUserAccount === walletAddress) {
         solAmount += solValue;
       }
     }
   }
 
-  // Extract native balance change from account data
   if (data.accountData && data.accountData.length > 0) {
     const walletAccount = data.accountData.find(acc => acc.account === walletAddress);
     if (walletAccount && walletAccount.nativeBalanceChange !== undefined) {
-      // Convert lamports to SOL
       nativeBalanceChange = walletAccount.nativeBalanceChange / 1_000_000_000;
     }
   }
@@ -547,7 +541,6 @@ Deno.serve(async (req: Request) => {
 
     console.log(`Processing ${data.type} transaction`);
 
-    // First extract to get fromAddress
     const preliminaryData = extractTransactionData(data, data.feePayer || data.from || "");
 
     if (!preliminaryData.fromAddress || !preliminaryData.tokenMint || preliminaryData.amount <= 0) {
@@ -580,7 +573,6 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Now extract with correct wallet address
     const { fromAddress, toAddress, amount, tokenMint, tokenSymbol, solAmount, nativeBalanceChange } =
       extractTransactionData(data, preliminaryData.fromAddress);
 
@@ -601,6 +593,17 @@ Deno.serve(async (req: Request) => {
     const currentPrice = tokenMetadata.price;
     const realTokenSymbol = tokenMetadata.symbol;
     const marketCap = tokenMetadata.marketCap;
+
+    if (realTokenSymbol === 'UNKNOWN') {
+      console.log(`Skipping transaction: Unable to fetch token metadata for ${tokenMint}`);
+      return new Response(
+        JSON.stringify({ message: "Transaction skipped - unknown token" }),
+        {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     console.log(`Transaction Type: ${transactionType} | Token: ${realTokenSymbol} @ $${currentPrice} | MC: $${marketCap}`);
 
