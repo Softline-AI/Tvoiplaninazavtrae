@@ -6,7 +6,6 @@ import Sidebar from './components/Sidebar';
 import HomePage from './components/HomePage';
 import Futures from './components/Futures';
 
-const KOLFeed = lazy(() => import('./components/KOLFeed'));
 const KOLProfile = lazy(() => import('./components/KOLProfile'));
 const KOLLeaderboard = lazy(() => import('./components/KOLLeaderboard'));
 const TopKOLTokens = lazy(() => import('./components/TopKOLTokens'));
@@ -85,8 +84,8 @@ const AnimatedRoutes: React.FC = () => {
         classNames="page"
       >
         <Routes location={location}>
-          <Route path="/" element={<KOLFeed />} />
-          <Route path="/kol-feed" element={<KOLFeed />} />
+          <Route path="/" element={<KOLFeedLegacy />} />
+          <Route path="/kol-feed" element={<KOLFeedLegacy />} />
           <Route path="/kol-profile/:walletAddress" element={<KOLProfile />} />
           <Route path="/kol-leaderboard" element={<KOLLeaderboard />} />
           <Route path="/top-kol-tokens" element={<TopKOLTokens />} />
