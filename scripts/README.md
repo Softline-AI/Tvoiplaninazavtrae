@@ -243,6 +243,67 @@ node scripts/check-pnl.js
 
 ---
 
+## monitor-transactions.js
+
+Real-time transaction monitoring with alerts and notifications.
+
+### Features
+
+- Real-time monitoring (checks every 60 seconds)
+- Zero P&L trade alerts (instant flips)
+- Profitable trade notifications (> $10)
+- Token balance analysis
+- Negative balance detection
+- Summary statistics
+
+### Usage
+
+```bash
+node scripts/monitor-transactions.js
+```
+
+### Alerts
+
+**Zero P&L Alert:**
+```
+⚠️  ZERO P&L ALERT
+   Trader: cupseyy
+   Token: USD1
+   Type: SELL
+   Instant flip detected - bought and sold at same price
+```
+
+**Profitable Trade Alert:**
+```
+💰 PROFITABLE TRADE ALERT
+   Trader: publixplays
+   Token: TRUMP
+   P&L: $52.35 (+15.25%)
+```
+
+**Big Win Alert (> $100):**
+```
+🎉 BIG WIN ALERT!
+   Trader: beaverd
+   Token: BONK
+   P&L: $523.45 (+125.50%)
+```
+
+### Token Balance Analysis
+
+The monitor analyzes token balances to detect potential issues:
+
+- **Negative balances**: May indicate sells before tracked buys
+- **Balance discrepancies**: Shows BUY/SELL count for debugging
+
+### Control
+
+- Press `Ctrl+C` to stop monitoring
+- Updates every 60 seconds
+- Runs initial balance analysis on start
+
+---
+
 ## Future Improvements
 
 - [ ] Add batch processing for multiple wallets
@@ -252,3 +313,6 @@ node scripts/check-pnl.js
 - [ ] Add progress bar
 - [ ] Add dry-run mode
 - [ ] Export to CSV
+- [x] Real-time monitoring
+- [x] Transaction alerts
+- [x] Balance analysis
