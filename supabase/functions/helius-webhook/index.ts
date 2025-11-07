@@ -416,19 +416,24 @@ function determineTransactionType(data: HeliusWebhookData, walletAddress: string
 }
 
 function extractTransactionData(
-  data: HeliusWebhookData
+  data: HeliusWebhookData,
+  walletAddress: string
 ): {
   fromAddress: string | null;
   toAddress: string | null;
   amount: number;
   tokenMint: string | null;
   tokenSymbol: string | null;
+  solAmount: number;
+  nativeBalanceChange: number;
 } {
   let fromAddress: string | null = null;
   let toAddress: string | null = null;
   let amount = 0;
   let tokenMint: string | null = null;
   let tokenSymbol: string | null = null;
+  let solAmount = 0;
+  let nativeBalanceChange = 0;
 
   if (data.tokenTransfers && data.tokenTransfers.length > 0) {
     const tokenTransfer = data.tokenTransfers.find(
@@ -459,6 +464,32 @@ function extractTransactionData(
     }
   }
 
+  // Extract SOL amount from native transfers
+  if (data.nativeTransfers && data.nativeTransfers.length > 0) {
+    for (const transfer of data.nativeTransfers) {
+      // Convert lamports to SOL (1 SOL = 1,000,000,000 lamports)
+      const solValue = transfer.amount / 1_000_000_000;
+
+      // If wallet is sender (fromUserAccount), SOL is negative (spent)
+      if (transfer.fromUserAccount === walletAddress) {
+        solAmount -= solValue;
+      }
+      // If wallet is receiver (toUserAccount), SOL is positive (received)
+      if (transfer.toUserAccount === walletAddress) {
+        solAmount += solValue;
+      }
+    }
+  }
+
+  // Extract native balance change from account data
+  if (data.accountData && data.accountData.length > 0) {
+    const walletAccount = data.accountData.find(acc => acc.account === walletAddress);
+    if (walletAccount && walletAccount.nativeBalanceChange !== undefined) {
+      // Convert lamports to SOL
+      nativeBalanceChange = walletAccount.nativeBalanceChange / 1_000_000_000;
+    }
+  }
+
   if (!fromAddress) {
     fromAddress = data.feePayer || data.from || null;
   }
@@ -475,7 +506,7 @@ function extractTransactionData(
     tokenMint = data.tokenMint;
   }
 
-  return { fromAddress, toAddress, amount, tokenMint, tokenSymbol };
+  return { fromAddress, toAddress, amount, tokenMint, tokenSymbol, solAmount, nativeBalanceChange };
 }
 
 Deno.serve(async (req: Request) => {
@@ -516,12 +547,12 @@ Deno.serve(async (req: Request) => {
 
     console.log(`Processing ${data.type} transaction`);
 
-    const { fromAddress, toAddress, amount, tokenMint, tokenSymbol } =
-      extractTransactionData(data);
+    // First extract to get fromAddress
+    const preliminaryData = extractTransactionData(data, data.feePayer || data.from || "");
 
-    if (!fromAddress || !tokenMint || amount <= 0) {
+    if (!preliminaryData.fromAddress || !preliminaryData.tokenMint || preliminaryData.amount <= 0) {
       console.log(
-        `Skipping transaction: fromAddress=${fromAddress}, tokenMint=${tokenMint}, amount=${amount}`
+        `Skipping transaction: fromAddress=${preliminaryData.fromAddress}, tokenMint=${preliminaryData.tokenMint}, amount=${preliminaryData.amount}`
       );
       return new Response(
         JSON.stringify({ message: "Transaction skipped - insufficient data" }),
@@ -535,11 +566,11 @@ Deno.serve(async (req: Request) => {
     const { data: monitoredWallet } = await supabase
       .from("monitored_wallets")
       .select("*")
-      .eq("wallet_address", fromAddress)
+      .eq("wallet_address", preliminaryData.fromAddress)
       .maybeSingle();
 
     if (!monitoredWallet) {
-      console.log(`Wallet ${fromAddress} is not monitored, skipping`);
+      console.log(`Wallet ${preliminaryData.fromAddress} is not monitored, skipping`);
       return new Response(
         JSON.stringify({ message: "Wallet not monitored" }),
         {
@@ -548,6 +579,10 @@ Deno.serve(async (req: Request) => {
         }
       );
     }
+
+    // Now extract with correct wallet address
+    const { fromAddress, toAddress, amount, tokenMint, tokenSymbol, solAmount, nativeBalanceChange } =
+      extractTransactionData(data, preliminaryData.fromAddress);
 
     const transactionType = determineTransactionType(data, fromAddress);
 
@@ -580,6 +615,8 @@ Deno.serve(async (req: Request) => {
 
     console.log(`Calculated P&L: $${tokenPnl} (${tokenPnlPercentage}%) | Remaining: ${remainingTokens} | All Sold: ${allTokensSold}`);
 
+    console.log(`SOL Amount: ${solAmount} | Native Balance Change: ${nativeBalanceChange}`);
+
     const transactionData = {
       transaction_signature: data.signature || `${data.type}-${Date.now()}`,
       block_time: data.timestamp
@@ -593,6 +630,8 @@ Deno.serve(async (req: Request) => {
       token_name: tokenMetadata.name,
       transaction_type: transactionType,
       fee: data.fee || 0,
+      sol_amount: solAmount.toString(),
+      native_balance_change: nativeBalanceChange.toString(),
       token_pnl: tokenPnl.toString(),
       token_pnl_percentage: tokenPnlPercentage.toString(),
       current_token_price: currentPrice.toString(),

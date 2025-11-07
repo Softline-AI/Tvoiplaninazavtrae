@@ -45,31 +45,55 @@ const TYPE_MAPPING: TransactionTypeMapping = {
 
 /**
  * Determine if a SWAP transaction is a BUY or SELL
- * based on token balances and amounts
+ *
+ * Logic:
+ * - SWAP SOL -> Token = BUY (trader gives SOL, receives token)
+ * - SWAP Token -> SOL = SELL (trader gives token, receives SOL)
+ *
+ * @param tokenMint - The token being tracked
+ * @param amount - Token amount (positive = receiving, negative = sending)
+ * @param solAmount - SOL amount involved (positive = receiving SOL, negative = spending SOL)
+ * @param nativeBalanceChange - Native SOL balance change
  */
 export function classifySwapTransaction(
   tokenMint: string,
   amount: number,
-  fromTokenBalance?: number,
-  toTokenBalance?: number
+  solAmount?: number,
+  nativeBalanceChange?: number
 ): TransactionAction {
-  // If amount is positive, it's likely a BUY (receiving tokens)
+  // If we have SOL amount information
+  if (solAmount !== undefined && solAmount !== 0) {
+    // Spending SOL (negative) to get tokens = BUY
+    if (solAmount < 0 && amount > 0) {
+      return 'BUY';
+    }
+    // Receiving SOL (positive) by giving tokens = SELL
+    if (solAmount > 0 && amount < 0) {
+      return 'SELL';
+    }
+  }
+
+  // If we have native balance change information
+  if (nativeBalanceChange !== undefined && nativeBalanceChange !== 0) {
+    // SOL decreased (spent) and tokens increased = BUY
+    if (nativeBalanceChange < 0 && amount > 0) {
+      return 'BUY';
+    }
+    // SOL increased (received) and tokens decreased = SELL
+    if (nativeBalanceChange > 0 && amount < 0) {
+      return 'SELL';
+    }
+  }
+
+  // Fallback to simple amount-based logic
+  // Positive amount = receiving tokens = BUY
   if (amount > 0) {
     return 'BUY';
   }
 
-  // If amount is negative, it's likely a SELL (sending tokens)
+  // Negative amount = sending tokens = SELL
   if (amount < 0) {
     return 'SELL';
-  }
-
-  // If we have balance information
-  if (fromTokenBalance !== undefined && toTokenBalance !== undefined) {
-    if (toTokenBalance > fromTokenBalance) {
-      return 'BUY';
-    } else if (toTokenBalance < fromTokenBalance) {
-      return 'SELL';
-    }
   }
 
   return 'UNKNOWN';
@@ -102,8 +126,8 @@ export function mapTransactionType(
       return classifySwapTransaction(
         tokenMint,
         amount,
-        additionalContext?.fromTokenBalance,
-        additionalContext?.toTokenBalance
+        additionalContext?.solAmount,
+        additionalContext?.nativeBalanceChange
       );
     }
     return 'UNKNOWN';
@@ -169,19 +193,27 @@ export function classifyTransactionWithContext(transaction: {
   from_address: string;
   to_address?: string;
   token_balance_change?: number;
+  sol_amount?: string | number;
+  native_balance_change?: number;
   [key: string]: any;
 }): TransactionAction {
   const amount = typeof transaction.amount === 'string'
     ? parseFloat(transaction.amount)
     : transaction.amount;
 
+  const solAmount = transaction.sol_amount
+    ? (typeof transaction.sol_amount === 'string'
+      ? parseFloat(transaction.sol_amount)
+      : transaction.sol_amount)
+    : undefined;
+
   const action = mapTransactionType(
     transaction.transaction_type,
     transaction.token_mint,
     amount,
     {
-      fromTokenBalance: transaction.token_balance_change,
-      toTokenBalance: transaction.token_balance_change
+      solAmount: solAmount,
+      nativeBalanceChange: transaction.native_balance_change
     }
   );
 
