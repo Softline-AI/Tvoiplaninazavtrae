@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { TrendingUp, Clock, DollarSign } from 'lucide-react';
+import { TrendingUp, Clock } from 'lucide-react';
 import { kolFeedServiceV2, type KOLFeedItem } from '../services/kolFeedServiceV2';
 
 export default function TopTransactions() {
@@ -13,10 +13,11 @@ export default function TopTransactions() {
 
   const loadTopTransactions = async () => {
     setLoading(true);
-    const result = await kolFeedServiceV2.getTopTransactions({
+    const result = await kolFeedServiceV2.getKOLFeed({
       timeRange,
-      limit: 10,
-      minPnl: 100
+      type: 'all',
+      sortBy: 'time',
+      limit: 10
     });
 
     if (result.success) {
@@ -33,8 +34,8 @@ export default function TopTransactions() {
             <TrendingUp className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-white">Top P&L Trades</h2>
-            <p className="text-sm text-gray-400">Most profitable transactions</p>
+            <h2 className="text-xl font-bold text-white">Recent Trades</h2>
+            <p className="text-sm text-gray-400">Latest transactions</p>
           </div>
         </div>
 
@@ -66,7 +67,7 @@ export default function TopTransactions() {
       ) : topTrades.length === 0 ? (
         <div className="text-center py-12">
           <TrendingUp className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-400">No profitable trades found</p>
+          <p className="text-gray-400">No trades found</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -122,22 +123,9 @@ export default function TopTransactions() {
                 </div>
 
                 <div className="flex flex-col items-end gap-1">
-                  <div className={`text-lg font-bold ${
-                    trade.pnlValue >= 0 ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {trade.pnl}
-                  </div>
-                  <div className={`text-sm font-medium ${
-                    trade.pnlValue >= 0 ? 'text-green-400' : 'text-red-400'
-                  }`}>
-                    {trade.pnlPercentage}
-                  </div>
-                  {trade.pnlValue >= 1000 && (
-                    <div className="flex items-center gap-1 px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded text-xs font-medium mt-1">
-                      <DollarSign className="w-3 h-3" />
-                      <span>Big Win</span>
-                    </div>
-                  )}
+                  <span className="text-xs text-gray-500">
+                    {trade.lastTx === 'buy' ? trade.bought : trade.sold}
+                  </span>
                 </div>
               </div>
             </div>

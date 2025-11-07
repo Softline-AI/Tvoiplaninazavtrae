@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download } from 'lucide-react';
+import { Clock, TrendingUp, ExternalLink, Copy, Download } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
-import { aggregatedPnlService } from '../services/aggregatedPnlService';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -25,15 +24,11 @@ interface LegacyTrade {
   value: string;
   walletAddress: string;
   twitterHandle: string;
-  pnl: string;
-  pnlPercentage: string;
   remainingTokens: number;
   allTokensSold: boolean;
   // Aggregated fields
   buyCount?: number;
   sellCount?: number;
-  realizedPnl?: number;
-  unrealizedPnl?: number;
 }
 
 const KOLFeedLegacy: React.FC = () => {
@@ -42,11 +37,10 @@ const KOLFeedLegacy: React.FC = () => {
   const [trades, setTrades] = useState<LegacyTrade[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
-  const [useAggregated, setUseAggregated] = useState(true);
 
   useEffect(() => {
     loadTransactions();
-  }, [timeFilter, actionFilter, useAggregated]);
+  }, [timeFilter, actionFilter]);
 
   const loadTransactions = async () => {
     setLoading(true);
@@ -131,8 +125,6 @@ const KOLFeedLegacy: React.FC = () => {
         const amount = parseFloat(tx.amount || '0');
         const price = parseFloat(tx.current_token_price || '0');
         const entryPrice = parseFloat(tx.entry_price || '0');
-        const tokenPnl = parseFloat(tx.token_pnl || '0');
-        const tokenPnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
 
         return {
           id: tx.id,
@@ -157,8 +149,6 @@ const KOLFeedLegacy: React.FC = () => {
           value: `$${(amount * price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
           walletAddress: tx.from_address,
           twitterHandle: profile?.twitter_handle || tx.from_address.substring(0, 8),
-          pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
-          pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
           remainingTokens: parseFloat(tx.remaining_tokens || '0'),
           allTokensSold: tx.all_tokens_sold || false
         };
@@ -202,7 +192,7 @@ const KOLFeedLegacy: React.FC = () => {
   };
 
   const exportCSV = () => {
-    const headers = ['Timestamp', 'Trader', 'Action', 'Token', 'Amount', 'Price', 'Total Value', 'P&L', 'P&L %', 'Wallet Address'];
+    const headers = ['Timestamp', 'Trader', 'Action', 'Token', 'Amount', 'Price', 'Total Value', 'Wallet Address'];
     const rows = trades.map(trade => [
       trade.timestamp,
       trade.trader,
@@ -211,8 +201,6 @@ const KOLFeedLegacy: React.FC = () => {
       trade.amount,
       trade.price,
       trade.value,
-      trade.pnl,
-      trade.pnlPercentage,
       trade.walletAddress
     ]);
 
@@ -327,9 +315,6 @@ const KOLFeedLegacy: React.FC = () => {
                       Value
                     </th>
                     <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
-                      P&L
-                    </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Links
                     </th>
                   </tr>
@@ -383,17 +368,6 @@ const KOLFeedLegacy: React.FC = () => {
                       <td className="px-3 py-2 whitespace-nowrap">
                         <div className={`text-xs font-semibold ${getActionColor(trade.action)}`}>
                           {trade.value}
-                        </div>
-                      </td>
-
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        <div className="text-xs">
-                          <div className={`text-sm font-bold ${trade.pnl.includes('-') ? 'text-red-400' : 'text-green-400'}`}>
-                            {trade.pnlPercentage}
-                          </div>
-                          <div className={`text-xs ${trade.pnl.includes('-') ? 'text-red-400/70' : 'text-green-400/70'}`}>
-                            {trade.pnl}
-                          </div>
                         </div>
                       </td>
 
