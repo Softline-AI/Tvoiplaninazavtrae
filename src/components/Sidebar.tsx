@@ -64,7 +64,7 @@ const Sidebar: React.FC = () => {
           >
             <div className="flex items-center gap-3">
               <Target className="w-5 h-5 transition-transform group-hover:scale-110" />
-              <span className="text-sm font-medium">My Stalks</span>
+              <span className="text-sm font-medium">My Smarts</span>
             </div>
             <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-white/20 bg-white/5">
               PRO

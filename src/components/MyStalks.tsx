@@ -363,7 +363,7 @@ const MyStalks: React.FC = () => {
           <div>
             <h1 className="text-xl mb-1 font-semibold text-white flex items-center gap-2">
               <Target className="w-6 h-6" />
-              My Stalks
+              My Smarts
             </h1>
           </div>
           <button
@@ -371,7 +371,7 @@ const MyStalks: React.FC = () => {
             className="bg-white text-noir-black px-4 py-2 rounded-lg font-medium hover:bg-white/90 transition-all flex items-center gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Stalk
+            Add Smart
           </button>
         </div>
       </div>
