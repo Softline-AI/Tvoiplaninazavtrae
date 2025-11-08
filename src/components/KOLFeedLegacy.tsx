@@ -559,14 +559,21 @@ const KOLFeedLegacy: React.FC = () => {
           <div className="noir-card rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
-              <div>
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  {selectedTrade.trader} - {selectedTrade.tokenSymbol}
-                </h2>
-                <div className="flex items-center gap-4 text-sm text-white/70">
-                  <span>Wallet: {selectedTrade.walletAddress.substring(0, 8)}...{selectedTrade.walletAddress.substring(selectedTrade.walletAddress.length - 6)}</span>
-                  <span>•</span>
-                  <span>{tradeDetails.length} transactions</span>
+              <div className="flex items-center gap-4">
+                <img
+                  src={selectedTrade.traderAvatar}
+                  alt={selectedTrade.trader}
+                  className="w-16 h-16 rounded-full border-2 border-white/30"
+                />
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    {selectedTrade.trader} - {selectedTrade.tokenSymbol}
+                  </h2>
+                  <div className="flex items-center gap-4 text-sm text-white/70">
+                    <span>Wallet: {selectedTrade.walletAddress.substring(0, 8)}...{selectedTrade.walletAddress.substring(selectedTrade.walletAddress.length - 6)}</span>
+                    <span>•</span>
+                    <span>{tradeDetails.length} transactions</span>
+                  </div>
                 </div>
               </div>
               <button
@@ -607,7 +614,7 @@ const KOLFeedLegacy: React.FC = () => {
                       <div className="bg-noir-dark rounded-lg p-4">
                         <div className="text-xs text-white/60 mb-1">Realized P&L</div>
                         <div className={`text-lg font-bold ${stats.realizedPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {stats.realizedPnl >= 0 ? '+' : ''}${stats.realizedPnl.toFixed(2)}
+                          {stats.realizedPnl >= 0 ? '+' : '-'}${Math.abs(stats.realizedPnl).toFixed(2)}
                         </div>
                         <div className={`text-xs ${stats.pnlPercentage >= 0 ? 'text-green-400/70' : 'text-red-400/70'}`}>
                           {stats.pnlPercentage >= 0 ? '+' : ''}{stats.pnlPercentage.toFixed(2)}%
