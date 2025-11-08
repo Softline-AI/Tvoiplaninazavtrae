@@ -95,15 +95,11 @@ const FAQ: React.FC = () => {
                 />
               </button>
 
-              <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                  openItems.has(item.id) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                }`}
-              >
+              {openItems.has(item.id) && (
                 <div className="px-6 pb-5 noir-text-secondary text-base leading-relaxed">
                   {item.answer}
                 </div>
-              </div>
+              )}
             </div>
           </React.Fragment>
         ))}
