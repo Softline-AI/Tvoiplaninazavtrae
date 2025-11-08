@@ -494,10 +494,10 @@ Deno.serve(async (req: Request) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    let data: HeliusWebhookData;
+    let rawData: any;
 
     try {
-      data = await req.json();
+      rawData = await req.json();
     } catch (parseError) {
       console.error("Failed to parse JSON:", parseError);
       return new Response(
@@ -509,9 +509,9 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    console.log("Received webhook data:", JSON.stringify(data).substring(0, 200));
+    console.log("Received webhook data:", JSON.stringify(rawData).substring(0, 300));
 
-    if (!data) {
+    if (!rawData) {
       console.error("No data received");
       return new Response(
         JSON.stringify({ message: "No data received" }),
@@ -521,6 +521,22 @@ Deno.serve(async (req: Request) => {
         }
       );
     }
+
+    if (Array.isArray(rawData)) {
+      console.log("Received array of transactions, processing first one");
+      if (rawData.length === 0) {
+        return new Response(
+          JSON.stringify({ message: "Empty transaction array" }),
+          {
+            status: 200,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          }
+        );
+      }
+      rawData = rawData[0];
+    }
+
+    const data: HeliusWebhookData = rawData;
 
     if (!data.type) {
       console.error("Missing transaction type in webhook data");
