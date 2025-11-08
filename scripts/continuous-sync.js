@@ -49,11 +49,13 @@ async function getTokenPrice(mint) {
 async function processTransaction(tx, walletAddress) {
   const { data: existing } = await supabase
     .from('webhook_transactions')
-    .select('transaction_signature')
+    .select('transaction_signature, price_usd, token_pnl')
     .eq('transaction_signature', tx.signature)
     .maybeSingle();
 
-  if (existing) return null;
+  if (existing) {
+    return null;
+  }
 
   let tokenMint = null;
   let tokenAmount = 0;
@@ -109,7 +111,7 @@ async function syncWalletTransactions(walletAddress) {
   try {
     const apiKey = getNextApiKey();
     const response = await fetch(
-      `https://api.helius.xyz/v0/addresses/${walletAddress}/transactions?api-key=${apiKey}&limit=20&type=SWAP`
+      `https://api.helius.xyz/v0/addresses/${walletAddress}/transactions?api-key=${apiKey}&limit=50&type=SWAP`
     );
 
     if (!response.ok) {
@@ -120,7 +122,7 @@ async function syncWalletTransactions(walletAddress) {
     const recentTransactions = transactions.filter(tx => {
       const txTime = new Date(tx.timestamp * 1000);
       const hoursDiff = (Date.now() - txTime) / (1000 * 60 * 60);
-      return hoursDiff < 2;
+      return hoursDiff < 6;
     });
 
     let inserted = 0;
@@ -133,7 +135,11 @@ async function syncWalletTransactions(walletAddress) {
 
         if (!error) {
           inserted++;
-          console.log(`    ✅ Inserted: ${tx.signature.slice(0, 20)}... (${txData.transaction_type})`);
+          console.log(`    ✅ NEW: ${tx.signature.slice(0, 12)}... ${txData.transaction_type} ${txData.token_symbol}`);
+        } else if (error.code === '23505') {
+          console.log(`    ⏭️  EXISTS: ${tx.signature.slice(0, 12)}...`);
+        } else {
+          console.error(`    ❌ Error inserting:`, error.message);
         }
       }
     }

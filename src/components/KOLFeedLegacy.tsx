@@ -66,8 +66,8 @@ const KOLFeedLegacy: React.FC = () => {
           schema: 'public',
           table: 'webhook_transactions'
         },
-        () => {
-          loadTransactions();
+        (payload) => {
+          handleRealtimeUpdate(payload);
         }
       )
       .subscribe();
@@ -75,7 +75,133 @@ const KOLFeedLegacy: React.FC = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [timeFilter, actionFilter, useAggregated]);
+  }, [timeFilter, actionFilter, useAggregated, trades]);
+
+  const handleRealtimeUpdate = useCallback(async (payload: any) => {
+    console.log('🔔 Realtime update:', payload.eventType);
+
+    if (payload.eventType === 'INSERT') {
+      const newTx = payload.new;
+      const txTime = new Date(newTx.block_time);
+      const now = new Date();
+      let timeFilter_date: Date;
+
+      switch (timeFilter) {
+        case '1h':
+          timeFilter_date = new Date(now.getTime() - 60 * 60 * 1000);
+          break;
+        case '6h':
+          timeFilter_date = new Date(now.getTime() - 6 * 60 * 60 * 1000);
+          break;
+        case '24h':
+          timeFilter_date = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+          break;
+        case '7d':
+          timeFilter_date = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+          break;
+        case '30d':
+          timeFilter_date = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+          break;
+        default:
+          timeFilter_date = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      }
+
+      if (txTime < timeFilter_date) return;
+
+      if (actionFilter !== 'all') {
+        const txTypes = actionFilter === 'buy' ? ['BUY'] : ['SELL'];
+        if (!txTypes.includes(newTx.transaction_type)) return;
+      }
+
+      const { data: wallets } = await supabase
+        .from('monitored_wallets')
+        .select('wallet_address, label, twitter_handle, twitter_avatar');
+
+      const walletMap = new Map();
+      wallets?.forEach((wallet: any) => {
+        walletMap.set(wallet.wallet_address, wallet);
+      });
+
+      const { data: profiles } = await supabase
+        .from('kol_profiles')
+        .select('*');
+
+      const profileMap = new Map();
+      profiles?.forEach((profile: any) => {
+        profileMap.set(profile.wallet_address, profile);
+      });
+
+      const wallet = walletMap.get(newTx.from_address);
+      const profile = profileMap.get(newTx.from_address);
+      const avatarUrl = wallet?.twitter_avatar || profile?.avatar_url || 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
+
+      const txType = newTx.transaction_type === 'BUY' ? 'buy' : 'sell';
+      const amount = parseFloat(newTx.amount || '0');
+      const price = parseFloat(newTx.current_token_price || '0');
+      const entryPrice = parseFloat(newTx.entry_price || '0');
+      const tokenPnl = parseFloat(newTx.token_pnl || '0');
+      const tokenPnlPercentage = parseFloat(newTx.token_pnl_percentage || '0');
+      const displayName = profile?.name || 'Insider';
+
+      const formattedTrade: LegacyTrade = {
+        id: newTx.id,
+        timestamp: new Date(newTx.block_time).toLocaleString('en-US', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }),
+        trader: displayName,
+        traderAvatar: avatarUrl,
+        action: txType,
+        token: newTx.token_symbol || 'Unknown',
+        tokenSymbol: newTx.token_symbol || 'UNK',
+        tokenMint: newTx.token_mint || '',
+        amount: `${amount.toLocaleString('en-US', { maximumFractionDigits: 2 })} ${newTx.token_symbol}`,
+        price: `$${price.toFixed(price < 0.01 ? 8 : 2)}`,
+        entryPrice: `$${entryPrice.toFixed(entryPrice < 0.01 ? 8 : 2)}`,
+        value: `$${(amount * price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        walletAddress: newTx.from_address,
+        twitterHandle: profile?.twitter_handle || newTx.from_address.substring(0, 8),
+        pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+        pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
+        remainingTokens: parseFloat(newTx.remaining_tokens || '0'),
+        allTokensSold: newTx.all_tokens_sold || false,
+        transactionSignature: newTx.transaction_signature || ''
+      };
+
+      setTrades(prevTrades => [formattedTrade, ...prevTrades]);
+      setTotalCount(prev => prev + 1);
+      console.log('✅ Added new trade to feed:', formattedTrade.token);
+    } else if (payload.eventType === 'UPDATE') {
+      const updatedTx = payload.new;
+      setTrades(prevTrades =>
+        prevTrades.map(trade => {
+          if (trade.transactionSignature === updatedTx.transaction_signature) {
+            const amount = parseFloat(updatedTx.amount || '0');
+            const price = parseFloat(updatedTx.current_token_price || '0');
+            const tokenPnl = parseFloat(updatedTx.token_pnl || '0');
+            const tokenPnlPercentage = parseFloat(updatedTx.token_pnl_percentage || '0');
+
+            return {
+              ...trade,
+              price: `$${price.toFixed(price < 0.01 ? 8 : 2)}`,
+              value: `$${(amount * price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+              pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
+              remainingTokens: parseFloat(updatedTx.remaining_tokens || '0'),
+              allTokensSold: updatedTx.all_tokens_sold || false
+            };
+          }
+          return trade;
+        })
+      );
+      console.log('✅ Updated trade in feed');
+    }
+  }, [timeFilter, actionFilter, trades]);
 
   const loadTransactions = useCallback(async () => {
     setLoading(true);
