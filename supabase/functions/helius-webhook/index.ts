@@ -699,14 +699,17 @@ Deno.serve(async (req: Request) => {
       all_tokens_sold: allTokensSold,
     };
 
-    const { error: insertError } = await supabase
+    const { error: upsertError } = await supabase
       .from("webhook_transactions")
-      .insert([transactionData]);
+      .upsert([transactionData], {
+        onConflict: "transaction_signature",
+        ignoreDuplicates: false
+      });
 
-    if (insertError) {
-      console.error("Error inserting transaction:", insertError);
+    if (upsertError) {
+      console.error("Error upserting transaction:", upsertError);
       return new Response(
-        JSON.stringify({ message: "Error saving transaction", error: insertError.message }),
+        JSON.stringify({ message: "Error saving transaction", error: upsertError.message }),
         {
           status: 500,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -714,7 +717,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    console.log(`Transaction ${data.signature} saved successfully`);
+    console.log(`Transaction ${data.signature} saved/updated successfully`);
 
     return new Response(
       JSON.stringify({ message: "Transaction processed successfully" }),
