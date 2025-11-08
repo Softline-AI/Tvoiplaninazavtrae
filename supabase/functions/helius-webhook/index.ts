@@ -680,7 +680,10 @@ Deno.serve(async (req: Request) => {
 
     const { error: insertError } = await supabase
       .from("webhook_transactions")
-      .insert([transactionData]);
+      .upsert([transactionData], {
+        onConflict: 'transaction_signature',
+        ignoreDuplicates: true
+      });
 
     if (insertError) {
       console.error("Error inserting transaction:", insertError);
@@ -693,7 +696,7 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    console.log(`Transaction ${data.signature} saved successfully`);
+    console.log(`✅ Transaction ${data.signature} saved successfully`);
 
     return new Response(
       JSON.stringify({ message: "Transaction processed successfully" }),
