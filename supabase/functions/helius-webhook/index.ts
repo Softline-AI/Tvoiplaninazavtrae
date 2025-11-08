@@ -438,7 +438,6 @@ function extractTransactionData(
     }
   }
 
-  // Determine the monitored wallet address (either fromAddress or toAddress of token transfer)
   const monitoredWalletAddr = fromAddress || toAddress || walletAddress;
 
   if (data.nativeTransfers && data.nativeTransfers.length > 0) {
@@ -495,11 +494,38 @@ Deno.serve(async (req: Request) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const data: HeliusWebhookData = await req.json();
+    let data: HeliusWebhookData;
 
-    if (!data || !data.type) {
+    try {
+      data = await req.json();
+    } catch (parseError) {
+      console.error("Failed to parse JSON:", parseError);
       return new Response(
-        JSON.stringify({ message: "Invalid webhook data" }),
+        JSON.stringify({ message: "Invalid JSON" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    console.log("Received webhook data:", JSON.stringify(data).substring(0, 200));
+
+    if (!data) {
+      console.error("No data received");
+      return new Response(
+        JSON.stringify({ message: "No data received" }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
+    if (!data.type) {
+      console.error("Missing transaction type in webhook data");
+      return new Response(
+        JSON.stringify({ message: "Missing transaction type", received: Object.keys(data) }),
         {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
