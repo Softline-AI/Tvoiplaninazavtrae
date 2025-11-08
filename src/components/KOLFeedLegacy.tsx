@@ -29,6 +29,7 @@ interface LegacyTrade {
   pnlPercentage: string;
   remainingTokens: number;
   allTokensSold: boolean;
+  transactionSignature: string;
   // Aggregated fields
   buyCount?: number;
   sellCount?: number;
@@ -161,7 +162,8 @@ const KOLFeedLegacy: React.FC = () => {
           pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
           pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
           remainingTokens: parseFloat(tx.remaining_tokens || '0'),
-          allTokensSold: tx.all_tokens_sold || false
+          allTokensSold: tx.all_tokens_sold || false,
+          transactionSignature: tx.transaction_signature || ''
         };
       });
 
@@ -412,7 +414,16 @@ const KOLFeedLegacy: React.FC = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="hover:opacity-70 transition-all p-1 text-white/70"
-                            title="Solscan"
+                            title="View Wallet"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                          <a
+                            href={`https://solscan.io/tx/${trade.transactionSignature}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:opacity-70 transition-all p-1 text-purple-400"
+                            title="View Transaction"
                           >
                             <ExternalLink className="w-3 h-3" />
                           </a>
