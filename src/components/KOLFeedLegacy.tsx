@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download } from 'lucide-react';
+import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download, Info, X } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
 import { aggregatedPnlService } from '../services/aggregatedPnlService';
@@ -44,6 +44,9 @@ const KOLFeedLegacy: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [totalCount, setTotalCount] = useState(0);
   const [useAggregated, setUseAggregated] = useState(true);
+  const [selectedTrade, setSelectedTrade] = useState<LegacyTrade | null>(null);
+  const [tradeDetails, setTradeDetails] = useState<any[]>([]);
+  const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
     loadTransactions();
@@ -242,6 +245,70 @@ const KOLFeedLegacy: React.FC = () => {
     a.click();
   };
 
+  const loadTradeDetails = async (trade: LegacyTrade) => {
+    setSelectedTrade(trade);
+    setLoadingDetails(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('webhook_transactions')
+        .select('*')
+        .eq('from_address', trade.walletAddress)
+        .eq('token_mint', trade.tokenMint)
+        .order('block_time', { ascending: false });
+
+      if (error) throw error;
+
+      setTradeDetails(data || []);
+    } catch (error) {
+      console.error('Error loading trade details:', error);
+      setTradeDetails([]);
+    } finally {
+      setLoadingDetails(false);
+    }
+  };
+
+  const closeModal = () => {
+    setSelectedTrade(null);
+    setTradeDetails([]);
+  };
+
+  const calculateTotalPnL = () => {
+    let totalBought = 0;
+    let totalSold = 0;
+    let totalBuyValue = 0;
+    let totalSellValue = 0;
+
+    for (const tx of tradeDetails) {
+      const amount = Math.abs(parseFloat(tx.amount) || 0);
+      const solAmount = Math.abs(parseFloat(tx.sol_amount) || 0);
+
+      if (tx.transaction_type === 'BUY') {
+        totalBought += amount;
+        totalBuyValue += solAmount;
+      } else if (tx.transaction_type === 'SELL') {
+        totalSold += amount;
+        totalSellValue += solAmount;
+      }
+    }
+
+    const remainingTokens = totalBought - totalSold;
+    const realizedPnl = totalSellValue - (totalBuyValue * (totalSold / totalBought));
+    const pnlPercentage = totalBuyValue > 0 ? (realizedPnl / totalBuyValue) * 100 : 0;
+
+    return {
+      totalBought,
+      totalSold,
+      totalBuyValue,
+      totalSellValue,
+      remainingTokens,
+      realizedPnl,
+      pnlPercentage,
+      buyCount: tradeDetails.filter(t => t.transaction_type === 'BUY').length,
+      sellCount: tradeDetails.filter(t => t.transaction_type === 'SELL').length
+    };
+  };
+
   return (
     <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
       <div className="relative z-10">
@@ -333,6 +400,9 @@ const KOLFeedLegacy: React.FC = () => {
                       P&L
                     </th>
                     <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                      More
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Links
                     </th>
                   </tr>
@@ -398,6 +468,17 @@ const KOLFeedLegacy: React.FC = () => {
                             {trade.pnl}
                           </div>
                         </div>
+                      </td>
+
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <button
+                          onClick={() => loadTradeDetails(trade)}
+                          className="px-3 py-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg transition-all text-xs font-medium flex items-center gap-1"
+                          title="View all trades"
+                        >
+                          <Info className="w-3 h-3" />
+                          Details
+                        </button>
                       </td>
 
                       <td className="px-3 py-2 whitespace-nowrap">
@@ -471,6 +552,139 @@ const KOLFeedLegacy: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Trade Details Modal */}
+      {selectedTrade && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="noir-card rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <div>
+                <h2 className="text-2xl font-bold text-white mb-2">
+                  {selectedTrade.trader} - {selectedTrade.tokenSymbol}
+                </h2>
+                <div className="flex items-center gap-4 text-sm text-white/70">
+                  <span>Wallet: {selectedTrade.walletAddress.substring(0, 8)}...{selectedTrade.walletAddress.substring(selectedTrade.walletAddress.length - 6)}</span>
+                  <span>•</span>
+                  <span>{tradeDetails.length} transactions</span>
+                </div>
+              </div>
+              <button
+                onClick={closeModal}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+            </div>
+
+            {/* Summary Stats */}
+            {!loadingDetails && tradeDetails.length > 0 && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6 border-b border-white/10">
+                {(() => {
+                  const stats = calculateTotalPnL();
+                  return (
+                    <>
+                      <div className="bg-noir-dark rounded-lg p-4">
+                        <div className="text-xs text-white/60 mb-1">Total Bought</div>
+                        <div className="text-lg font-bold text-green-400">
+                          {stats.totalBought.toLocaleString()} {selectedTrade.tokenSymbol}
+                        </div>
+                        <div className="text-xs text-white/50">{stats.buyCount} buys</div>
+                      </div>
+                      <div className="bg-noir-dark rounded-lg p-4">
+                        <div className="text-xs text-white/60 mb-1">Total Sold</div>
+                        <div className="text-lg font-bold text-red-400">
+                          {stats.totalSold.toLocaleString()} {selectedTrade.tokenSymbol}
+                        </div>
+                        <div className="text-xs text-white/50">{stats.sellCount} sells</div>
+                      </div>
+                      <div className="bg-noir-dark rounded-lg p-4">
+                        <div className="text-xs text-white/60 mb-1">Remaining</div>
+                        <div className="text-lg font-bold text-white">
+                          {stats.remainingTokens.toLocaleString()} {selectedTrade.tokenSymbol}
+                        </div>
+                      </div>
+                      <div className="bg-noir-dark rounded-lg p-4">
+                        <div className="text-xs text-white/60 mb-1">Realized P&L</div>
+                        <div className={`text-lg font-bold ${stats.realizedPnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {stats.realizedPnl >= 0 ? '+' : ''}${stats.realizedPnl.toFixed(2)}
+                        </div>
+                        <div className={`text-xs ${stats.pnlPercentage >= 0 ? 'text-green-400/70' : 'text-red-400/70'}`}>
+                          {stats.pnlPercentage >= 0 ? '+' : ''}{stats.pnlPercentage.toFixed(2)}%
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+
+            {/* Transaction List */}
+            <div className="flex-1 overflow-y-auto p-6">
+              {loadingDetails ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                  <p className="text-white/70">Loading transaction history...</p>
+                </div>
+              ) : tradeDetails.length === 0 ? (
+                <div className="text-center py-12">
+                  <p className="text-white/70">No transactions found</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {tradeDetails.map((tx) => {
+                    const amount = Math.abs(parseFloat(tx.amount) || 0);
+                    const solAmount = Math.abs(parseFloat(tx.sol_amount) || 0);
+                    const price = parseFloat(tx.current_token_price) || 0;
+                    const isBuy = tx.transaction_type === 'BUY';
+
+                    return (
+                      <div key={tx.id} className="bg-noir-dark rounded-lg p-4 hover:bg-white/5 transition-colors">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-3 mb-2">
+                              <div className={`px-3 py-1 rounded-full text-xs font-bold ${isBuy ? 'bg-green-600/20 text-green-400' : 'bg-red-600/20 text-red-400'}`}>
+                                {tx.transaction_type}
+                              </div>
+                              <span className="text-white font-semibold">
+                                {amount.toLocaleString()} {selectedTrade.tokenSymbol}
+                              </span>
+                              <span className="text-white/50">@</span>
+                              <span className="text-white/70">
+                                ${price.toFixed(price < 0.01 ? 8 : 4)}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-4 text-xs text-white/50">
+                              <span>{new Date(tx.block_time).toLocaleString()}</span>
+                              <span>•</span>
+                              <span>Total: ${(amount * price).toFixed(2)}</span>
+                              {solAmount > 0 && (
+                                <>
+                                  <span>•</span>
+                                  <span>SOL: {solAmount.toFixed(4)}</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                          <a
+                            href={`https://solscan.io/tx/${tx.transaction_signature}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 hover:bg-white/10 rounded-lg transition-colors text-white/60 hover:text-white"
+                            title="View on Solscan"
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
