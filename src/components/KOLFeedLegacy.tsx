@@ -3,6 +3,7 @@ import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download, Info, X } from
 import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
 import { aggregatedPnlService } from '../services/aggregatedPnlService';
+import { SafeImage } from './SafeImage';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -192,13 +193,11 @@ const KOLFeedLegacy: React.FC = () => {
     const logoUrl = useTokenLogo(mint);
 
     return (
-      <img
+      <SafeImage
         src={logoUrl}
         alt={symbol}
         className="w-6 h-6 rounded-full border border-white/30"
-        onError={(e) => {
-          e.currentTarget.src = 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
-        }}
+        fallbackIcon={false}
       />
     );
   };
@@ -418,7 +417,7 @@ const KOLFeedLegacy: React.FC = () => {
 
                       <td className="px-3 py-2 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <img
+                          <SafeImage
                             src={trade.traderAvatar}
                             alt={trade.trader}
                             className="w-6 h-6 rounded-full border border-white/30"
@@ -560,7 +559,7 @@ const KOLFeedLegacy: React.FC = () => {
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-white/10">
               <div className="flex items-center gap-4">
-                <img
+                <SafeImage
                   src={selectedTrade.traderAvatar}
                   alt={selectedTrade.trader}
                   className="w-16 h-16 rounded-full border-2 border-white/30"

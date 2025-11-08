@@ -6,6 +6,7 @@ import {
   Calendar, Zap, Users
 } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { SafeImage } from './SafeImage';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -388,7 +389,7 @@ const KOLProfile: React.FC = () => {
         <div className="bg-noir-dark/40 border border-white/10 rounded-xl p-8 mb-6">
           <div className="flex flex-col md:flex-row items-start gap-6">
             <div className="relative">
-              <img
+              <SafeImage
                 src={profile.avatar_url}
                 alt={profile.name}
                 className="w-24 h-24 rounded-xl border border-white/20 object-cover"
