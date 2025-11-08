@@ -42,6 +42,7 @@ const TopKOLTokens: React.FC = () => {
     setError(null);
 
     try {
+      console.log(`[TopKOLTokens] Loading stats for period: ${timePeriod}`);
       const now = new Date();
       let timeFilter: Date | null = null;
 
@@ -66,13 +67,15 @@ const TopKOLTokens: React.FC = () => {
       let query = supabase
         .from('webhook_transactions')
         .select('token_symbol, token_mint, from_address, transaction_type, amount, token_pnl, token_pnl_percentage, current_token_price')
-        .neq('token_symbol', 'UNKNOWN');
+        .neq('token_symbol', 'UNKNOWN')
+        .in('transaction_type', ['BUY', 'SELL']);
 
       if (timeFilter) {
         query = query.gte('block_time', timeFilter.toISOString());
       }
 
       const { data: transactions, error: txError } = await query;
+      console.log(`[TopKOLTokens] Loaded ${transactions?.length || 0} transactions`);
 
       if (txError) {
         console.error('Error loading transactions:', txError);
@@ -139,39 +142,14 @@ const TopKOLTokens: React.FC = () => {
       });
 
       const tokenStatsArray: TokenStats[] = [];
+      const eligibleTokens = Array.from(tokenMap.entries()).filter(([_, stats]) => stats.kols.size >= minKOLs);
 
-      for (const [key, stats] of tokenMap.entries()) {
-        if (stats.kols.size < minKOLs) continue;
+      console.log(`[TopKOLTokens] Processing ${eligibleTokens.length} tokens with ${minKOLs}+ KOLs`);
 
+      for (const [key, stats] of eligibleTokens) {
         const avgPrice = stats.prices.length > 0
           ? stats.prices.reduce((sum, p) => sum + p, 0) / stats.prices.length
           : 0;
-
-        let marketCapStr = '$0';
-        let priceChange = 0;
-
-        if (stats.mint) {
-          try {
-            const priceData = await birdeyeService.getTokenPrice(stats.mint);
-            if (priceData && priceData.value) {
-              priceChange = priceData.priceChange24h || 0;
-            }
-
-            const overview = await birdeyeService.getTokenOverview(stats.mint);
-            if (overview && overview.mc) {
-              const mc = overview.mc;
-              if (mc >= 1000000) {
-                marketCapStr = `$${(mc / 1000000).toFixed(2)}M`;
-              } else if (mc >= 1000) {
-                marketCapStr = `$${(mc / 1000).toFixed(1)}K`;
-              } else {
-                marketCapStr = `$${mc.toFixed(0)}`;
-              }
-            }
-          } catch (error) {
-            console.log(`Could not fetch Birdeye data for ${stats.symbol}`);
-          }
-        }
 
         tokenStatsArray.push({
           id: key,
@@ -187,10 +165,55 @@ const TopKOLTokens: React.FC = () => {
           sellVolume: stats.sellVolume,
           netVolume: stats.buyVolume - stats.sellVolume,
           currentPrice: avgPrice,
-          marketCap: marketCapStr,
-          priceChange24h: priceChange
+          marketCap: '$0',
+          priceChange24h: 0
         });
       }
+
+      const topTokens = tokenStatsArray.sort((a, b) => b.kolCount - a.kolCount).slice(0, 50);
+      console.log(`[TopKOLTokens] Fetching Birdeye data for top ${topTokens.length} tokens`);
+
+      for (let i = 0; i < topTokens.length; i++) {
+        const token = topTokens[i];
+
+        if (token.mint) {
+          try {
+            const [overview, priceData] = await Promise.all([
+              birdeyeService.getTokenOverview(token.mint),
+              birdeyeService.getTokenPrice(token.mint)
+            ]);
+
+            if (overview && overview.mc) {
+              const mc = overview.mc;
+              if (mc >= 1000000) {
+                token.marketCap = `$${(mc / 1000000).toFixed(2)}M`;
+              } else if (mc >= 1000) {
+                token.marketCap = `$${(mc / 1000).toFixed(1)}K`;
+              } else {
+                token.marketCap = `$${mc.toFixed(0)}`;
+              }
+            }
+
+            if (priceData && priceData.v24hChangePercent !== undefined) {
+              token.priceChange24h = priceData.v24hChangePercent;
+            }
+          } catch (error) {
+            console.log(`[TopKOLTokens] Could not fetch Birdeye data for ${token.symbol}`);
+          }
+
+          if (i % 10 === 0 && i > 0) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+        }
+      }
+
+      tokenStatsArray.forEach(token => {
+        const topToken = topTokens.find(t => t.id === token.id);
+        if (topToken) {
+          token.marketCap = topToken.marketCap;
+          token.priceChange24h = topToken.priceChange24h;
+        }
+      });
 
       let sortedTokens = [...tokenStatsArray];
 
