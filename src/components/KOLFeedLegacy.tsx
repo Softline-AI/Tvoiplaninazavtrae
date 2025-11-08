@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download, Info, X } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
@@ -50,10 +50,13 @@ const KOLFeedLegacy: React.FC = () => {
   const [loadingDetails, setLoadingDetails] = useState(false);
 
   useEffect(() => {
-    loadTransactions();
+    const timer = setTimeout(() => {
+      loadTransactions();
+    }, 300);
+    return () => clearTimeout(timer);
   }, [timeFilter, actionFilter, useAggregated]);
 
-  const loadTransactions = async () => {
+  const loadTransactions = useCallback(async () => {
     setLoading(true);
 
     try {
@@ -179,15 +182,15 @@ const KOLFeedLegacy: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [timeFilter, actionFilter]);
 
-  const getActionColor = (action: string) => {
+  const getActionColor = useCallback((action: string) => {
     return action === 'buy' ? 'text-green-600' : 'text-red-600';
-  };
+  }, []);
 
-  const getActionBg = (action: string) => {
+  const getActionBg = useCallback((action: string) => {
     return action === 'buy' ? 'bg-green-600/10' : 'bg-red-600/10';
-  };
+  }, []);
 
   const TokenLogo: React.FC<{ mint: string; symbol: string }> = ({ mint, symbol }) => {
     const logoUrl = useTokenLogo(mint);
@@ -408,7 +411,7 @@ const KOLFeedLegacy: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-white/10">
                   {trades.map((trade) => (
-                    <tr key={trade.id} className="transition-all duration-200 hover:bg-white/5">
+                    <tr key={trade.id} className="hover:bg-white/5">
                       <td className="px-3 py-2 whitespace-nowrap">
                         <div className="text-xs font-mono text-white/70">
                           {new Date(trade.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
