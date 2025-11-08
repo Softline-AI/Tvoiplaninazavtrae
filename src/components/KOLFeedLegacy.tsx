@@ -143,7 +143,7 @@ const KOLFeedLegacy: React.FC = () => {
         const tokenPnl = parseFloat(tx.token_pnl || '0');
         const tokenPnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
 
-        const displayName = profile?.name || (wallet?.label ? 'Insider' : tx.from_address.substring(0, 8));
+        const displayName = profile?.name || 'Insider';
 
         return {
           id: tx.id,
