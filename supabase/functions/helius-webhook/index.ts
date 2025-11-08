@@ -402,13 +402,31 @@ function determineTransactionType(data: HeliusWebhookData, walletAddress: string
     console.log(`Transaction analysis: SOL sent=${solSent}, SOL received=${solReceived}, Token sent=${tokenSent}, Token received=${tokenReceived}`);
 
     if (tokenReceived && solSent) {
+      console.log("✅ Determined as BUY (token in, SOL out)");
       return "BUY";
     }
 
     if (solReceived && tokenSent) {
+      console.log("✅ Determined as SELL (SOL in, token out)");
       return "SELL";
     }
 
+    if (tokenReceived && !tokenSent) {
+      console.log("✅ Determined as BUY (only token received)");
+      return "BUY";
+    }
+
+    if (tokenSent && !tokenReceived) {
+      console.log("✅ Determined as SELL (only token sent)");
+      return "SELL";
+    }
+
+    if (tokenReceived && tokenSent) {
+      console.log("⚠️ Token-to-token swap detected, keeping as SWAP");
+      return "SWAP";
+    }
+
+    console.log("⚠️ Could not determine BUY/SELL, defaulting to SWAP");
     return "SWAP";
   }
 
