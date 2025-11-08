@@ -348,35 +348,65 @@ function determineTransactionType(data: HeliusWebhookData, walletAddress: string
   const type = data.type?.toUpperCase() || "UNKNOWN";
 
   if (type === "SWAP") {
-    if (data.tokenTransfers && data.tokenTransfers.length >= 2) {
-      const solTransfer = data.tokenTransfers.find(
-        (t) => t.mint === "So11111111111111111111111111111111111111112"
-      );
+    let solReceived = false;
+    let solSent = false;
+    let tokenReceived = false;
+    let tokenSent = false;
 
-      if (solTransfer) {
-        if (solTransfer.fromUserAccount === walletAddress) return "BUY";
-        if (solTransfer.toUserAccount === walletAddress) return "SELL";
-      }
+    if (data.tokenTransfers && data.tokenTransfers.length > 0) {
+      for (const transfer of data.tokenTransfers) {
+        const isSol = transfer.mint === "So11111111111111111111111111111111111111112";
 
-      const nonSolTransfer = data.tokenTransfers.find(
-        (t) => t.mint !== "So11111111111111111111111111111111111111112"
-      );
+        if (transfer.toUserAccount === walletAddress) {
+          if (isSol) {
+            solReceived = true;
+          } else {
+            tokenReceived = true;
+          }
+        }
 
-      if (nonSolTransfer) {
-        if (nonSolTransfer.toUserAccount === walletAddress) return "BUY";
-        if (nonSolTransfer.fromUserAccount === walletAddress) return "SELL";
+        if (transfer.fromUserAccount === walletAddress) {
+          if (isSol) {
+            solSent = true;
+          } else {
+            tokenSent = true;
+          }
+        }
       }
     }
 
     if (data.accountData && data.accountData.length > 0) {
       const walletAccount = data.accountData.find(acc => acc.account === walletAddress);
-      if (walletAccount && walletAccount.tokenBalanceChanges) {
-        for (const balanceChange of walletAccount.tokenBalanceChanges) {
-          const amount = parseFloat(balanceChange.rawTokenAmount.tokenAmount);
-          if (amount > 0) return "BUY";
-          if (amount < 0) return "SELL";
+
+      if (walletAccount) {
+        if (walletAccount.nativeBalanceChange) {
+          const solChange = walletAccount.nativeBalanceChange;
+          if (solChange > 0) solReceived = true;
+          if (solChange < 0) solSent = true;
+        }
+
+        if (walletAccount.tokenBalanceChanges) {
+          for (const balanceChange of walletAccount.tokenBalanceChanges) {
+            if (balanceChange.mint === "So11111111111111111111111111111111111111112") {
+              continue;
+            }
+
+            const amount = parseFloat(balanceChange.rawTokenAmount.tokenAmount);
+            if (amount > 0) tokenReceived = true;
+            if (amount < 0) tokenSent = true;
+          }
         }
       }
+    }
+
+    console.log(`Transaction analysis: SOL sent=${solSent}, SOL received=${solReceived}, Token sent=${tokenSent}, Token received=${tokenReceived}`);
+
+    if (tokenReceived && solSent) {
+      return "BUY";
+    }
+
+    if (solReceived && tokenSent) {
+      return "SELL";
     }
 
     return "SWAP";
