@@ -56,6 +56,27 @@ const KOLFeedLegacy: React.FC = () => {
     return () => clearTimeout(timer);
   }, [timeFilter, actionFilter, useAggregated]);
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('webhook_transactions_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'webhook_transactions'
+        },
+        () => {
+          loadTransactions();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [timeFilter, actionFilter, useAggregated]);
+
   const loadTransactions = useCallback(async () => {
     setLoading(true);
 
