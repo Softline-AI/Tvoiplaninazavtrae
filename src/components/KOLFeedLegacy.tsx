@@ -143,6 +143,8 @@ const KOLFeedLegacy: React.FC = () => {
         const tokenPnl = parseFloat(tx.token_pnl || '0');
         const tokenPnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
 
+        const displayName = profile?.name || (wallet?.label ? 'Insider' : tx.from_address.substring(0, 8));
+
         return {
           id: tx.id,
           timestamp: new Date(tx.block_time).toLocaleString('en-US', {
@@ -154,7 +156,7 @@ const KOLFeedLegacy: React.FC = () => {
             second: '2-digit',
             hour12: false
           }),
-          trader: profile?.name || tx.from_address.substring(0, 8),
+          trader: displayName,
           traderAvatar: avatarUrl,
           action: txType,
           token: tx.token_symbol || 'Unknown',
