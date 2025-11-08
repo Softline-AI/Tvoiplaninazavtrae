@@ -749,6 +749,88 @@ class HeliusService {
       return null;
     }
   }
+
+  async getAddressTransactionHistory(address: string, limit: number = 100): Promise<any[]> {
+    if (!this.isConnected) {
+      console.warn('⚠️ Helius API not connected');
+      return [];
+    }
+
+    try {
+      console.log(`📜 Fetching transaction history for address: ${address.slice(0, 8)}...`);
+
+      const url = `${HELIUS_BASE_URL}/addresses/${address}/transactions?api-key=${this.getCurrentApiKey()}&limit=${limit}`;
+
+      const response = await this.fetchWithRetry(url, {
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        console.error(`❌ Failed to fetch transaction history: ${response.status}`);
+        return [];
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        console.log(`✅ Retrieved ${data.length} transactions for ${address.slice(0, 8)}`);
+        return data;
+      }
+
+      console.warn(`⚠️ Unexpected response format for ${address.slice(0, 8)}`);
+      return [];
+    } catch (error) {
+      console.error('❌ Error fetching address transaction history:', error);
+      return [];
+    }
+  }
+
+  async getParsedTransactionHistory(address: string, limit: number = 100): Promise<any[]> {
+    if (!this.isConnected) {
+      console.warn('⚠️ Helius API not connected');
+      return [];
+    }
+
+    try {
+      console.log(`📜 Fetching parsed transaction history for address: ${address.slice(0, 8)}...`);
+
+      const url = `${HELIUS_BASE_URL}/addresses/${address}/transactions?api-key=${this.getCurrentApiKey()}&limit=${limit}&type=SWAP`;
+
+      const response = await this.fetchWithRetry(url, {
+        method: 'GET'
+      });
+
+      if (!response.ok) {
+        console.error(`❌ Failed to fetch parsed transactions: ${response.status}`);
+        return [];
+      }
+
+      const data = await response.json();
+
+      if (Array.isArray(data)) {
+        console.log(`✅ Retrieved ${data.length} parsed transactions for ${address.slice(0, 8)}`);
+
+        return data.map(tx => ({
+          signature: tx.signature,
+          timestamp: tx.timestamp,
+          type: tx.type,
+          fee: tx.fee,
+          status: tx.status || 'success',
+          slot: tx.slot,
+          nativeTransfers: tx.nativeTransfers,
+          tokenTransfers: tx.tokenTransfers,
+          accountData: tx.accountData,
+          description: tx.description
+        }));
+      }
+
+      console.warn(`⚠️ Unexpected response format for ${address.slice(0, 8)}`);
+      return [];
+    } catch (error) {
+      console.error('❌ Error fetching parsed transaction history:', error);
+      return [];
+    }
+  }
 }
 
 export const heliusService = new HeliusService();
