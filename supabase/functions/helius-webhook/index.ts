@@ -504,12 +504,18 @@ Deno.serve(async (req: Request) => {
     const webhookSecret = req.headers.get("x-webhook-secret");
     const expectedSecret = Deno.env.get("HELIUS_WEBHOOK_SECRET");
 
-    if (!webhookSecret || webhookSecret !== expectedSecret) {
-      console.error("Unauthorized webhook request");
+    if (webhookSecret && webhookSecret !== expectedSecret) {
+      console.error("Unauthorized webhook request - invalid secret");
       return new Response(JSON.stringify({ message: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    if (webhookSecret) {
+      console.log("✅ Webhook secret verified");
+    } else {
+      console.log("ℹ️ No webhook secret provided (Helius webhook)");
     }
 
     const payload = await req.json();
