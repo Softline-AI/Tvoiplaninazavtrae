@@ -34,6 +34,7 @@ interface RecentTransaction {
   nickname: string;
   market_cap?: number;
   token_pnl?: number;
+  transaction_signature?: string;
 }
 
 interface Stalk {
@@ -84,21 +85,22 @@ const MyStalks: React.FC = () => {
         table: 'webhook_transactions'
       }, (payload) => {
         const newTx = payload.new;
-        const trackedWallet = smartMoneyWallets.find(w => w.wallet_address === newTx.wallet_address);
+        const trackedWallet = smartMoneyWallets.find(w => w.wallet_address === newTx.from_address);
 
-        if (trackedWallet && (newTx.transaction_type === 'buy' || newTx.transaction_type === 'sell')) {
+        if (trackedWallet && (newTx.transaction_type === 'BUY' || newTx.transaction_type === 'SELL')) {
           const transaction: RecentTransaction = {
             id: newTx.id,
-            wallet_address: newTx.wallet_address,
-            transaction_type: newTx.transaction_type,
+            wallet_address: newTx.from_address,
+            transaction_type: newTx.transaction_type.toLowerCase(),
             token_symbol: newTx.token_symbol,
-            token_address: newTx.token_address,
-            token_amount: newTx.token_amount,
-            usd_value: newTx.usd_value || 0,
-            timestamp: newTx.timestamp,
+            token_address: newTx.token_mint,
+            token_amount: newTx.amount,
+            usd_value: newTx.sol_amount * 150 || 0,
+            timestamp: newTx.block_time,
             nickname: trackedWallet.nickname,
             market_cap: newTx.market_cap,
-            token_pnl: newTx.token_pnl
+            token_pnl: newTx.token_pnl,
+            transaction_signature: newTx.transaction_signature
           };
 
           showNotification(transaction);
@@ -155,25 +157,26 @@ const MyStalks: React.FC = () => {
     const { data } = await supabase
       .from('webhook_transactions')
       .select('*')
-      .in('wallet_address', walletAddresses)
-      .in('transaction_type', ['buy', 'sell'])
+      .in('from_address', walletAddresses)
+      .in('transaction_type', ['BUY', 'SELL'])
       .neq('token_symbol', 'UNKNOWN')
-      .order('timestamp', { ascending: false })
+      .order('block_time', { ascending: false })
       .limit(50);
 
     if (data) {
       const transactions: RecentTransaction[] = data.map(tx => ({
         id: tx.id,
-        wallet_address: tx.wallet_address,
-        transaction_type: tx.transaction_type,
+        wallet_address: tx.from_address,
+        transaction_type: tx.transaction_type.toLowerCase(),
         token_symbol: tx.token_symbol,
-        token_address: tx.token_address,
-        token_amount: tx.token_amount,
-        usd_value: tx.usd_value || 0,
-        timestamp: tx.timestamp,
-        nickname: walletMap.get(tx.wallet_address) || 'Unknown',
+        token_address: tx.token_mint,
+        token_amount: tx.amount,
+        usd_value: tx.sol_amount * 150 || 0,
+        timestamp: tx.block_time,
+        nickname: walletMap.get(tx.from_address) || 'Unknown',
         market_cap: tx.market_cap,
-        token_pnl: tx.token_pnl
+        token_pnl: tx.token_pnl,
+        transaction_signature: tx.transaction_signature
       }));
       setRecentTransactions(transactions);
     }
@@ -798,7 +801,7 @@ const MyStalks: React.FC = () => {
                     <div
                       key={tx.id}
                       className="bg-noir-dark rounded-lg p-4 cursor-pointer hover:bg-white/5 transition-all"
-                      onClick={() => window.open(`https://solscan.io/token/${tx.token_address}`, '_blank')}
+                      onClick={() => window.open(`https://solscan.io/tx/${tx.transaction_signature}`, '_blank')}
                     >
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
@@ -829,7 +832,7 @@ const MyStalks: React.FC = () => {
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            window.open(`https://solscan.io/token/${tx.token_address}`, '_blank');
+                            window.open(`https://solscan.io/tx/${tx.transaction_signature}`, '_blank');
                           }}
                           className="text-white/40 hover:text-white transition-colors"
                         >
