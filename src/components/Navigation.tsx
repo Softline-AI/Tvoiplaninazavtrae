@@ -181,10 +181,13 @@ const Navigation: React.FC = () => {
             <div className="hidden md:flex items-center gap-4">
               <Link
                 to="/app/kol-feed"
-                className="relative px-6 py-2.5 font-semibold text-black bg-white rounded-lg overflow-hidden group transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-gray-900/50"
+                className="transition-all duration-300 hover:scale-105 hover:opacity-80"
               >
-                <span className="relative z-10 group-hover:text-white transition-colors duration-300">Launch App</span>
-                <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <img
+                  src="/launch.jpg"
+                  alt="Launch App"
+                  className="h-10"
+                />
               </Link>
             </div>
           )}
@@ -260,10 +263,14 @@ const Navigation: React.FC = () => {
 
             <Link
               to="/app/kol-feed"
-              className="relative px-6 py-3 font-semibold text-black bg-white rounded-lg overflow-hidden inline-block w-full text-center transition-all duration-300 hover:scale-105"
+              className="block transition-all duration-300 hover:scale-105 hover:opacity-80"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Launch App
+              <img
+                src="/launch.jpg"
+                alt="Launch App"
+                className="w-full h-auto"
+              />
             </Link>
           </div>
         </div>
