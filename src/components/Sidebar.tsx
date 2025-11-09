@@ -227,7 +227,7 @@ const Sidebar: React.FC = () => {
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
               <div className="flex items-center gap-3">
-                <img src="/ChatGPT Image 9 нояб. 2025 г., 03_46_51.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
+                <img src="/ChatGPT Image 9 нояб. 2025 г., 02_50_28.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
                 <span className="text-sm font-medium">Trends Analytics</span>
               </div>
               <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-white/20 bg-white/5">
