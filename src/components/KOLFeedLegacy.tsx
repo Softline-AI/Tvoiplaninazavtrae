@@ -497,16 +497,16 @@ const KOLFeedLegacy: React.FC = () => {
   };
 
   return (
-    <div className="w-full mx-auto max-w-screen-xl px-0 md:px-10 py-5 relative">
-      <div className="relative z-10">
-        <div className="mb-6">
+    <div className="w-full h-screen flex flex-col px-0 md:px-10 py-4 relative">
+      <div className="relative z-10 flex-1 flex flex-col min-h-0">
+        <div className="mb-3">
           <h1 className="text-xl mb-1 font-semibold text-white">KOL Feed Legacy</h1>
           <p className="text-sm text-gray-400">
             {loading ? 'Loading...' : `${totalCount} transactions found`}
           </p>
         </div>
 
-        <div className="flex flex-col gap-4 mb-6">
+        <div className="flex flex-col gap-3 mb-3">
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
               {['1h', '6h', '24h', '7d', '30d'].map((period) => (
@@ -599,58 +599,58 @@ const KOLFeedLegacy: React.FC = () => {
             <p className="text-white/70">No transactions found for this period</p>
           </div>
         ) : (
-          <div className="noir-card rounded-2xl overflow-hidden h-[calc(100vh-320px)] flex flex-col">
+          <div className="noir-card rounded-2xl overflow-hidden flex-1 flex flex-col min-h-0">
             <div className="overflow-x-auto overflow-y-auto flex-1">
-              <table className="min-w-full" style={{ tableLayout: 'fixed' }}>
+              <table className="min-w-full w-full" style={{ tableLayout: 'fixed' }}>
                 <colgroup>
-                  <col style={{ width: '80px' }} />
-                  <col style={{ width: '180px' }} />
-                  <col style={{ width: '100px' }} />
+                  <col style={{ width: '70px' }} />
+                  <col style={{ width: '150px' }} />
+                  <col style={{ width: '85px' }} />
+                  <col style={{ width: '95px' }} />
                   <col style={{ width: '120px' }} />
-                  <col style={{ width: '140px' }} />
-                  <col style={{ width: '100px' }} />
-                  <col style={{ width: '100px' }} />
-                  <col style={{ width: '100px' }} />
-                  <col style={{ width: '110px' }} />
-                  <col style={{ width: '100px' }} />
-                  <col style={{ width: '120px' }} />
+                  <col style={{ width: '85px' }} />
+                  <col style={{ width: '85px' }} />
+                  <col style={{ width: '85px' }} />
+                  <col style={{ width: '95px' }} />
+                  <col style={{ width: '85px' }} />
+                  <col style={{ width: '105px' }} />
                 </colgroup>
                 <thead className="bg-noir-dark border-b border-white/20 sticky top-0 z-10">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       <div className="flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         Time
                       </div>
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Trader
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Action
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Token
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Amount
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Entry
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Current
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Value
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       P&L
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       More
                     </th>
-                    <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
+                    <th className="px-2 py-2 text-left text-xs font-bold text-white tracking-wider">
                       Links
                     </th>
                   </tr>
@@ -658,61 +658,61 @@ const KOLFeedLegacy: React.FC = () => {
                 <tbody className="divide-y divide-white/10">
                   {filteredAndSortedTrades.map((trade) => (
                     <tr key={trade.id} className="hover:bg-white/5">
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <div className="text-xs font-mono text-white/70">
                           {new Date(trade.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                         </div>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <button
                           onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
-                          className="flex items-center gap-2 px-3 py-2 bg-noir-dark/50 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-lg transition-colors group w-full min-w-0"
+                          className="flex items-center gap-1.5 px-2 py-1 bg-noir-dark/50 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-md transition-colors group min-w-0 max-w-full"
                         >
                           <SafeImage
                             src={trade.traderAvatar}
                             alt={trade.trader}
-                            className="w-8 h-8 rounded-full border-2 border-white/30 group-hover:border-white/50 transition-colors flex-shrink-0"
+                            className="w-6 h-6 rounded-full border border-white/30 group-hover:border-white/50 transition-colors flex-shrink-0"
                           />
-                          <div className="text-xs font-semibold text-white group-hover:text-white/90 truncate min-w-0">
+                          <div className="text-xs font-medium text-white group-hover:text-white/90 truncate min-w-0">
                             {trade.trader}
                           </div>
                         </button>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold ${getActionColor(trade.action)} ${getActionBg(trade.action)}`}>
                           <TrendingUp className={`w-3 h-3 ${trade.action === 'sell' ? 'rotate-180' : ''}`} />
                           {trade.action.toUpperCase()}
                         </div>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        <div className="flex items-center gap-2 min-w-0">
+                      <td className="px-2 py-2 whitespace-nowrap">
+                        <div className="flex items-center gap-1.5 min-w-0">
                           <TokenLogo mint={trade.tokenMint} symbol={trade.tokenSymbol} />
                           <div className="text-xs font-semibold text-white truncate">{trade.tokenSymbol}</div>
                         </div>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <div className="text-xs font-semibold text-white truncate">{trade.amount}</div>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <div className="text-xs text-white/70">{trade.entryPrice}</div>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <div className="text-xs font-semibold text-white">{trade.price}</div>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <div className={`text-xs font-semibold ${getActionColor(trade.action)}`}>
                           {trade.value}
                         </div>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <div className="text-xs">
                           <div className={`text-sm font-bold ${trade.pnl.includes('-') ? 'text-red-400' : 'text-green-400'}`}>
                             {trade.pnlPercentage}
@@ -723,18 +723,17 @@ const KOLFeedLegacy: React.FC = () => {
                         </div>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <button
                           onClick={() => loadTradeDetails(trade)}
-                          className="px-3 py-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg transition-all text-xs font-medium flex items-center gap-1"
+                          className="px-2 py-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-md transition-all text-xs font-medium flex items-center gap-1"
                           title="View all trades"
                         >
                           <Info className="w-3 h-3" />
-                          Details
                         </button>
                       </td>
 
-                      <td className="px-3 py-2 whitespace-nowrap">
+                      <td className="px-2 py-2 whitespace-nowrap">
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => copyToClipboard(trade.walletAddress)}
@@ -780,27 +779,26 @@ const KOLFeedLegacy: React.FC = () => {
           </div>
         )}
 
-        <div className="noir-card rounded-xl p-6 mt-6">
-          <h3 className="text-lg font-semibold text-white mb-4">Export Historical Data</h3>
-          <div className="flex items-center gap-4 flex-wrap">
+        <div className="noir-card rounded-xl p-3 mt-2 flex-shrink-0">
+          <div className="flex items-center gap-3 flex-wrap">
             <button
               onClick={exportCSV}
               disabled={trades.length === 0}
-              className="bg-white text-noir-black px-4 py-2 rounded-lg font-medium hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-white text-noir-black px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-white/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
             >
-              <Download className="w-4 h-4" />
-              Export CSV
+              <Download className="w-3 h-3" />
+              CSV
             </button>
             <button
               onClick={exportJSON}
               disabled={trades.length === 0}
-              className="bg-noir-dark border border-white/20 text-white px-4 py-2 rounded-lg font-medium hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-noir-dark border border-white/20 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
             >
-              <Download className="w-4 h-4" />
-              Export JSON
+              <Download className="w-3 h-3" />
+              JSON
             </button>
-            <div className="ml-auto text-sm text-white/70">
-              Showing {filteredAndSortedTrades.length} of {totalCount} transactions from the last {timeFilter}
+            <div className="ml-auto text-xs text-white/70">
+              {filteredAndSortedTrades.length} / {totalCount} transactions
             </div>
           </div>
         </div>
