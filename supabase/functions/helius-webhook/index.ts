@@ -368,22 +368,35 @@ function determineTransactionType(data: HeliusWebhookData, walletAddress: string
 
   console.log(`📊 Analysis: SOL sent=${solSent}, SOL received=${solReceived}, Token sent=${tokenSent}, Token received=${tokenReceived}`);
 
+  // PRIMARY RULES (most accurate):
+  // Rule 1: Spending SOL + Receiving tokens = BUY
   if (tokenReceived && solSent) {
     console.log("✅ BUY detected: Token IN + SOL OUT");
     return "BUY";
   }
 
+  // Rule 2: Receiving SOL + Sending tokens = SELL
   if (solReceived && tokenSent) {
     console.log("✅ SELL detected: SOL IN + Token OUT");
     return "SELL";
   }
 
-  if (tokenReceived && !tokenSent && !solReceived) {
+  // Rule 3: Receiving SOL + Receiving tokens (edge case) = SELL
+  // This happens when wallet sells tokens and gets SOL, token amount is absolute value
+  if (solReceived && tokenReceived) {
+    console.log("✅ SELL detected: SOL IN + Token absolute value (selling)");
+    return "SELL";
+  }
+
+  // SECONDARY RULES:
+  // Rule 4: Only tokens received, no SOL change = BUY (airdrop/transfer in)
+  if (tokenReceived && !tokenSent && !solReceived && !solSent) {
     console.log("✅ BUY detected: Only token received");
     return "BUY";
   }
 
-  if (tokenSent && !tokenReceived && !solSent) {
+  // Rule 5: Only tokens sent, no SOL change = SELL (transfer out)
+  if (tokenSent && !tokenReceived && !solSent && !solReceived) {
     console.log("✅ SELL detected: Only token sent");
     return "SELL";
   }
