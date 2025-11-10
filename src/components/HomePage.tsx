@@ -309,10 +309,16 @@ const HomePage: React.FC = () => {
 
             <Link
               to="/app/kol-feed"
-              className="group w-full bg-gradient-to-r from-white to-gray-100 text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:from-gray-100 hover:to-white hover:scale-105 hover:shadow-2xl transition-all duration-300 mb-8 shadow-xl flex items-center justify-center gap-2"
+              className="group relative w-full h-14 rounded-xl font-bold text-lg hover:scale-105 hover:shadow-2xl transition-all duration-300 mb-8 shadow-xl flex items-center justify-center gap-2 overflow-hidden"
             >
-              <span>Start Free</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <img
+                src="/launch.jpg"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+              <span className="relative z-10 text-white">Start Free</span>
+              <ArrowRight className="relative z-10 w-5 h-5 group-hover:translate-x-1 transition-transform text-white" />
             </Link>
 
             <ul className="space-y-4 text-left">
@@ -345,10 +351,16 @@ const HomePage: React.FC = () => {
 
             <Link
               to="/app/kol-feed"
-              className="group w-full bg-gradient-to-r from-white to-gray-100 text-noir-black py-4 px-6 rounded-xl font-bold text-lg hover:from-gray-100 hover:to-white hover:scale-105 hover:shadow-2xl transition-all duration-300 mb-8 shadow-xl flex items-center justify-center gap-2"
+              className="group relative w-full h-14 rounded-xl font-bold text-lg hover:scale-105 hover:shadow-2xl transition-all duration-300 mb-8 shadow-xl flex items-center justify-center gap-2 overflow-hidden"
             >
-              <span>Get Pro</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <img
+                src="/launch.jpg"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+              <span className="relative z-10 text-white">Get Pro</span>
+              <ArrowRight className="relative z-10 w-5 h-5 group-hover:translate-x-1 transition-transform text-white" />
             </Link>
 
             <ul className="space-y-4 text-left">
@@ -391,11 +403,17 @@ const HomePage: React.FC = () => {
 
             <Link
               to="/app/kol-feed"
-              className="group w-full bg-gradient-to-r from-white via-gray-50 to-white text-noir-black py-5 px-8 rounded-xl font-bold text-xl hover:shadow-3xl hover:scale-105 transition-all duration-300 mb-8 shadow-2xl flex items-center justify-center gap-3 border-2 border-white/50"
+              className="group relative w-full h-16 rounded-xl font-bold text-xl hover:scale-105 transition-all duration-300 mb-8 shadow-2xl flex items-center justify-center gap-3 overflow-hidden border-2 border-white/50"
             >
-              <Crown className="w-6 h-6" />
-              <span>Go Legend</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+              <img
+                src="/launch.jpg"
+                alt=""
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+              <Crown className="relative z-10 w-6 h-6 text-white" />
+              <span className="relative z-10 text-white">Go Legend</span>
+              <ArrowRight className="relative z-10 w-6 h-6 group-hover:translate-x-1 transition-transform text-white" />
             </Link>
 
             <ul className="space-y-4 text-left">
