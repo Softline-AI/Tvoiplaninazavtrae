@@ -186,7 +186,7 @@ const Navigation: React.FC = () => {
                 <img
                   src="/лаунч апп.png"
                   alt="Launch App"
-                  className="h-auto w-full max-w-[200px]"
+                  className="h-auto w-full max-w-[100px]"
                 />
               </Link>
             </div>
