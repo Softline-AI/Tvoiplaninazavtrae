@@ -601,7 +601,20 @@ const KOLFeedLegacy: React.FC = () => {
         ) : (
           <div className="noir-card rounded-2xl overflow-hidden h-[calc(100vh-320px)] flex flex-col">
             <div className="overflow-x-auto overflow-y-auto flex-1">
-              <table className="min-w-full">
+              <table className="min-w-full" style={{ tableLayout: 'fixed' }}>
+                <colgroup>
+                  <col style={{ width: '80px' }} />
+                  <col style={{ width: '180px' }} />
+                  <col style={{ width: '100px' }} />
+                  <col style={{ width: '120px' }} />
+                  <col style={{ width: '140px' }} />
+                  <col style={{ width: '100px' }} />
+                  <col style={{ width: '100px' }} />
+                  <col style={{ width: '100px' }} />
+                  <col style={{ width: '110px' }} />
+                  <col style={{ width: '100px' }} />
+                  <col style={{ width: '120px' }} />
+                </colgroup>
                 <thead className="bg-noir-dark border-b border-white/20 sticky top-0 z-10">
                   <tr>
                     <th className="px-3 py-2 text-left text-xs font-bold text-white tracking-wider">
@@ -654,14 +667,14 @@ const KOLFeedLegacy: React.FC = () => {
                       <td className="px-3 py-2 whitespace-nowrap">
                         <button
                           onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
-                          className="flex items-center gap-2 px-3 py-2 bg-noir-dark/50 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-lg transition-all group w-full"
+                          className="flex items-center gap-2 px-3 py-2 bg-noir-dark/50 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-lg transition-colors group w-full min-w-0"
                         >
                           <SafeImage
                             src={trade.traderAvatar}
                             alt={trade.trader}
-                            className="w-8 h-8 rounded-full border-2 border-white/30 group-hover:border-white/50 transition-all"
+                            className="w-8 h-8 rounded-full border-2 border-white/30 group-hover:border-white/50 transition-colors flex-shrink-0"
                           />
-                          <div className="text-xs font-semibold text-white group-hover:text-white/90 truncate max-w-[120px]">
+                          <div className="text-xs font-semibold text-white group-hover:text-white/90 truncate min-w-0">
                             {trade.trader}
                           </div>
                         </button>
@@ -675,14 +688,14 @@ const KOLFeedLegacy: React.FC = () => {
                       </td>
 
                       <td className="px-3 py-2 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
                           <TokenLogo mint={trade.tokenMint} symbol={trade.tokenSymbol} />
-                          <div className="text-xs font-semibold text-white">{trade.tokenSymbol}</div>
+                          <div className="text-xs font-semibold text-white truncate">{trade.tokenSymbol}</div>
                         </div>
                       </td>
 
                       <td className="px-3 py-2 whitespace-nowrap">
-                        <div className="text-xs font-semibold text-white">{trade.amount}</div>
+                        <div className="text-xs font-semibold text-white truncate">{trade.amount}</div>
                       </td>
 
                       <td className="px-3 py-2 whitespace-nowrap">
