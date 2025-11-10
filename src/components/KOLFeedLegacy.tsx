@@ -48,6 +48,9 @@ const KOLFeedLegacy: React.FC = () => {
   const [selectedTrade, setSelectedTrade] = useState<LegacyTrade | null>(null);
   const [tradeDetails, setTradeDetails] = useState<any[]>([]);
   const [loadingDetails, setLoadingDetails] = useState(false);
+  const [traderSearch, setTraderSearch] = useState('');
+  const [tokenSearch, setTokenSearch] = useState('');
+  const [sortBy, setSortBy] = useState<'time' | 'pnl'>('time');
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -354,6 +357,37 @@ const KOLFeedLegacy: React.FC = () => {
     );
   };
 
+  const filteredAndSortedTrades = useMemo(() => {
+    let filtered = trades;
+
+    if (traderSearch.trim()) {
+      const searchLower = traderSearch.toLowerCase();
+      filtered = filtered.filter(trade =>
+        trade.trader.toLowerCase().includes(searchLower) ||
+        trade.twitterHandle.toLowerCase().includes(searchLower) ||
+        trade.walletAddress.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (tokenSearch.trim()) {
+      const searchLower = tokenSearch.toLowerCase();
+      filtered = filtered.filter(trade =>
+        trade.tokenSymbol.toLowerCase().includes(searchLower) ||
+        trade.token.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (sortBy === 'pnl') {
+      filtered = [...filtered].sort((a, b) => {
+        const pnlA = parseFloat(a.pnl.replace(/[$,+]/g, ''));
+        const pnlB = parseFloat(b.pnl.replace(/[$,+]/g, ''));
+        return pnlB - pnlA;
+      });
+    }
+
+    return filtered;
+  }, [trades, traderSearch, tokenSearch, sortBy]);
+
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
   };
@@ -470,37 +504,85 @@ const KOLFeedLegacy: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-4 mb-6 flex-wrap">
-          <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
-            {['1h', '6h', '24h', '7d', '30d'].map((period) => (
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
+              {['1h', '6h', '24h', '7d', '30d'].map((period) => (
+                <button
+                  key={period}
+                  onClick={() => setTimeFilter(period)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    timeFilter === period
+                      ? 'bg-white text-noir-black'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  {period}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
+              {['all', 'buy', 'sell'].map((action) => (
+                <button
+                  key={action}
+                  onClick={() => setActionFilter(action)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${
+                    actionFilter === action
+                      ? 'bg-white text-noir-black'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'
+                  }`}
+                >
+                  {action === 'all' ? 'All Actions' : action}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
               <button
-                key={period}
-                onClick={() => setTimeFilter(period)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  timeFilter === period
+                onClick={() => setSortBy('time')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                  sortBy === 'time'
                     ? 'bg-white text-noir-black'
                     : 'text-white/70 hover:text-white hover:bg-white/10'
                 }`}
               >
-                {period}
+                <Clock className="w-3 h-3" />
+                Time
               </button>
-            ))}
+              <button
+                onClick={() => setSortBy('pnl')}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                  sortBy === 'pnl'
+                    ? 'bg-white text-noir-black'
+                    : 'text-white/70 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <TrendingUp className="w-3 h-3" />
+                P&L
+              </button>
+            </div>
           </div>
 
-          <div className="flex h-fit gap-1 items-center flex-nowrap rounded-xl bg-noir-dark border border-white/20 p-1">
-            {['all', 'buy', 'sell'].map((action) => (
-              <button
-                key={action}
-                onClick={() => setActionFilter(action)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${
-                  actionFilter === action
-                    ? 'bg-white text-noir-black'
-                    : 'text-white/70 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                {action === 'all' ? 'All Actions' : action}
-              </button>
-            ))}
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search by trader or wallet address..."
+                value={traderSearch}
+                onChange={(e) => setTraderSearch(e.target.value)}
+                className="w-full px-4 py-2 bg-noir-dark border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/40"
+              />
+            </div>
+            <div className="flex-1">
+              <input
+                type="text"
+                placeholder="Search by token symbol..."
+                value={tokenSearch}
+                onChange={(e) => setTokenSearch(e.target.value)}
+                className="w-full px-4 py-2 bg-noir-dark border border-white/20 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/40"
+              />
+            </div>
           </div>
         </div>
 
@@ -515,8 +597,8 @@ const KOLFeedLegacy: React.FC = () => {
             <p className="text-white/70">No transactions found for this period</p>
           </div>
         ) : (
-          <div className="noir-card rounded-2xl overflow-hidden">
-            <div className="overflow-x-auto max-h-[calc(100vh-300px)] overflow-y-auto">
+          <div className="noir-card rounded-2xl overflow-hidden h-[calc(100vh-320px)] flex flex-col">
+            <div className="overflow-x-auto overflow-y-auto flex-1">
               <table className="min-w-full">
                 <thead className="bg-noir-dark border-b border-white/20 sticky top-0 z-10">
                   <tr>
@@ -559,7 +641,7 @@ const KOLFeedLegacy: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/10">
-                  {trades.map((trade) => (
+                  {filteredAndSortedTrades.map((trade) => (
                     <tr key={trade.id} className="hover:bg-white/5">
                       <td className="px-3 py-2 whitespace-nowrap">
                         <div className="text-xs font-mono text-white/70">
@@ -698,7 +780,7 @@ const KOLFeedLegacy: React.FC = () => {
               Export JSON
             </button>
             <div className="ml-auto text-sm text-white/70">
-              Showing {trades.length} of {totalCount} transactions from the last {timeFilter}
+              Showing {filteredAndSortedTrades.length} of {totalCount} transactions from the last {timeFilter}
             </div>
           </div>
         </div>
