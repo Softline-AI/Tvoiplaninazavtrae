@@ -179,16 +179,9 @@ const Navigation: React.FC = () => {
 
           {!isAppRoute && (
             <div className="hidden md:flex items-center">
-              <Link
-                to="/app/kol-feed"
-                className="transition-all duration-300 hover:scale-105 hover:opacity-80"
-              >
-                <img
-                  src="/лаунч апп.png"
-                  alt="Launch App"
-                  className="w-[130px] h-auto"
-                />
-              </Link>
+              <button className="px-6 py-2 bg-white text-black font-semibold rounded-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105">
+                Login
+              </button>
             </div>
           )}
 

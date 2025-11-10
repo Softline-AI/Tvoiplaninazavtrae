@@ -147,6 +147,17 @@ const HomePage: React.FC = () => {
               ))}
             </ul>
 
+            <Link
+              to="/app/kol-feed"
+              className="transition-all duration-300 hover:scale-105 hover:opacity-80 inline-block"
+            >
+              <img
+                src="/лаунч апп.png"
+                alt="Launch App"
+                className="w-[130px] h-auto"
+              />
+            </Link>
+
           </div>
         </div>
       </section>
