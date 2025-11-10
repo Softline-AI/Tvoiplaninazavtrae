@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Clock, TrendingUp, Filter, ExternalLink, Copy, Download, Info, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
 import { aggregatedPnlService } from '../services/aggregatedPnlService';
@@ -39,6 +40,7 @@ interface LegacyTrade {
 }
 
 const KOLFeedLegacy: React.FC = () => {
+  const navigate = useNavigate();
   const [timeFilter, setTimeFilter] = useState('7d');
   const [actionFilter, setActionFilter] = useState('all');
   const [trades, setTrades] = useState<LegacyTrade[]>([]);
@@ -650,14 +652,19 @@ const KOLFeedLegacy: React.FC = () => {
                       </td>
 
                       <td className="px-3 py-2 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => navigate(`/app/kol-profile/${trade.walletAddress}`)}
+                          className="flex items-center gap-2 px-3 py-2 bg-noir-dark/50 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-lg transition-all group w-full"
+                        >
                           <SafeImage
                             src={trade.traderAvatar}
                             alt={trade.trader}
-                            className="w-6 h-6 rounded-full border border-white/30"
+                            className="w-8 h-8 rounded-full border-2 border-white/30 group-hover:border-white/50 transition-all"
                           />
-                          <div className="text-xs font-semibold text-white">{trade.trader}</div>
-                        </div>
+                          <div className="text-xs font-semibold text-white group-hover:text-white/90 truncate max-w-[120px]">
+                            {trade.trader}
+                          </div>
+                        </button>
                       </td>
 
                       <td className="px-3 py-2 whitespace-nowrap">
