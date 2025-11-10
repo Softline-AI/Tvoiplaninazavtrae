@@ -114,7 +114,7 @@ const Sidebar: React.FC = () => {
                 boxShadow: '0 2px 8px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
               } : {}}
             >
-              <img src="/ChatGPT Image 9 нояб. 2025 г., 04_22_09 copy.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
+              <img src="/kol leaderboard.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
               <span className="text-sm font-medium">KOL Leaderboard</span>
             </Link>
             <Link
@@ -166,7 +166,7 @@ const Sidebar: React.FC = () => {
               to="/app/live-market-feed"
               className="flex items-center gap-3 h-10 px-3 rounded-lg transition-all text-white hover:bg-white/10 group"
             >
-              <img src="/ChatGPT Image 9 нояб. 2025 г., 04_09_16 copy.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
+              <img src="/live market feed.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
               <span className="text-sm font-medium">Live Market Feed</span>
             </Link>
             <Link
@@ -203,7 +203,7 @@ const Sidebar: React.FC = () => {
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
               <div className="flex items-center gap-3">
-                <img src="/ChatGPT Image 9 нояб. 2025 г., 04_16_30 copy.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
+                <img src="/dayly trends.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
                 <span className="text-sm font-medium">Daily Trends</span>
               </div>
               <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-white/20 bg-white/5">
@@ -215,7 +215,7 @@ const Sidebar: React.FC = () => {
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
               <div className="flex items-center gap-3">
-                <Star className="w-5 h-5 transition-transform group-hover:scale-110" />
+                <img src="/top tokens.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
                 <span className="text-sm font-medium">Top Tokens</span>
               </div>
               <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-white/20 bg-white/5">
@@ -227,7 +227,7 @@ const Sidebar: React.FC = () => {
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
               <div className="flex items-center gap-3">
-                <img src="/ChatGPT Image 9 нояб. 2025 г., 02_50_28.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
+                <img src="/trand analytics.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
                 <span className="text-sm font-medium">Trends Analytics</span>
               </div>
               <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-white/20 bg-white/5">
@@ -266,7 +266,7 @@ const Sidebar: React.FC = () => {
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
               <div className="flex items-center gap-3">
-                <img src="/ChatGPT Image 9 нояб. 2025 г., 05_21_47.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
+                <img src="/wallet finder.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
                 <span className="text-sm font-medium">Wallet Finder</span>
               </div>
               <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-white/20 bg-white/5">
