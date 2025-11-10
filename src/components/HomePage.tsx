@@ -121,7 +121,19 @@ const HomePage: React.FC = () => {
       </video>
       <div className="fixed inset-0 bg-gradient-to-b from-noir-black/40 via-noir-black/50 to-noir-black z-0" style={{ transform: 'translateZ(0)', willChange: 'auto' }}></div>
 
-      <section className="w-full pt-16 sm:pt-20 lg:pt-32 pb-16 sm:pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
+      <header className="w-full py-4 sm:py-6 relative z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-end">
+          <Link to="/app/kol-feed" className="group">
+            <img
+              src="/ChatGPT Image 9 нояб. 2025 г., 18_36_36.png"
+              alt="Launch App"
+              className="h-12 sm:h-14 md:h-16 hover:scale-105 transition-transform duration-300"
+            />
+          </Link>
+        </div>
+      </header>
+
+      <section className="w-full pt-8 sm:pt-12 lg:pt-20 pb-16 sm:pb-20 lg:pb-32 flex flex-col items-center justify-center relative z-10">
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-8 sm:gap-16 max-w-7xl mx-auto px-4 sm:px-6 relative z-10">
           <div className="flex-1 flex flex-col items-start text-left">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-2 noir-text-secondary relative z-20 pb-2" style={{ lineHeight: '1.15' }}>
