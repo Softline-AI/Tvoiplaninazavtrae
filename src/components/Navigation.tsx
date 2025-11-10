@@ -184,7 +184,7 @@ const Navigation: React.FC = () => {
                 className="transition-all duration-300 hover:scale-105 hover:opacity-80"
               >
                 <img
-                  src="/launch.jpg"
+                  src="/лаунч апп.png"
                   alt="Launch App"
                   className="h-10"
                 />
@@ -267,7 +267,7 @@ const Navigation: React.FC = () => {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               <img
-                src="/launch.jpg"
+                src="/лаунч апп.png"
                 alt="Launch App"
                 className="w-full h-auto"
               />
