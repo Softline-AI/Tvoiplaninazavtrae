@@ -125,7 +125,7 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-end">
           <Link to="/app/kol-feed" className="group">
             <img
-              src="/launch-app-button.jpg"
+              src="/launch-button.png"
               alt="Launch App"
               loading="eager"
               className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto hover:scale-105 hover:opacity-90 transition-all duration-300"
