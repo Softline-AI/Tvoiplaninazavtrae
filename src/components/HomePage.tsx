@@ -134,7 +134,7 @@ const HomePage: React.FC = () => {
               Real-time blockchain intelligence. Follow the biggest wallets, catch trends early, and make profitable moves before the market reacts.
             </p>
 
-            <ul className="grid grid-cols-1 gap-4 mb-10 sm:mb-14 w-full max-w-lg">
+            <ul className="grid grid-cols-1 gap-4 mb-6 w-full max-w-lg">
               {['Live whale wallet tracking', '1000+ KOL database', 'Early trend detection', 'Insider move alerts'].map((item, i) => (
                 <li
                   key={i}
@@ -149,12 +149,12 @@ const HomePage: React.FC = () => {
 
             <Link
               to="/app/kol-feed"
-              className="transition-all duration-300 hover:scale-105 hover:opacity-80 inline-block"
+              className="transition-all duration-300 hover:scale-105 hover:opacity-80 inline-block mt-8"
             >
               <img
                 src="/лаунч апп.png"
                 alt="Launch App"
-                className="w-[130px] h-auto"
+                className="w-[200px] h-auto"
               />
             </Link>
 
