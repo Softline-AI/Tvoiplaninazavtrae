@@ -69,8 +69,8 @@ const Navigation: React.FC = () => {
     <nav className="fixed top-0 inset-x-0 z-50 nav-dark" style={{ willChange: 'transform', transform: 'translateZ(0)' }}>
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-8">
-            <Link to="/" className="text-lg font-bold text-white tracking-tight">
+          <div className="flex items-center gap-6">
+            <Link to="/" className="text-xl font-bold text-white tracking-tight">
               SMARTCHAIN
             </Link>
 
@@ -178,7 +178,7 @@ const Navigation: React.FC = () => {
           </div>
 
           {!isAppRoute && (
-            <div className="hidden md:flex items-center gap-4">
+            <div className="hidden md:flex items-center">
               <Link
                 to="/app/kol-feed"
                 className="transition-all duration-300 hover:scale-105 hover:opacity-80"
@@ -186,7 +186,7 @@ const Navigation: React.FC = () => {
                 <img
                   src="/лаунч апп.png"
                   alt="Launch App"
-                  className="h-auto w-full max-w-[150px]"
+                  className="h-12 w-auto"
                 />
               </Link>
             </div>
