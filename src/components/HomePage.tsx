@@ -125,9 +125,14 @@ const HomePage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex justify-end">
           <Link to="/app/kol-feed" className="group">
             <img
-              src="/ChatGPT Image 9 нояб. 2025 г., 18_36_36.png"
+              src="/ChatGPT Image 9 нояб. 2025 г., 18_36_36 copy.png"
               alt="Launch App"
-              className="h-12 sm:h-14 md:h-16 hover:scale-105 transition-transform duration-300"
+              loading="eager"
+              className="h-10 sm:h-12 md:h-14 lg:h-16 w-auto hover:scale-105 hover:opacity-90 transition-all duration-300"
+              onError={(e) => {
+                console.error('Failed to load launch button image');
+                e.currentTarget.style.display = 'none';
+              }}
             />
           </Link>
         </div>
