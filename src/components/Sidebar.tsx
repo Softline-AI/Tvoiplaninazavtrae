@@ -97,7 +97,7 @@ const Sidebar: React.FC = () => {
                 boxShadow: '0 2px 8px rgba(255, 255, 255, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.15)'
               } : {}}
             >
-              <TrendingUp className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <img src="/kol feed.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
               <span className="text-sm font-medium">KOL Feed</span>
             </Link>
             <Link
@@ -173,7 +173,7 @@ const Sidebar: React.FC = () => {
               to="/app/transaction-stream"
               className="flex items-center gap-3 h-10 px-3 rounded-lg transition-all text-white hover:bg-white/10 group"
             >
-              <Zap className="w-5 h-5 transition-transform group-hover:scale-110" />
+              <img src="/transaction stream.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
               <span className="text-sm font-medium">Transaction Stream</span>
             </Link>
             <Link
@@ -290,7 +290,7 @@ const Sidebar: React.FC = () => {
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
               <div className="flex items-center gap-3">
-                <Users className="w-5 h-5 transition-transform group-hover:scale-110" />
+                <img src="/copy traders.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
                 <span className="text-sm font-medium">Copy Traders</span>
               </div>
               <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-white/20 bg-white/5">
@@ -317,7 +317,7 @@ const Sidebar: React.FC = () => {
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
               <div className="flex items-center gap-3">
-                <Zap className="w-5 h-5 transition-transform group-hover:scale-110" />
+                <img src="/insider scan.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
                 <span className="text-sm font-medium">Insider Scan</span>
               </div>
               <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-amber-500/30 bg-amber-500/10 text-amber-400">
@@ -341,7 +341,7 @@ const Sidebar: React.FC = () => {
               className="flex items-center justify-between h-10 px-3 rounded-lg transition-all text-white/50 hover:bg-white/10 hover:text-white/80 group"
             >
               <div className="flex items-center gap-3">
-                <Repeat className="w-5 h-5 transition-transform group-hover:scale-110" />
+                <img src="/live dca feed.png" alt="" className="w-8 h-8 transition-transform group-hover:scale-110 -ml-1" />
                 <span className="text-sm font-medium">Live DCA Feed</span>
               </div>
               <div className="font-bold px-2 py-0.5 rounded text-[10px] border border-amber-500/30 bg-amber-500/10 text-amber-400">
