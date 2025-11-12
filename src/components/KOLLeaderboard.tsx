@@ -114,9 +114,11 @@ const KOLLeaderboard: React.FC = () => {
 
           const totalTrades = buyCount + sellCount;
 
-          const totalVolume = transactions?.reduce((sum: number, tx: any) =>
-            sum + parseFloat(tx.amount || '0'), 0
-          ) || 0;
+          const totalVolume = transactions?.reduce((sum: number, tx: any) => {
+            const solAmount = Math.abs(parseFloat(tx.sol_amount || '0'));
+            const usdValue = solAmount * 200;
+            return sum + usdValue;
+          }, 0) || 0;
 
           const totalPnl = transactions?.reduce((sum: number, tx: any) =>
             sum + parseFloat(tx.token_pnl || '0'), 0
