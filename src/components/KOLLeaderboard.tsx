@@ -94,7 +94,7 @@ const KOLLeaderboard: React.FC = () => {
         profiles.map(async (profile: any) => {
           let txQuery = supabase
             .from('webhook_transactions')
-            .select('transaction_type, amount, token_pnl')
+            .select('transaction_type, amount, token_pnl, sol_amount')
             .eq('from_address', profile.wallet_address)
             .neq('token_symbol', 'UNKNOWN');
 
@@ -116,7 +116,7 @@ const KOLLeaderboard: React.FC = () => {
 
           const totalVolume = transactions?.reduce((sum: number, tx: any) => {
             const solAmount = Math.abs(parseFloat(tx.sol_amount || '0'));
-            const usdValue = solAmount * 200;
+            const usdValue = solAmount * 142.74;
             return sum + usdValue;
           }, 0) || 0;
 
