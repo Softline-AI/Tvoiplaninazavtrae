@@ -103,10 +103,10 @@ const SmartMoney: React.FC = () => {
     const { data, error } = await supabase
       .from('webhook_transactions')
       .select('*')
-      .in('wallet_address', walletAddresses)
-      .in('transaction_type', ['buy', 'sell'])
+      .in('from_address', walletAddresses)
+      .in('transaction_type', ['BUY', 'SELL'])
       .neq('token_symbol', 'UNKNOWN')
-      .order('timestamp', { ascending: false })
+      .order('block_time', { ascending: false })
       .limit(50);
 
     if (data) {

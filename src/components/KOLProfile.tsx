@@ -94,25 +94,30 @@ const KOLProfile: React.FC = () => {
 
     setLoading(true);
     try {
-      const { data: walletData } = await supabase
-        .from('monitored_wallets')
-        .select('wallet_address, label, twitter_handle, twitter_avatar')
-        .eq('wallet_address', walletAddress)
-        .maybeSingle();
+      // Parallel fetch of all data
+      const [walletResult, profileResult, txResult] = await Promise.all([
+        supabase
+          .from('monitored_wallets')
+          .select('wallet_address, label, twitter_handle, twitter_avatar')
+          .eq('wallet_address', walletAddress)
+          .maybeSingle(),
+        supabase
+          .from('kol_profiles')
+          .select('*')
+          .eq('wallet_address', walletAddress)
+          .maybeSingle(),
+        supabase
+          .from('webhook_transactions')
+          .select('*')
+          .eq('from_address', walletAddress)
+          .neq('token_symbol', 'UNKNOWN')
+          .order('block_time', { ascending: false })
+          .limit(200)
+      ]);
 
-      const { data: profileData } = await supabase
-        .from('kol_profiles')
-        .select('*')
-        .eq('wallet_address', walletAddress)
-        .maybeSingle();
-
-      const { data: txData, error: txError } = await supabase
-        .from('webhook_transactions')
-        .select('*')
-        .eq('from_address', walletAddress)
-        .neq('token_symbol', 'UNKNOWN')
-        .order('block_time', { ascending: false })
-        .limit(500);
+      const walletData = walletResult.data;
+      const profileData = profileResult.data;
+      const { data: txData, error: txError } = txResult;
 
       if (txError) {
         console.error('Error loading transactions:', txError);

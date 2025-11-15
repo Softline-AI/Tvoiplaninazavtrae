@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Crown, ExternalLink, RefreshCw, ChevronDown, TrendingUp, DollarSign } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
+import { profileCache } from '../services/profileCache';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -66,26 +67,12 @@ const KOLLeaderboard: React.FC = () => {
           break;
       }
 
-      const { data: wallets } = await supabase
-        .from('monitored_wallets')
-        .select('wallet_address, label, twitter_handle, twitter_avatar');
+      // Use cached profiles and wallets
+      const { profiles: profilesMap, wallets: walletsMap } = await profileCache.getAll();
+      const walletMap = walletsMap;
+      const profiles = Array.from(profilesMap.values());
 
-      const walletMap = new Map();
-      wallets?.forEach((wallet: any) => {
-        walletMap.set(wallet.wallet_address, wallet);
-      });
-
-      const { data: profiles, error: profilesError } = await supabase
-        .from('kol_profiles')
-        .select('*');
-
-      if (profilesError) {
-        console.error('Error loading KOL profiles:', profilesError);
-        setError('Failed to load leaderboard data');
-        return;
-      }
-
-      if (!profiles || profiles.length === 0) {
+      if (profiles.length === 0) {
         setTraders([]);
         return;
       }

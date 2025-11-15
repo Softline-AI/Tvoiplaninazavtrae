@@ -5,6 +5,7 @@ import { supabase } from '../services/supabaseClient';
 import { useTokenLogo } from '../hooks/useTokenLogo';
 import { aggregatedPnlService } from '../services/aggregatedPnlService';
 import { SafeImage } from './SafeImage';
+import { profileCache } from '../services/profileCache';
 
 const XIcon = ({ className }: { className?: string }) => (
   <svg viewBox="0 0 24 24" className={className} fill="currentColor">
@@ -118,26 +119,10 @@ const KOLFeedLegacy: React.FC = () => {
         if (!txTypes.includes(newTx.transaction_type)) return;
       }
 
-      const { data: wallets } = await supabase
-        .from('monitored_wallets')
-        .select('wallet_address, label, twitter_handle, twitter_avatar');
-
-      const walletMap = new Map();
-      wallets?.forEach((wallet: any) => {
-        walletMap.set(wallet.wallet_address, wallet);
-      });
-
-      const { data: profiles } = await supabase
-        .from('kol_profiles')
-        .select('*');
-
-      const profileMap = new Map();
-      profiles?.forEach((profile: any) => {
-        profileMap.set(profile.wallet_address, profile);
-      });
-
-      const wallet = walletMap.get(newTx.from_address);
-      const profile = profileMap.get(newTx.from_address);
+      // Use cached profiles and wallets
+      const { profiles, wallets } = await profileCache.getAll();
+      const wallet = wallets.get(newTx.from_address);
+      const profile = profiles.get(newTx.from_address);
       const avatarUrl = wallet?.twitter_avatar || profile?.avatar_url || 'https://pbs.twimg.com/profile_images/1969372691523145729/jb8dFHTB_400x400.jpg';
 
       const txType = newTx.transaction_type === 'BUY' ? 'buy' : 'sell';
@@ -235,38 +220,28 @@ const KOLFeedLegacy: React.FC = () => {
           timeFilter_date = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       }
 
-      const { data: wallets } = await supabase
-        .from('monitored_wallets')
-        .select('wallet_address, label, twitter_handle, twitter_avatar');
-
-      const walletMap = new Map();
-      wallets?.forEach((wallet: any) => {
-        walletMap.set(wallet.wallet_address, wallet);
-      });
-
-      const { data: profiles } = await supabase
-        .from('kol_profiles')
-        .select('*');
-
-      const profileMap = new Map();
-      profiles?.forEach((profile: any) => {
-        profileMap.set(profile.wallet_address, profile);
-      });
+      // Use cached profiles and wallets
+      const { profiles, wallets } = await profileCache.getAll();
+      const walletMap = wallets;
+      const profileMap = profiles;
 
       let query = supabase
         .from('webhook_transactions')
-        .select('*', { count: 'exact' })
+        .select('*')
         .gte('block_time', timeFilter_date.toISOString())
         .neq('token_symbol', 'UNKNOWN');
 
-      if (actionFilter !== 'all') {
-        const txTypes = actionFilter === 'buy' ? ['BUY'] : ['SELL'];
-        query = query.in('transaction_type', txTypes);
+      if (actionFilter === 'buy') {
+        query = query.in('transaction_type', ['BUY', 'SWAP']);
+      } else if (actionFilter === 'sell') {
+        query = query.eq('transaction_type', 'SELL');
+      } else {
+        query = query.in('transaction_type', ['BUY', 'SELL', 'SWAP']);
       }
 
-      const { data: transactions, error, count } = await query
+      const { data: transactions, error } = await query
         .order('block_time', { ascending: false })
-        .limit(500);
+        .limit(200);
 
       if (error) {
         console.error('Error loading transactions:', error);
@@ -281,7 +256,7 @@ const KOLFeedLegacy: React.FC = () => {
         return;
       }
 
-      setTotalCount(count || 0);
+      setTotalCount(transactions.length);
 
       const formattedTrades: LegacyTrade[] = transactions.map((tx: any) => {
         const wallet = walletMap.get(tx.from_address);

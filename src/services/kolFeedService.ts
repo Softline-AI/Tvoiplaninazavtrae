@@ -43,6 +43,12 @@ export interface KOLFeedItem {
   timestamp: string;
 }
 
+// In-memory cache for KOL profiles and wallets
+let cachedProfiles: Map<string, KOLProfile> | null = null;
+let cachedWallets: Map<string, any> | null = null;
+let cacheTimestamp: number = 0;
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
 const formatTimeAgo = (timestamp: string): string => {
   const now = new Date();
   const txTime = new Date(timestamp);
@@ -87,24 +93,48 @@ export const kolFeedService = {
           timeFilter = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       }
 
-      // Fetch monitored wallets
-      const { data: wallets } = await supabase
-        .from('monitored_wallets')
-        .select('wallet_address, label, twitter_handle, twitter_avatar');
+      // Check cache validity
+      const now = Date.now();
+      const isCacheValid = cachedProfiles && cachedWallets && (now - cacheTimestamp) < CACHE_DURATION;
 
-      const walletMap = new Map();
-      wallets?.forEach((wallet: any) => {
-        walletMap.set(wallet.wallet_address, wallet);
-      });
+      let walletMap: Map<string, any>;
+      let profiles: any[];
 
-      // Fetch KOL profiles
-      const { data: profiles, error: profilesError } = await supabase
-        .from('kol_profiles')
-        .select('*');
+      if (isCacheValid) {
+        console.log('[KOL Feed] Using cached profiles');
+        walletMap = cachedWallets!;
+        profiles = Array.from(cachedProfiles!.values());
+      } else {
+        console.log('[KOL Feed] Fetching fresh profiles');
+        // Fetch wallets and profiles in parallel
+        const [walletsResult, profilesResult] = await Promise.all([
+          supabase
+            .from('monitored_wallets')
+            .select('wallet_address, label, twitter_handle, twitter_avatar'),
+          supabase
+            .from('kol_profiles')
+            .select('*')
+        ]);
 
-      if (profilesError) {
-        console.error('Error fetching KOL profiles:', profilesError);
-        return { success: false, data: [], error: profilesError.message };
+        if (profilesResult.error) {
+          console.error('Error fetching KOL profiles:', profilesResult.error);
+          return { success: false, data: [], error: profilesResult.error.message };
+        }
+
+        walletMap = new Map();
+        walletsResult.data?.forEach((wallet: any) => {
+          walletMap.set(wallet.wallet_address, wallet);
+        });
+
+        profiles = profilesResult.data || [];
+
+        // Update cache
+        cachedWallets = walletMap;
+        cachedProfiles = new Map();
+        profiles.forEach((profile: any) => {
+          cachedProfiles!.set(profile.wallet_address, profile);
+        });
+        cacheTimestamp = now;
       }
 
       if (!profiles || profiles.length === 0) {
@@ -124,23 +154,25 @@ export const kolFeedService = {
       const page = params.page || 1;
       const offset = (page - 1) * params.limit;
 
-      // Get total count for pagination
-      const { count, error: countError } = await supabase
-        .from('webhook_transactions')
-        .select('*', { count: 'exact', head: true })
-        .in('from_address', walletAddresses)
-        .gte('block_time', timeFilter.toISOString());
-
-      if (countError) {
-        console.error('Error counting transactions:', countError);
-      }
-
-      // Fetch transactions for KOL wallets with pagination
-      const { data: transactions, error: txError } = await supabase
+      // Build transaction query with filters
+      let txQuery = supabase
         .from('webhook_transactions')
         .select('*')
         .in('from_address', walletAddresses)
         .gte('block_time', timeFilter.toISOString())
+        .neq('token_symbol', 'UNKNOWN');
+
+      // Add type filter at database level if specified
+      if (params.type === 'buy') {
+        txQuery = txQuery.in('transaction_type', ['BUY', 'SWAP']);
+      } else if (params.type === 'sell') {
+        txQuery = txQuery.eq('transaction_type', 'SELL');
+      } else {
+        txQuery = txQuery.in('transaction_type', ['BUY', 'SELL', 'SWAP']);
+      }
+
+      // Fetch transactions with pagination
+      const { data: transactions, error: txError } = await txQuery
         .order('block_time', { ascending: false })
         .range(offset, offset + params.limit - 1);
 
@@ -163,11 +195,6 @@ export const kolFeedService = {
           const avatarUrl = wallet?.twitter_avatar || profile.avatar_url || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg';
 
           const txType = ['SWAP', 'BUY'].includes(tx.transaction_type) ? 'buy' : 'sell';
-
-          // Filter by type if needed
-          if (params.type !== 'all' && txType !== params.type) {
-            return null;
-          }
 
           const amount = parseFloat(tx.amount || '0');
           const tokenPnl = parseFloat(tx.token_pnl || '0');
@@ -209,9 +236,8 @@ export const kolFeedService = {
       }
       // 'time' is already sorted by default
 
-      // Calculate if there are more pages
-      const total = count || feedItems.length;
-      const hasMore = (page * params.limit) < total;
+      // Simple hasMore detection: if we got full page, there might be more
+      const hasMore = transactions.length === params.limit;
 
       return {
         success: true,
