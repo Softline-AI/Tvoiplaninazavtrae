@@ -28,7 +28,7 @@ export function SafeImage({ src, alt, className = '', fallbackIcon = true }: Saf
     const timeoutId = setTimeout(() => {
       setError(true);
       setLoading(false);
-    }, 5000);
+    }, 2000);
 
     img.onload = () => {
       clearTimeout(timeoutId);
@@ -54,7 +54,7 @@ export function SafeImage({ src, alt, className = '', fallbackIcon = true }: Saf
 
   if (loading) {
     return (
-      <div className={`${className} bg-gray-700/50 animate-pulse flex items-center justify-center`}>
+      <div className={`${className} bg-gray-800/30 animate-pulse flex items-center justify-center`}>
         {fallbackIcon && <User className="w-1/2 h-1/2 text-gray-600" />}
       </div>
     );

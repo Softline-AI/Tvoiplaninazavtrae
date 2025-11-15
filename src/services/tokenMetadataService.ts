@@ -258,19 +258,60 @@ export const tokenMetadataService = {
   },
 
   /**
-   * Batch fetch multiple token logos
+   * Batch fetch multiple token logos with parallel processing
    */
   async getBatchTokenLogos(tokenMints: string[]): Promise<Record<string, string>> {
     const logos: Record<string, string> = {};
 
-    const batchSize = 10;
-    for (let i = 0; i < tokenMints.length; i += batchSize) {
-      const batch = tokenMints.slice(i, i + batchSize);
-      const promises = batch.map(async (mint) => {
-        const logo = await this.getTokenLogo(mint);
-        logos[mint] = logo;
+    try {
+      const { data: cachedData } = await supabase
+        .from('token_metadata')
+        .select('token_mint, logo_url, last_updated')
+        .in('token_mint', tokenMints);
+
+      const cachedMap = new Map<string, { logo_url: string | null; last_updated: string }>();
+      cachedData?.forEach(item => {
+        cachedMap.set(item.token_mint, { logo_url: item.logo_url, last_updated: item.last_updated });
       });
-      await Promise.all(promises);
+
+      const mintsToFetch: string[] = [];
+
+      tokenMints.forEach(mint => {
+        const cached = cachedMap.get(mint);
+        if (cached && this.isCacheValid(cached.last_updated)) {
+          logos[mint] = cached.logo_url || DEFAULT_TOKEN_LOGO;
+        } else {
+          mintsToFetch.push(mint);
+        }
+      });
+
+      if (mintsToFetch.length > 0) {
+        const batchSize = 15;
+        for (let i = 0; i < mintsToFetch.length; i += batchSize) {
+          const batch = mintsToFetch.slice(i, i + batchSize);
+          const results = await Promise.allSettled(
+            batch.map(async (mint) => {
+              const logo = await this.getTokenLogo(mint);
+              return { mint, logo };
+            })
+          );
+
+          results.forEach((result) => {
+            if (result.status === 'fulfilled') {
+              logos[result.value.mint] = result.value.logo;
+            } else {
+              logos[result.value as any] = DEFAULT_TOKEN_LOGO;
+            }
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error in getBatchTokenLogos:', error);
+      tokenMints.forEach(mint => {
+        if (!logos[mint]) {
+          logos[mint] = DEFAULT_TOKEN_LOGO;
+        }
+      });
     }
 
     return logos;
