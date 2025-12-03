@@ -12,6 +12,7 @@
     "server": "node server.js"
   },
   "dependencies": {
+    "@privy-io/react-auth": "^1.90.2",
     "@supabase/supabase-js": "^2.57.4",
     "axios": "^1.12.2",
     "body-parser": "^2.2.0",

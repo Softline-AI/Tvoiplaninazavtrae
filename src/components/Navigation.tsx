@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, ChevronDown, TrendingUp, BarChart3, Star, Activity, Coins, TrendingDown, ArrowLeftRight, Wallet, Search, LineChart } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { AuthButton } from './AuthButton';
 
 const Navigation: React.FC = () => {
   const location = useLocation();
@@ -177,8 +178,8 @@ const Navigation: React.FC = () => {
             </div>
           </div>
 
-          {!isAppRoute && (
-            <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center gap-4">
+            {!isAppRoute && (
               <Link
                 to="/app/kol-feed"
                 className="transition-all duration-300 hover:scale-105 hover:opacity-80"
@@ -189,8 +190,9 @@ const Navigation: React.FC = () => {
                   className="w-[130px] h-auto"
                 />
               </Link>
-            </div>
-          )}
+            )}
+            {isAppRoute && <AuthButton />}
+          </div>
 
           <button
             className="md:hidden text-white p-2"
