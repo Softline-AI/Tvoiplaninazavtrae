@@ -113,9 +113,23 @@ const transformTransaction = (
 
   const action = classifyTransactionWithContext(tx);
   const txType = action === 'BUY' ? 'buy' : 'sell';
-  const amount = parseFloat(tx.amount || '0');
+  const tokenAmount = parseFloat(tx.amount || '0');
+  const tokenPrice = parseFloat(tx.current_token_price || tx.price_usd || '0');
+  const solAmount = Math.abs(parseFloat(tx.sol_amount || '0'));
+
+  // Calculate USD value: use SOL amount if available, otherwise token_amount * price
+  let usdValue = 0;
+  if (solAmount > 0.001) {
+    // Assume SOL price ~$150 for approximation
+    usdValue = solAmount * 150;
+  } else if (tokenPrice > 0) {
+    usdValue = tokenAmount * tokenPrice;
+  }
+
   const tokenPnl = parseFloat(tx.token_pnl || '0');
   const tokenPnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
+  const entryPrice = parseFloat(tx.entry_price || tokenPrice || '0');
+  const currentPrice = parseFloat(tx.current_token_price || tx.price_usd || '0');
 
   return {
     id: tx.id,
@@ -127,9 +141,9 @@ const transformTransaction = (
     twitterHandle: profile.twitter_handle || tx.from_address.substring(0, 8),
     token: tx.token_symbol || 'Unknown',
     tokenContract: tx.token_mint || '',
-    bought: txType === 'buy' ? `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '$0.00',
-    sold: txType === 'sell' ? `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '$0.00',
-    holding: txType === 'buy' ? `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'sold all',
+    bought: txType === 'buy' ? `$${usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '$0.00',
+    sold: txType === 'sell' ? `$${usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : '$0.00',
+    holding: txType === 'buy' ? `$${usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : 'sold all',
     pnl: `${tokenPnl >= 0 ? '+' : ''}$${Math.abs(tokenPnl).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
     pnlPercentage: `${tokenPnlPercentage >= 0 ? '+' : ''}${tokenPnlPercentage.toFixed(2)}%`,
     pnlValue: tokenPnl,
