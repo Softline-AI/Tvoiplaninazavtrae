@@ -8,21 +8,25 @@ const privyAppId = import.meta.env.VITE_PRIVY_APP_ID || '';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <PrivyProvider
-      appId={privyAppId}
-      config={{
-        loginMethods: ['email', 'wallet', 'google', 'twitter'],
-        appearance: {
-          theme: 'dark',
-          accentColor: '#ffffff',
-          logo: '/favicon.svg',
-        },
-        embeddedWallets: {
-          createOnLogin: 'users-without-wallets',
-        },
-      }}
-    >
+    {privyAppId ? (
+      <PrivyProvider
+        appId={privyAppId}
+        config={{
+          loginMethods: ['email', 'wallet', 'google', 'twitter'],
+          appearance: {
+            theme: 'dark',
+            accentColor: '#ffffff',
+            logo: '/favicon.svg',
+          },
+          embeddedWallets: {
+            createOnLogin: 'users-without-wallets',
+          },
+        }}
+      >
+        <App />
+      </PrivyProvider>
+    ) : (
       <App />
-    </PrivyProvider>
+    )}
   </StrictMode>
 );

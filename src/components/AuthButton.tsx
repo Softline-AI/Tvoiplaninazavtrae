@@ -3,6 +3,13 @@ import { usePrivy } from '@privy-io/react-auth';
 import { LogIn, LogOut, User } from 'lucide-react';
 
 export const AuthButton: React.FC = () => {
+  const privyAppId = import.meta.env.VITE_PRIVY_APP_ID || '';
+
+  // If no Privy App ID, don't show auth button
+  if (!privyAppId) {
+    return null;
+  }
+
   const { ready, authenticated, login, logout, user } = usePrivy();
 
   if (!ready) {

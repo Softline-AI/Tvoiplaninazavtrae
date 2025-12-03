@@ -8,6 +8,13 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, fallback }) => {
+  const privyAppId = import.meta.env.VITE_PRIVY_APP_ID || '';
+
+  // If no Privy App ID, show content without protection
+  if (!privyAppId) {
+    return <>{children}</>;
+  }
+
   const { authenticated, ready, login } = usePrivy();
 
   if (!ready) {
