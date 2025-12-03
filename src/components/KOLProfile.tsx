@@ -653,9 +653,16 @@ const KOLProfile: React.FC = () => {
                       {sortedTransactions.slice(0, 5).map((tx) => (
                         <div key={tx.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/5">
                           <div className="flex items-center gap-3">
-                            <div className={`px-2 py-0.5 rounded text-xs font-bold ${
-                              tx.transaction_type === 'BUY' ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'
+                            <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-bold text-xs ${
+                              tx.transaction_type === 'BUY'
+                                ? 'bg-green-500/20 text-green-500 border border-green-500/30'
+                                : 'bg-red-500/20 text-red-500 border border-red-500/30'
                             }`}>
+                              {tx.transaction_type === 'BUY' ? (
+                                <ArrowDownRight className="w-3.5 h-3.5" />
+                              ) : (
+                                <ArrowUpRight className="w-3.5 h-3.5" />
+                              )}
                               {tx.transaction_type}
                             </div>
                             <div>
@@ -758,13 +765,18 @@ const KOLProfile: React.FC = () => {
                     {sortedTransactions.map((tx) => (
                       <tr key={tx.id} className="hover:bg-white/[0.02] transition-colors">
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`text-xs font-bold uppercase ${
-                              tx.transaction_type === 'BUY' ? 'text-green-600' : 'text-red-600'
-                            }`}
-                          >
+                          <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-bold text-xs ${
+                            tx.transaction_type === 'BUY'
+                              ? 'bg-green-500/20 text-green-500 border border-green-500/30'
+                              : 'bg-red-500/20 text-red-500 border border-red-500/30'
+                          }`}>
+                            {tx.transaction_type === 'BUY' ? (
+                              <ArrowDownRight className="w-3.5 h-3.5" />
+                            ) : (
+                              <ArrowUpRight className="w-3.5 h-3.5" />
+                            )}
                             {tx.transaction_type}
-                          </span>
+                          </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className="text-xs text-white/50">{formatTimeAgo(tx.block_time)}</span>

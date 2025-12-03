@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200">
+  <rect width="400" height="200" fill="#000000" rx="20"/>
+  <circle cx="80" cy="100" r="35" fill="none" stroke="#00ff00" stroke-width="4"/>
+  <circle cx="80" cy="100" r="8" fill="#00ff00"/>
+  <text x="140" y="90" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">Fresh</text>
+  <text x="140" y="125" font-family="Arial, sans-serif" font-size="32" font-weight="bold" fill="#FFFFFF">Wallets</text>
+  <path d="M 320 70 L 340 90 L 320 110" stroke="#00ff00" stroke-width="3" fill="none"/>
+  <circle cx="350" cy="90" r="5" fill="#00ff00"/>
+</svg>

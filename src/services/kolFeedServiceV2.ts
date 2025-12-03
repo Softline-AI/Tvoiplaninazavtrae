@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import type { RealtimeChannel } from '@supabase/supabase-js';
+import { classifyTransactionWithContext } from './transactionTypeMapper';
 
 export interface KOLProfile {
   id: string;
@@ -110,7 +111,8 @@ const transformTransaction = (
 ): KOLFeedItem | null => {
   if (!profile) return null;
 
-  const txType = ['SWAP', 'BUY'].includes(tx.transaction_type) ? 'buy' : 'sell';
+  const action = classifyTransactionWithContext(tx);
+  const txType = action === 'BUY' ? 'buy' : 'sell';
   const amount = parseFloat(tx.amount || '0');
   const tokenPnl = parseFloat(tx.token_pnl || '0');
   const tokenPnlPercentage = parseFloat(tx.token_pnl_percentage || '0');
